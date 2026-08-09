@@ -110,6 +110,12 @@ func (q *Queue) Close() error                   { return q.rdb.Close() }
 func (q *Queue) Ping(ctx context.Context) error { return q.rdb.Ping(ctx).Err() }
 func (q *Queue) QueueName() string              { return q.queue }
 
+// FlushForTest wipes the Redis database. Integration suites outside this
+// package need it; nothing else may call it, and the name says so.
+func (q *Queue) FlushForTest(ctx context.Context) error {
+	return q.rdb.FlushDB(ctx).Err()
+}
+
 func (q *Queue) streamKey(p job.Priority) string {
 	return fmt.Sprintf("%s:stream:%s:%s", q.prefix, q.queue, p)
 }
