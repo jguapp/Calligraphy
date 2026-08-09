@@ -1,0 +1,46 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Forge">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16130F"/>
+      <stop offset="100%" stop-color="#211B14"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8763A" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#E8763A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="heat" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#E8763A"/>
+      <stop offset="100%" stop-color="#F2A65A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <rect width="640" height="320" fill="url(#glow)"/>
+
+  <!-- anvil mark; three sparks for the three moving pieces:
+       queue, workers, record -->
+  <g transform="translate(88, 100)">
+    <g stroke="#E8763A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <!-- top face with horn -->
+      <path d="M10 26 H84 C100 26 112 20 120 10 C106 8 96 12 88 14 H10 Z"/>
+      <!-- waist -->
+      <path d="M34 40 C34 50 26 56 18 60 H80 C72 56 64 50 64 40"/>
+      <!-- base -->
+      <path d="M14 60 H84 V74 H14 Z"/>
+    </g>
+    <!-- sparks rising off the horn -->
+    <g fill="url(#heat)">
+      <circle cx="126" cy="-6" r="4"/>
+      <circle cx="140" cy="8" r="3"/>
+      <circle cx="130" cy="22" r="2.5"/>
+    </g>
+    <!-- ember line under the anvil -->
+    <rect x="10" y="86" width="78" height="9" rx="4.5" fill="#E8763A" opacity="0.5"/>
+  </g>
+
+  <text x="248" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#ECE5DA" font-weight="700">Forge</text>
+  <text x="252" y="214" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" fill="#A89A8A" letter-spacing="0.3">Submit work. Kill the worker. Get the result anyway.</text>
+
+  <line x1="92" y1="252" x2="940" y2="252" stroke="#332A21" stroke-width="1.5"/>
+  <text x="92" y="286" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#7A6E5F">A distributed job-processing platform in Go — Redis Streams transport, Postgres truth, fenced writes, honest benchmarks</text>
+</svg>

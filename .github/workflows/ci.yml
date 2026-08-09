@@ -51,6 +51,10 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
+          # Not a secret: the throwaway password of an ephemeral CI
+          # service container that exists for one job run and listens
+          # only inside it. Secret scanners flag it (GitGuardian did);
+          # the correct disposition is "false positive", not rotation.
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: forge_test
         ports: ["5432:5432"]
@@ -72,7 +76,9 @@ jobs:
         env:
           FORGE_TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/forge_test?sslmode=disable
           FORGE_TEST_REDIS_ADDR: 127.0.0.1:6379
-        run: go test -race -count=1 ./...
+        # -p 1: integration packages share one Redis + Postgres and flush
+        # them in setup; parallel packages would eat each other's state.
+        run: go test -race -count=1 -p 1 ./...
 
   build:
     runs-on: ubuntu-latest
