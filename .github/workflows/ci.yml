@@ -1,0 +1,89 @@
+# CI for Forge. Four jobs, in dependency order of trust: format/vet is
+# seconds and gates everything cheap-to-fix; unit tests need no services;
+# the integration job runs the REAL suites (Postgres 16 + Redis 7 as
+# service containers -- the same stores the code ships against, not
+# mocks); the docker job proves the shipping artifact builds.
+#
+# The integration job is the one that matters: it includes the SIGKILL
+# crash-recovery test, so every push re-proves the platform's central
+# claim.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: gofmt
+        run: |
+          out="$(gofmt -l .)"
+          if [ -n "$out" ]; then echo "gofmt needed on:"; echo "$out"; exit 1; fi
+      - name: go vet
+        run: go vet ./...
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: unit tests (no services; integration suites self-skip)
+        run: go test -race ./...
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: forge_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: integration tests (store, queue, worker, recovery incl. SIGKILL, api, control)
+        env:
+          FORGE_TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/forge_test?sslmode=disable
+          FORGE_TEST_REDIS_ADDR: 127.0.0.1:6379
+        run: go test -race -count=1 ./...
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: build all binaries
+        run: make build
+      - name: docker image (api)
+        run: docker build -f deploy/docker/Dockerfile --build-arg BINARY=forge-api -t forge-api:ci .
+      - name: docker image (worker)
+        run: docker build -f deploy/docker/Dockerfile --build-arg BINARY=forge-worker -t forge-worker:ci .

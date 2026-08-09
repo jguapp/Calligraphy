@@ -1,0 +1,47 @@
+# Dev-grade Postgres: one replica, one 5Gi PVC, no backups, no operator.
+# Fine for a demo cluster; a real deployment should use managed Postgres
+# and delete this file (see README.md).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: forge
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels: { app: postgres }
+  template:
+    metadata:
+      labels: { app: postgres }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - { name: POSTGRES_USER, value: forge }
+            - { name: POSTGRES_PASSWORD, value: forge }
+            - { name: POSTGRES_DB, value: forge }
+          ports: [{ containerPort: 5432 }]
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql/data }
+          readinessProbe:
+            exec: { command: ["pg_isready", "-U", "forge"] }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { memory: 1Gi }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 5Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: forge
+spec:
+  selector: { app: postgres }
+  ports: [{ port: 5432 }]
