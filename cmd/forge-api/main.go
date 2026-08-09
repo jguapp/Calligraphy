@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,6 +20,7 @@ import (
 
 	"github.com/jguapp/forge/internal/api"
 	"github.com/jguapp/forge/internal/config"
+	"github.com/jguapp/forge/internal/control"
 	"github.com/jguapp/forge/internal/handlers"
 	"github.com/jguapp/forge/internal/metrics"
 	"github.com/jguapp/forge/internal/queue"
@@ -70,6 +72,19 @@ func run() error {
 	m := metrics.New()
 	m.MustRegister(metrics.NewDepthCollector(q))
 
+	// The control plane: workers stream in; the API (and forgectl through
+	// it) commands them. Jobs never travel here.
+	hub := control.NewHub(log)
+	grpcSrv := control.NewGRPCServer(hub)
+	grpcLis, err := net.Listen("tcp", cfg.GRPCAddr)
+	if err != nil {
+		return fmt.Errorf("grpc listen: %w", err)
+	}
+	go func() {
+		log.Info("forge-api: control plane listening", "addr", cfg.GRPCAddr)
+		grpcSrv.Serve(grpcLis) //nolint:errcheck // stopped in shutdown below
+	}()
+
 	// The registry is built here only for its type names: the API
 	// validates submissions against what the worker fleet can execute.
 	reg := handlers.NewRegistry(handlers.Config{
@@ -95,6 +110,7 @@ func run() error {
 		MaxPayloadBytes: cfg.MaxPayloadBytes,
 		Version:         version,
 	}, log)
+	srv.Hub = hub
 
 	httpSrv := &http.Server{
 		Addr:              cfg.HTTPAddr,
@@ -123,6 +139,7 @@ func run() error {
 	if err := httpSrv.Shutdown(shutdownCtx); err != nil {
 		log.Warn("forge-api: shutdown timed out; closing anyway", "err", err)
 	}
+	grpcSrv.GracefulStop()
 	<-leaderDone
 	return nil
 }

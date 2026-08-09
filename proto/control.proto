@@ -1,0 +1,68 @@
+// The control plane. This is the only place gRPC appears in Forge, and
+// the boundary is strict: jobs NEVER travel here. Work moves through
+// Redis, where it is durable and claimable; this stream carries the small
+// bidirectional truth that HTTP polling handles badly -- workers pushing
+// live stats up, operators pushing drain/pause/resize down, with sub-
+// second latency and no polling loop on either side. That push-down
+// direction is what earns gRPC its place: "drain worker 3 now" over
+// polled HTTP means waiting a poll interval; over a live stream it means
+// now.
+syntax = "proto3";
+
+package forge.control.v1;
+
+option go_package = "github.com/jguapp/forge/internal/control/pb;pb";
+
+service Control {
+  // WorkerStream is opened by each worker at boot and held for its
+  // lifetime. First message must be a WorkerHello; stats follow
+  // periodically; commands flow back whenever an operator issues one.
+  rpc WorkerStream(stream WorkerMessage) returns (stream Command);
+}
+
+message WorkerMessage {
+  oneof msg {
+    WorkerHello hello = 1;
+    WorkerStats stats = 2;
+    CommandAck ack = 3;
+  }
+}
+
+message WorkerHello {
+  string worker_id = 1;
+  string hostname = 2;
+  int32 pid = 3;
+  int32 concurrency = 4;
+  repeated string types = 5;
+}
+
+message WorkerStats {
+  int32 active = 1;
+  int32 target = 2;
+  uint64 processed = 3;
+  double utilization = 4;
+  bool paused = 5;
+}
+
+message CommandAck {
+  string command_id = 1;
+  string detail = 2;
+}
+
+message Command {
+  string command_id = 1;
+  oneof cmd {
+    Drain drain = 2;                    // stop fetching, finish in-flight, exit
+    Pause pause = 3;                    // stop fetching, stay alive
+    Resume resume = 4;
+    SetConcurrency set_concurrency = 5; // live-resize the pool
+  }
+}
+
+message Drain {}
+message Pause {}
+message Resume {}
+
+message SetConcurrency {
+  int32 target = 1;
+}

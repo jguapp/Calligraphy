@@ -22,17 +22,30 @@ import (
 	"sort"
 	"time"
 
+	"github.com/jguapp/forge/internal/control"
 	"github.com/jguapp/forge/internal/job"
 	"github.com/jguapp/forge/internal/metrics"
 	"github.com/jguapp/forge/internal/queue"
 	"github.com/jguapp/forge/internal/store"
 )
 
+// ControlHub is the live-worker command surface, defined here (the
+// consumer) and implemented by control.Hub. Nil means no control plane --
+// every admin endpoint answers 503 rather than pretending.
+type ControlHub interface {
+	Workers() []control.WorkerView
+	Drain(workerID string) error
+	Pause(workerID string) error
+	Resume(workerID string) error
+	SetConcurrency(workerID string, target int) error
+}
+
 type Server struct {
 	Store  *store.Store
 	Queue  *queue.Queue
 	Log    *slog.Logger
 	Meters *metrics.Metrics
+	Hub    ControlHub
 
 	// KnownTypes validates submissions against the same registry the
 	// workers run, so "job accepted" implies "somebody can run it".
@@ -101,6 +114,15 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("POST /api/v1/dlq/{id}/requeue", authed(s.handleRequeueDLQ))
 	mux.Handle("GET /api/v1/workers", authed(s.handleWorkers))
 	mux.Handle("GET /api/v1/meta", authed(s.handleMeta))
+
+	// The control plane's HTTP face: live-connected workers and the four
+	// commands. forgectl talks to these, which keeps it a plain HTTP
+	// client -- the gRPC stream stays a private worker<->API affair.
+	mux.Handle("GET /api/v1/control/workers", authed(s.handleControlWorkers))
+	mux.Handle("POST /api/v1/control/workers/{id}/drain", authed(s.controlCmd(func(h ControlHub, id string) error { return h.Drain(id) })))
+	mux.Handle("POST /api/v1/control/workers/{id}/pause", authed(s.controlCmd(func(h ControlHub, id string) error { return h.Pause(id) })))
+	mux.Handle("POST /api/v1/control/workers/{id}/resume", authed(s.controlCmd(func(h ControlHub, id string) error { return h.Resume(id) })))
+	mux.Handle("POST /api/v1/control/workers/{id}/concurrency", authed(s.handleSetConcurrency))
 
 	return s.recoverMW(s.logMW(mux))
 }
@@ -416,6 +438,48 @@ func (s *Server) handleWorkers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"workers": ws})
+}
+
+func (s *Server) handleControlWorkers(w http.ResponseWriter, r *http.Request) {
+	if s.Hub == nil {
+		writeErr(w, http.StatusServiceUnavailable, "no_control_plane", "This API has no control plane attached.")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"workers": s.Hub.Workers()})
+}
+
+func (s *Server) controlCmd(f func(ControlHub, string) error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if s.Hub == nil {
+			writeErr(w, http.StatusServiceUnavailable, "no_control_plane", "This API has no control plane attached.")
+			return
+		}
+		id := r.PathValue("id")
+		if err := f(s.Hub, id); err != nil {
+			writeErr(w, http.StatusNotFound, "command_failed", err.Error())
+			return
+		}
+		writeJSON(w, http.StatusAccepted, map[string]any{"worker": id, "sent": true})
+	}
+}
+
+func (s *Server) handleSetConcurrency(w http.ResponseWriter, r *http.Request) {
+	if s.Hub == nil {
+		writeErr(w, http.StatusServiceUnavailable, "no_control_plane", "This API has no control plane attached.")
+		return
+	}
+	var body struct {
+		Target int `json:"target"`
+	}
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1024)).Decode(&body); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid_json", err.Error())
+		return
+	}
+	if err := s.Hub.SetConcurrency(r.PathValue("id"), body.Target); err != nil {
+		writeErr(w, http.StatusNotFound, "command_failed", err.Error())
+		return
+	}
+	writeJSON(w, http.StatusAccepted, map[string]any{"worker": r.PathValue("id"), "target": body.Target})
 }
 
 // handleMeta exists for benchmark provenance: results are meaningless
