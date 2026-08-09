@@ -33,11 +33,17 @@ func isPanic(err error) bool {
 	return errors.As(err, &pe)
 }
 
-// Observer receives execution outcomes. The metrics package implements it;
-// tests use it to see inside; nil is fine.
+// Observer receives execution outcomes, one method per route so the
+// metrics can never conflate "retried" with "dead-lettered" (they share a
+// classification but not a fate). The metrics package implements it; nil
+// is fine.
 type Observer interface {
 	JobStarted(jobType string)
-	JobFinished(jobType string, outcome job.Outcome, execSeconds, e2eSeconds float64)
+	JobCompleted(jobType string, execSeconds, e2eSeconds float64)
+	JobFailed(jobType string)
+	JobRetried(jobType string)
+	JobDeadLettered(jobType string)
+	JobCancelled(jobType string)
 	ClaimSkipped()
 	WriteFenced()
 }
@@ -221,16 +227,22 @@ func (r *Runner) finish(ctx context.Context, d queue.Delivery, claim store.Claim
 	var applied bool
 	var recErr error
 	ackAfter := true
+	var notify func()
 
 	switch outcome {
 	case job.OutcomeCompleted:
 		applied, recErr = r.Recorder.Complete(recCtx, d.Env.ID, claim.Epoch, result, att)
+		exec := now.Sub(startedAt).Seconds()
+		e2e := now.Sub(d.Env.EnqueuedAt).Seconds()
+		notify = func() { r.Obs.JobCompleted(d.Env.Type, exec, e2e) }
 
 	case job.OutcomeFailed:
 		applied, recErr = r.Recorder.Fail(recCtx, d.Env.ID, claim.Epoch, job.AttemptError(handlerErr), att)
+		notify = func() { r.Obs.JobFailed(d.Env.Type) }
 
 	case job.OutcomeCancelled:
 		applied, recErr = r.Recorder.Cancelled(recCtx, d.Env.ID, claim.Epoch, att)
+		notify = func() { r.Obs.JobCancelled(d.Env.Type) }
 
 	case job.OutcomeLeaseExpired:
 		if err := r.Store.RecordAttempt(recCtx, att); err != nil {
@@ -244,6 +256,7 @@ func (r *Runner) finish(ctx context.Context, d queue.Delivery, claim store.Claim
 		}
 		if claim.Attempt >= claim.MaxAttempts {
 			applied, recErr = r.Recorder.DeadLetter(recCtx, d.Env.ID, claim.Epoch, job.AttemptError(handlerErr), att)
+			notify = func() { r.Obs.JobDeadLettered(d.Env.Type) }
 			if recErr == nil && applied {
 				if err := r.Queue.DeadLetter(recCtx, d.Env, job.AttemptError(handlerErr)); err != nil {
 					log.Warn("dlq log append failed (postgres record stands)", "err", err)
@@ -258,6 +271,7 @@ func (r *Runner) finish(ctx context.Context, d queue.Delivery, claim store.Claim
 			}
 			nextAt := now.Add(delay)
 			applied, recErr = r.Recorder.Retry(recCtx, d.Env.ID, claim.Epoch, job.AttemptError(handlerErr), nextAt, att)
+			notify = func() { r.Obs.JobRetried(d.Env.Type) }
 			if recErr == nil && applied {
 				next := d.Env
 				next.Attempt = claim.Attempt + 1
@@ -290,10 +304,8 @@ func (r *Runner) finish(ctx context.Context, d queue.Delivery, claim store.Claim
 	if ackAfter {
 		r.ack(ctx, d, log)
 	}
-	if r.Obs != nil {
-		exec := now.Sub(startedAt).Seconds()
-		e2e := now.Sub(d.Env.EnqueuedAt).Seconds()
-		r.Obs.JobFinished(d.Env.Type, outcome, exec, e2e)
+	if r.Obs != nil && notify != nil && recErr == nil {
+		notify()
 	}
 }
 

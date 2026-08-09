@@ -15,10 +15,7 @@ TEST_REDIS_ADDR   ?= 127.0.0.1:6379
 
 .PHONY: build
 build:
-	$(GO) build -o $(BIN_DIR)/forge-api    ./cmd/forge-api
-	$(GO) build -o $(BIN_DIR)/forge-worker ./cmd/forge-worker
-	$(GO) build -o $(BIN_DIR)/forge-bench  ./cmd/forge-bench
-	$(GO) build -o $(BIN_DIR)/forgectl     ./cmd/forgectl
+	$(GO) build -o $(BIN_DIR)/ ./cmd/...
 
 .PHONY: test
 test:
