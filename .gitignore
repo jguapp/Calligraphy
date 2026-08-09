@@ -1,0 +1,23 @@
+# Binaries land here via `make build`.
+/bin/
+
+# Test/coverage artifacts.
+*.test
+*.out
+coverage.html
+
+# Local env files -- compose reads .env, never commit one.
+.env
+.env.*
+!.env.example
+
+# Benchmark scratch space (final results ARE committed under bench/results/).
+/bench/tmp/
+
+# Local compose volumes if bind mounts are ever used.
+/deploy/compose/.data/
+
+# Editor noise.
+.idea/
+.vscode/
+*.swp
