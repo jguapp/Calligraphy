@@ -1,7 +1,7 @@
 // Package scale adjusts a worker's concurrency from queue depth. This is
 // the in-process half of "dynamic worker scaling" -- one worker growing
 // and shrinking its own pool. The other half, more replicas, belongs to
-// the orchestrator (compose --scale, a k8s HPA on forge_queue_depth); the
+// the orchestrator (compose --scale, a k8s HPA on caligraphy_queue_depth); the
 // two compose because each worker independently converges on a sane
 // concurrency for whatever share of the backlog it sees.
 //

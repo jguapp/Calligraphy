@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/jguapp/forge/internal/config"
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/retry"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/config"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/retry"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
 // Worker assembles the runtime: store + queue + recorder + pool + runner,

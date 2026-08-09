@@ -1,9 +1,9 @@
 // Package httpcallback delivers a job's payload to an HTTP endpoint --
-// the handler that turns Forge into generic infrastructure.
+// the handler that turns Caligraphy into generic infrastructure.
 //
 // This is the Cloud Tasks / SQS-to-webhook model: the submitting
 // application keeps its business logic (Booklet keeps Readability, JSDOM,
-// its TTS pipeline); Forge supplies what that application's own comments
+// its TTS pipeline); Caligraphy supplies what that application's own comments
 // say it lacks -- durability, retries with backoff, and a dead-letter
 // queue -- by POSTing the payload back when it's time to do the work.
 //
@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 const Type = "http.callback"
@@ -39,7 +39,7 @@ const maxResponseSnippet = 1024
 type payload struct {
 	URL  string          `json:"url"`
 	Body json.RawMessage `json:"body"`
-	// Event names what this delivery is, carried in X-Forge-Event so one
+	// Event names what this delivery is, carried in X-Caligraphy-Event so one
 	// endpoint can route several kinds.
 	Event string `json:"event"`
 	// TimeoutMs bounds this delivery attempt (default 10s, cap 30s).
@@ -75,7 +75,7 @@ func New(secret string, allowedHosts []string) handler.Registration {
 		Client: &http.Client{
 			// Redirects are refused, same reasoning as Booklet's webhook
 			// sender: replaying a signed POST to a redirect target would
-			// have Forge vouch for a body to a host nobody registered. A
+			// have Caligraphy vouch for a body to a host nobody registered. A
 			// callback endpoint is a fixed URL; a redirect is a
 			// misconfiguration and gets reported as one.
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -128,16 +128,16 @@ func (h *Handler) Handle(ctx context.Context, j *job.Job) (json.RawMessage, erro
 	req = req.WithContext(tctx)
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "forge/1.0")
+	req.Header.Set("User-Agent", "caligraphy/1.0")
 	if p.Event != "" {
-		req.Header.Set("X-Forge-Event", p.Event)
+		req.Header.Set("X-Caligraphy-Event", p.Event)
 	}
-	req.Header.Set("X-Forge-Job-Id", j.ID)
-	req.Header.Set("X-Forge-Attempt", strconv.Itoa(j.AttemptCount))
+	req.Header.Set("X-Caligraphy-Job-Id", j.ID)
+	req.Header.Set("X-Caligraphy-Attempt", strconv.Itoa(j.AttemptCount))
 	if h.Secret != "" {
 		ts := time.Now().Unix()
-		req.Header.Set("X-Forge-Timestamp", strconv.FormatInt(ts, 10))
-		req.Header.Set("X-Forge-Signature", "v1="+Sign(h.Secret, ts, p.Body))
+		req.Header.Set("X-Caligraphy-Timestamp", strconv.FormatInt(ts, 10))
+		req.Header.Set("X-Caligraphy-Signature", "v1="+Sign(h.Secret, ts, p.Body))
 	}
 
 	resp, err := h.Client.Do(req)

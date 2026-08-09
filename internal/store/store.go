@@ -1,4 +1,4 @@
-// Package store is Forge's Postgres layer: the durable source of truth for
+// Package store is Caligraphy's Postgres layer: the durable source of truth for
 // job state.
 //
 // The division of labor with the queue package is strict and worth stating
@@ -31,7 +31,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 // ErrNotFound is returned when a job id doesn't exist.

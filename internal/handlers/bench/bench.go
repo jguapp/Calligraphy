@@ -27,8 +27,8 @@ import (
 	"math/rand/v2"
 	"time"
 
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 const (

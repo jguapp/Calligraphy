@@ -15,7 +15,7 @@ import "fmt"
 //	RETRYING ───────► PENDING          backoff elapsed; promoter moved it back to the stream
 //	RETRYING ───────► RUNNING          a still-pending redelivery claimed it before promotion
 //	RETRYING ───────► CANCELLED        cancel while waiting out backoff
-//	DEAD_LETTER ────► PENDING          operator requeue (forgectl / API)
+//	DEAD_LETTER ────► PENDING          operator requeue (caligraphyctl / API)
 //
 // RETRYING -> RUNNING deserves a note, since it looks like it skips a step:
 // under at-least-once delivery the same job can legitimately have a second

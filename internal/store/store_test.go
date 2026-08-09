@@ -1,7 +1,7 @@
 package store
 
 // Integration tests against a real Postgres. Env-gated, not build-tag
-// gated: with no FORGE_TEST_DATABASE_URL set the whole file skips, so a
+// gated: with no CALIGRAPHY_TEST_DATABASE_URL set the whole file skips, so a
 // bare `go test ./...` stays green anywhere. `make test-integration` (and
 // CI) provide the DSN.
 
@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 // jsonEqual compares JSON semantically: jsonb canonicalizes formatting
@@ -34,9 +34,9 @@ func jsonEqual(t *testing.T, got json.RawMessage, want string) bool {
 
 func newTestStore(t *testing.T) *Store {
 	t.Helper()
-	dsn := os.Getenv("FORGE_TEST_DATABASE_URL")
+	dsn := os.Getenv("CALIGRAPHY_TEST_DATABASE_URL")
 	if dsn == "" {
-		t.Skip("FORGE_TEST_DATABASE_URL not set; skipping store integration tests")
+		t.Skip("CALIGRAPHY_TEST_DATABASE_URL not set; skipping store integration tests")
 	}
 	ctx := context.Background()
 	s, err := Open(ctx, dsn, 4)

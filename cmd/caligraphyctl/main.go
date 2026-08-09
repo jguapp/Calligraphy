@@ -1,11 +1,11 @@
-// forgectl is the operator's CLI. A thin HTTP client over the same public
+// caligraphyctl is the operator's CLI. A thin HTTP client over the same public
 // API everything else uses -- no privileged back channel, so anything
-// forgectl can do, any authenticated client can do, and the API surface
+// caligraphyctl can do, any authenticated client can do, and the API surface
 // stays the single source of capability.
 //
 // Usage:
 //
-//	forgectl [-api URL] [-token T] <command> [args]
+//	caligraphyctl [-api URL] [-token T] <command> [args]
 //
 //	stats                        job counts + latency percentiles (last hour)
 //	depths                       live queue depths
@@ -21,7 +21,7 @@
 //	resume <worker>              resume fetching
 //	concurrency <worker> <n>     live-resize a worker's pool
 //
-// FORGE_API_URL and FORGE_API_TOKEN are the flag defaults.
+// CALIGRAPHY_API_URL and CALIGRAPHY_API_TOKEN are the flag defaults.
 package main
 
 import (
@@ -36,8 +36,8 @@ import (
 )
 
 func main() {
-	api := flag.String("api", envOr("FORGE_API_URL", "http://127.0.0.1:8080"), "forge-api base URL")
-	token := flag.String("token", os.Getenv("FORGE_API_TOKEN"), "bearer token")
+	api := flag.String("api", envOr("CALIGRAPHY_API_URL", "http://127.0.0.1:8080"), "caligraphy-api base URL")
+	token := flag.String("token", os.Getenv("CALIGRAPHY_API_TOKEN"), "bearer token")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -77,7 +77,7 @@ func main() {
 		err = c.withArg(args, 1, func(w string) error { return c.do("POST", "/api/v1/control/workers/"+w+"/resume", nil) })
 	case "concurrency":
 		if len(args) < 3 {
-			err = fmt.Errorf("usage: forgectl concurrency <worker> <target>")
+			err = fmt.Errorf("usage: caligraphyctl concurrency <worker> <target>")
 			break
 		}
 		body := fmt.Sprintf(`{"target":%s}`, args[2])
@@ -86,7 +86,7 @@ func main() {
 		err = fmt.Errorf("unknown command %q", cmd)
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "forgectl:", err)
+		fmt.Fprintln(os.Stderr, "caligraphyctl:", err)
 		os.Exit(1)
 	}
 }
@@ -143,14 +143,14 @@ func envOr(key, def string) string {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `forgectl -- operate a Forge deployment
+	fmt.Fprintf(os.Stderr, `caligraphyctl -- operate a Caligraphy deployment
 
-usage: forgectl [-api URL] [-token T] <command> [args]
+usage: caligraphyctl [-api URL] [-token T] <command> [args]
 
   stats | depths | workers | live | dlq
   job <id> | attempts <id> | cancel <id> | requeue <id>
   drain <worker> | pause <worker> | resume <worker> | concurrency <worker> <n>
 
-env: FORGE_API_URL, FORGE_API_TOKEN
+env: CALIGRAPHY_API_URL, CALIGRAPHY_API_TOKEN
 `)
 }

@@ -1,13 +1,13 @@
-// Package handlers assembles Forge's built-in handler set. The API
+// Package handlers assembles Caligraphy's built-in handler set. The API
 // imports this too -- not to execute anything, but so submission can
 // validate job types against the same registry the workers run.
 package handlers
 
 import (
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/handlers/articleanalysis"
-	"github.com/jguapp/forge/internal/handlers/bench"
-	"github.com/jguapp/forge/internal/handlers/httpcallback"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/handlers/articleanalysis"
+	"github.com/jguapp/caligraphy/internal/handlers/bench"
+	"github.com/jguapp/caligraphy/internal/handlers/httpcallback"
 )
 
 // Config carries the pieces individual handlers need injected.

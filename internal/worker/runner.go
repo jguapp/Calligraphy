@@ -8,11 +8,11 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/retry"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/retry"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
 // errLeaseLost is the cancellation cause when a heartbeat discovers this

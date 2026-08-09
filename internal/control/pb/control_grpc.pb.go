@@ -1,4 +1,4 @@
-// The control plane. This is the only place gRPC appears in Forge, and
+// The control plane. This is the only place gRPC appears in Caligraphy, and
 // the boundary is strict: jobs NEVER travel here. Work moves through
 // Redis, where it is durable and claimable; this stream carries the small
 // bidirectional truth that HTTP polling handles badly -- workers pushing
@@ -29,7 +29,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Control_WorkerStream_FullMethodName = "/forge.control.v1.Control/WorkerStream"
+	Control_WorkerStream_FullMethodName = "/caligraphy.control.v1.Control/WorkerStream"
 )
 
 // ControlClient is the client API for Control service.
@@ -116,7 +116,7 @@ type Control_WorkerStreamServer = grpc.BidiStreamingServer[WorkerMessage, Comman
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Control_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "forge.control.v1.Control",
+	ServiceName: "caligraphy.control.v1.Control",
 	HandlerType: (*ControlServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{

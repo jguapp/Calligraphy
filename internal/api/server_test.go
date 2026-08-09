@@ -15,20 +15,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/metrics"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/metrics"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
-const testToken = "fg_test_token_abc123"
+const testToken = "cg_test_token_abc123"
 
 func newTestServer(t *testing.T) (*httptest.Server, *store.Store, *queue.Queue) {
 	t.Helper()
-	dsn := os.Getenv("FORGE_TEST_DATABASE_URL")
-	addr := os.Getenv("FORGE_TEST_REDIS_ADDR")
+	dsn := os.Getenv("CALIGRAPHY_TEST_DATABASE_URL")
+	addr := os.Getenv("CALIGRAPHY_TEST_REDIS_ADDR")
 	if dsn == "" || addr == "" {
-		t.Skip("FORGE_TEST_DATABASE_URL / FORGE_TEST_REDIS_ADDR not set")
+		t.Skip("CALIGRAPHY_TEST_DATABASE_URL / CALIGRAPHY_TEST_REDIS_ADDR not set")
 	}
 	ctx := context.Background()
 	st, err := store.Open(ctx, dsn, 4)
@@ -41,7 +41,7 @@ func newTestServer(t *testing.T) (*httptest.Server, *store.Store, *queue.Queue) 
 	if err := st.TruncateForTest(ctx); err != nil {
 		t.Fatal(err)
 	}
-	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "forgetest", Queue: "default"})
+	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "caligraphytest", Queue: "default"})
 	if err != nil {
 		t.Fatal(err)
 	}

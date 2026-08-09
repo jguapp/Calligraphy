@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 // A fixture with known shape: 3 paragraphs, clear topic words, and enough
@@ -16,7 +16,7 @@ can crash halfway through a job, a network can partition, and a queue can
 deliver the same message twice. The systems that survive are the ones
 designed around those failures rather than around their absence.
 
-Forge treats the queue as a transport and the database as the truth. The
+Caligraphy treats the queue as a transport and the database as the truth. The
 queue moves jobs between machines quickly. The database records what
 actually happened to every job, every attempt, and every retry. When the
 two disagree, the database wins.

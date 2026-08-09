@@ -1,4 +1,4 @@
-module github.com/jguapp/forge
+module github.com/jguapp/caligraphy
 
 go 1.25.0
 
