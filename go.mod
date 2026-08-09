@@ -1,4 +1,4 @@
-module github.com/jguapp/caligraphy
+module github.com/jguapp/calligraphy
 
 go 1.25.0
 

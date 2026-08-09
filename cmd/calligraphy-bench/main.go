@@ -1,4 +1,4 @@
-// caligraphy-bench generates load against a running Caligraphy deployment and
+// calligraphy-bench generates load against a running Calligraphy deployment and
 // writes a result file with everything needed to believe -- or contest --
 // the numbers.
 //
@@ -53,8 +53,8 @@ type flags struct {
 
 func main() {
 	var f flags
-	flag.StringVar(&f.api, "api", envOr("CALIGRAPHY_API_URL", "http://127.0.0.1:8080"), "caligraphy-api base URL")
-	flag.StringVar(&f.token, "token", os.Getenv("CALIGRAPHY_API_TOKEN"), "bearer token")
+	flag.StringVar(&f.api, "api", envOr("CALLIGRAPHY_API_URL", "http://127.0.0.1:8080"), "calligraphy-api base URL")
+	flag.StringVar(&f.token, "token", os.Getenv("CALLIGRAPHY_API_TOKEN"), "bearer token")
 	flag.StringVar(&f.name, "name", "adhoc", "scenario name (goes in the result filename)")
 	flag.StringVar(&f.out, "out", "bench/results", "directory for result JSON")
 	flag.IntVar(&f.jobs, "jobs", 1000, "number of jobs to submit")
@@ -72,7 +72,7 @@ func main() {
 	flag.Parse()
 
 	if err := run(f); err != nil {
-		fmt.Fprintln(os.Stderr, "caligraphy-bench:", err)
+		fmt.Fprintln(os.Stderr, "calligraphy-bench:", err)
 		os.Exit(1)
 	}
 }

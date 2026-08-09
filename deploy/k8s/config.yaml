@@ -1,17 +1,17 @@
 # Non-secret configuration. Secrets (api-tokens, database-url, callback
-# secret) live in the `caligraphy-secrets` Secret -- created imperatively or by
+# secret) live in the `calligraphy-secrets` Secret -- created imperatively or by
 # your secret manager, never committed. See deploy/k8s/README.md.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: caligraphy-config
-  namespace: caligraphy
+  name: calligraphy-config
+  namespace: calligraphy
 data:
-  CALIGRAPHY_REDIS_ADDR: "redis:6379"
-  CALIGRAPHY_QUEUE: "default"
-  CALIGRAPHY_CONCURRENCY: "4"
-  CALIGRAPHY_AUTOSCALE: "true"
-  CALIGRAPHY_MIN_CONCURRENCY: "2"
-  CALIGRAPHY_MAX_CONCURRENCY: "16"
-  CALIGRAPHY_CONTROL_ADDR: "caligraphy-api:9090"
-  CALIGRAPHY_DRAIN_TIMEOUT: "25s"
+  CALLIGRAPHY_REDIS_ADDR: "redis:6379"
+  CALLIGRAPHY_QUEUE: "default"
+  CALLIGRAPHY_CONCURRENCY: "4"
+  CALLIGRAPHY_AUTOSCALE: "true"
+  CALLIGRAPHY_MIN_CONCURRENCY: "2"
+  CALLIGRAPHY_MAX_CONCURRENCY: "16"
+  CALLIGRAPHY_CONTROL_ADDR: "calligraphy-api:9090"
+  CALLIGRAPHY_DRAIN_TIMEOUT: "25s"

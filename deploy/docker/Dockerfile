@@ -1,11 +1,11 @@
-# One Dockerfile for every Caligraphy binary, selected at build time:
+# One Dockerfile for every Calligraphy binary, selected at build time:
 #
-#   docker build -f deploy/docker/Dockerfile --build-arg BINARY=caligraphy-api .
+#   docker build -f deploy/docker/Dockerfile --build-arg BINARY=calligraphy-api .
 #
 # Multi-stage: the build stage carries the whole toolchain; the runtime
 # image is FROM scratch and carries exactly three things -- the static
 # binary, CA certificates (http.callback speaks TLS to the outside), and
-# tzdata is deliberately NOT one of them (everything in Caligraphy is UTC).
+# tzdata is deliberately NOT one of them (everything in Calligraphy is UTC).
 # Result: ~15MB images with no shell, no package manager, and no CVE
 # surface beyond the binary itself.
 #
@@ -27,7 +27,7 @@ RUN go mod download
 
 COPY . .
 
-ARG BINARY=caligraphy-api
+ARG BINARY=calligraphy-api
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/app ./cmd/${BINARY}
 
 FROM scratch

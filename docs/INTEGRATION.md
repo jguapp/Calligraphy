@@ -1,22 +1,22 @@
-# Integrating Booklet (or any app) with Caligraphy
+# Integrating Booklet (or any app) with Calligraphy
 
-Caligraphy exists because Booklet's own source comments describe four gaps —
+Calligraphy exists because Booklet's own source comments describe four gaps —
 extraction blocking the save request, embedding indexing as
 fire-and-forget, webhook delivery with no retry, and no scheduler at all.
 This guide is the drop-in path for closing them. **Nothing in this guide
-requires changes to Caligraphy**, and no changes have been made to Booklet's
+requires changes to Calligraphy**, and no changes have been made to Booklet's
 repository — this documents exactly what Booklet would add, on Booklet's
-side, when it adopts Caligraphy.
+side, when it adopts Calligraphy.
 
 The boundary rule that keeps both codebases healthy: **Booklet talks to
-Caligraphy only through the HTTP API.** No shared database, no shared Redis
-keys, no imported packages. Caligraphy stays generic infrastructure; Booklet
+Calligraphy only through the HTTP API.** No shared database, no shared Redis
+keys, no imported packages. Calligraphy stays generic infrastructure; Booklet
 stays a product. Either can be rewritten without the other noticing.
 
 ```
-Booklet API ──POST /api/v1/jobs──────────▶ Caligraphy
+Booklet API ──POST /api/v1/jobs──────────▶ Calligraphy
      ▲                                       │
-     │            (Caligraphy executes: its own   │
+     │            (Calligraphy executes: its own   │
      │             handler, or POSTs back    │
      │             via http.callback)        │
      └──────HMAC-signed callback ────────────┘
@@ -26,39 +26,39 @@ Booklet API ──POST /api/v1/jobs──────────▶ Caligraphy
 ## Setup
 
 Compose-network deployments put both stacks on one network and point
-Booklet at `http://caligraphy-api:8080`. Environment on Booklet's side:
+Booklet at `http://calligraphy-api:8080`. Environment on Booklet's side:
 
 ```bash
-CALIGRAPHY_URL=http://caligraphy-api:8080
-CALIGRAPHY_TOKEN=cg_…            # one of caligraphy's CALIGRAPHY_API_TOKENS
-CALIGRAPHY_CALLBACK_SECRET=…     # same value as caligraphy's CALIGRAPHY_CALLBACK_SECRET
+CALLIGRAPHY_URL=http://calligraphy-api:8080
+CALLIGRAPHY_TOKEN=cg_…            # one of calligraphy's CALLIGRAPHY_API_TOKENS
+CALLIGRAPHY_CALLBACK_SECRET=…     # same value as calligraphy's CALLIGRAPHY_CALLBACK_SECRET
 ```
 
-Client: `clients/ts` in this repo (`@caligraphy/client`) — dependency-free,
+Client: `clients/ts` in this repo (`@calligraphy/client`) — dependency-free,
 `fetch` + `node:crypto`.
 
-## Pattern 1 — native Caligraphy handler (`article.analysis`)
+## Pattern 1 — native Calligraphy handler (`article.analysis`)
 
-For work Caligraphy can own end-to-end. Booklet submits the article's
+For work Calligraphy can own end-to-end. Booklet submits the article's
 *already-extracted* text and retrieves structured analysis (TextRank
 keywords, extractive summary, readability, language):
 
 ```ts
-import { CaligraphyClient } from "@caligraphy/client";
+import { CalligraphyClient } from "@calligraphy/client";
 
-const caligraphy = new CaligraphyClient({ baseUrl: env.CALIGRAPHY_URL, token: env.CALIGRAPHY_TOKEN });
+const calligraphy = new CalligraphyClient({ baseUrl: env.CALLIGRAPHY_URL, token: env.CALLIGRAPHY_TOKEN });
 
 // In the article-save path, after extraction succeeds. The idempotency
 // key means a Booklet retry (or a double-submit from a webhook replay)
 // can never analyze the same article twice.
-const job = await caligraphy.submit(
+const job = await calligraphy.submit(
   "article.analysis",
   { articleId: article.id, text: article.extractedText },
   { idempotencyKey: `analysis:${article.id}` },
 );
 
 // Later — a poll from a status endpoint, or awaited where acceptable:
-const res = await caligraphy.waitForResult(job.id, { timeoutMs: 60_000 });
+const res = await calligraphy.waitForResult(job.id, { timeoutMs: 60_000 });
 if (res.status === "COMPLETED") {
   // res.result: { keywords, summary, fleschReadingEase, language, … }
 }
@@ -70,19 +70,19 @@ dies mid-analysis, the job is reaped and re-run; if it fails transiently,
 it retries with backoff; if it fails permanently, it's visible in the
 DLQ with its attempt history — not a line lost in stdout.
 
-## Pattern 2 — `http.callback` (Caligraphy as the retry engine)
+## Pattern 2 — `http.callback` (Calligraphy as the retry engine)
 
 For work whose logic must stay in Booklet (extraction needs Readability
-and JSDOM; webhook delivery needs Booklet's per-user records). Caligraphy
+and JSDOM; webhook delivery needs Booklet's per-user records). Calligraphy
 holds the job, the schedule, the retries, and the DLQ; at execution time
 it POSTs the payload back to a Booklet endpoint:
 
 ```ts
 // Submitting: "call me back with this payload, retrying until I 2xx"
-await caligraphy.submit(
+await calligraphy.submit(
   "http.callback",
   {
-    url: "http://booklet-api:4000/internal/caligraphy/extract",
+    url: "http://booklet-api:4000/internal/calligraphy/extract",
     body: { articleId: article.id, url: article.url },
     event: "article.extract",
   },
@@ -91,19 +91,19 @@ await caligraphy.submit(
 ```
 
 The receiving endpoint (new, small, internal) verifies the signature
-against the **raw body** and returns status codes that mean what Caligraphy
+against the **raw body** and returns status codes that mean what Calligraphy
 documents: `2xx` done, other `4xx` permanent (don't retry), `5xx`/`429`
 transient (retry with backoff):
 
 ```ts
-import { verifySignature } from "@caligraphy/client";
+import { verifySignature } from "@calligraphy/client";
 
-app.post("/internal/caligraphy/extract", { config: { rawBody: true } }, async (req, reply) => {
+app.post("/internal/calligraphy/extract", { config: { rawBody: true } }, async (req, reply) => {
   const ok = verifySignature({
-    secret: env.CALIGRAPHY_CALLBACK_SECRET,
+    secret: env.CALLIGRAPHY_CALLBACK_SECRET,
     rawBody: req.rawBody,                              // BYTES, not re-serialized JSON
-    signatureHeader: req.headers["x-caligraphy-signature"],
-    timestampHeader: req.headers["x-caligraphy-timestamp"],
+    signatureHeader: req.headers["x-calligraphy-signature"],
+    timestampHeader: req.headers["x-calligraphy-timestamp"],
   });
   if (!ok) return reply.code(401).send();
 
@@ -115,30 +115,30 @@ app.post("/internal/caligraphy/extract", { config: { rawBody: true } }, async (r
     if (err instanceof ExtractionError) {
       return reply.code(422).send({ error: err.message }); // permanent: bad page, don't retry
     }
-    return reply.code(503).send();                     // transient: Caligraphy retries with backoff
+    return reply.code(503).send();                     // transient: Calligraphy retries with backoff
   }
 });
 ```
 
 **Idempotency note, because at-least-once means it**: the handler above
-may run twice for one job (Caligraphy's documented guarantee is at-least-once
+may run twice for one job (Calligraphy's documented guarantee is at-least-once
 execution, exactly-once *result persistence*). Booklet's extraction
 writes are naturally idempotent (re-extracting an article converges), and
-the `X-Caligraphy-Job-Id` / `X-Caligraphy-Attempt` headers are available where a
+the `X-Calligraphy-Job-Id` / `X-Calligraphy-Attempt` headers are available where a
 receiving endpoint needs its own dedup.
 
 ## Mapping the four Booklet gaps
 
-| Booklet gap (its own comment) | Caligraphy pattern |
+| Booklet gap (its own comment) | Calligraphy pattern |
 |---|---|
 | Extraction blocks `POST /api/articles` for up to ~15s + 30 image fetches | `http.callback` → extraction endpoint; save returns instantly with `extractionStatus: PENDING`, reader polls or gets pushed |
 | Embeddings: *"failures are logged and dropped… backfill script re-attempts"* | `http.callback` → embedding endpoint with `maxAttempts: 5`; failures land in the DLQ, not the void |
-| Webhooks: *"at-least-once, no retry queue yet"* | `http.callback` per delivery — Caligraphy **is** the "real retry-with-backoff" that comment defers |
+| Webhooks: *"at-least-once, no retry queue yet"* | `http.callback` per delivery — Calligraphy **is** the "real retry-with-backoff" that comment defers |
 | Feeds: *"no background worker to poll feeds on a schedule"* | submit with `delaySeconds`/`scheduledAt`; the completing callback submits the next poll (a self-perpetuating schedule with per-tick retry semantics) |
 
 ## What Booklet must NOT do
 
-- Reach into Caligraphy's Postgres or Redis. The API is the whole contract.
+- Reach into Calligraphy's Postgres or Redis. The API is the whole contract.
 - Treat a callback 2xx as "exactly once happened". It means *at least
   once, and the result is recorded once*.
 - Skip signature verification because "it's on the internal network".

@@ -1,4 +1,4 @@
--- Caligraphy schema. Four tables, on purpose:
+-- Calligraphy schema. Four tables, on purpose:
 --
 --   jobs         the record of a unit of work (source of truth)
 --   job_attempts one row per execution attempt, kept forever

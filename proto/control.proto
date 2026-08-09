@@ -1,4 +1,4 @@
-// The control plane. This is the only place gRPC appears in Caligraphy, and
+// The control plane. This is the only place gRPC appears in Calligraphy, and
 // the boundary is strict: jobs NEVER travel here. Work moves through
 // Redis, where it is durable and claimable; this stream carries the small
 // bidirectional truth that HTTP polling handles badly -- workers pushing
@@ -9,9 +9,9 @@
 // now.
 syntax = "proto3";
 
-package caligraphy.control.v1;
+package calligraphy.control.v1;
 
-option go_package = "github.com/jguapp/caligraphy/internal/control/pb;pb";
+option go_package = "github.com/jguapp/calligraphy/internal/control/pb;pb";
 
 service Control {
   // WorkerStream is opened by each worker at boot and held for its

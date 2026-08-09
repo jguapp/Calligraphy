@@ -1,4 +1,4 @@
-// Package api is Caligraphy's public face: the HTTP surface Booklet (or any
+// Package api is Calligraphy's public face: the HTTP surface Booklet (or any
 // client holding a token) talks to. net/http and the 1.22 ServeMux --
 // there is nothing here a router framework would add except a dependency
 // to explain.
@@ -22,11 +22,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jguapp/caligraphy/internal/control"
-	"github.com/jguapp/caligraphy/internal/job"
-	"github.com/jguapp/caligraphy/internal/metrics"
-	"github.com/jguapp/caligraphy/internal/queue"
-	"github.com/jguapp/caligraphy/internal/store"
+	"github.com/jguapp/calligraphy/internal/control"
+	"github.com/jguapp/calligraphy/internal/job"
+	"github.com/jguapp/calligraphy/internal/metrics"
+	"github.com/jguapp/calligraphy/internal/queue"
+	"github.com/jguapp/calligraphy/internal/store"
 )
 
 // ControlHub is the live-worker command surface, defined here (the
@@ -84,7 +84,7 @@ func NewServer(st *store.Store, q *queue.Queue, m *metrics.Metrics, cfg Config, 
 	}
 	if len(s.tokens) == 0 {
 		// Loud, once, at startup -- not buried per-request. Dev-only mode.
-		log.Warn("api: CALIGRAPHY_API_TOKENS is empty; authentication is DISABLED")
+		log.Warn("api: CALLIGRAPHY_API_TOKENS is empty; authentication is DISABLED")
 	}
 	return s
 }
@@ -116,7 +116,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/v1/meta", authed(s.handleMeta))
 
 	// The control plane's HTTP face: live-connected workers and the four
-	// commands. caligraphyctl talks to these, which keeps it a plain HTTP
+	// commands. calligraphyctl talks to these, which keeps it a plain HTTP
 	// client -- the gRPC stream stays a private worker<->API affair.
 	mux.Handle("GET /api/v1/control/workers", authed(s.handleControlWorkers))
 	mux.Handle("POST /api/v1/control/workers/{id}/drain", authed(s.controlCmd(func(h ControlHub, id string) error { return h.Drain(id) })))

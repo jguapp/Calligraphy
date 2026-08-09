@@ -1,18 +1,18 @@
 /**
- * @caligraphy/client — the TypeScript client Booklet (or any Node service)
- * uses to talk to Caligraphy.
+ * @calligraphy/client — the TypeScript client Booklet (or any Node service)
+ * uses to talk to Calligraphy.
  *
  * Deliberately dependency-free: `fetch` for transport, `node:crypto` for
  * callback signature verification. A queue client that brings its own
  * HTTP stack and retry framework is a queue client someone has to audit.
  *
- * The shape mirrors Caligraphy's actual guarantees:
+ * The shape mirrors Calligraphy's actual guarantees:
  *  - `submit` with an idempotencyKey is safe to retry blindly — a replay
- *    returns the ORIGINAL job (Caligraphy dedupes on (type, key)).
+ *    returns the ORIGINAL job (Calligraphy dedupes on (type, key)).
  *  - `waitForResult` polls; terminal states resolve (including failures —
  *    a failed JOB is a successful POLL), and only transport errors reject
  *    after retries.
- *  - `verifySignature` implements the receiver half of Caligraphy's
+ *  - `verifySignature` implements the receiver half of Calligraphy's
  *    HMAC-signed callbacks, constant-time, with a replay-window check.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -60,18 +60,18 @@ export interface JobResult {
   error?: string;
 }
 
-export class CaligraphyError extends Error {
+export class CalligraphyError extends Error {
   constructor(
     message: string,
     public readonly status: number,
     public readonly code: string,
   ) {
     super(message);
-    this.name = "CaligraphyError";
+    this.name = "CalligraphyError";
   }
 }
 
-export interface CaligraphyClientOptions {
+export interface CalligraphyClientOptions {
   baseUrl: string;
   token: string;
   /** Per-request timeout. Default 10s. */
@@ -79,13 +79,13 @@ export interface CaligraphyClientOptions {
   fetch?: typeof fetch;
 }
 
-export class CaligraphyClient {
+export class CalligraphyClient {
   private readonly base: string;
   private readonly token: string;
   private readonly timeoutMs: number;
   private readonly fetchImpl: typeof fetch;
 
-  constructor(opts: CaligraphyClientOptions) {
+  constructor(opts: CalligraphyClientOptions) {
     this.base = opts.baseUrl.replace(/\/$/, "");
     this.token = opts.token;
     this.timeoutMs = opts.timeoutMs ?? 10_000;
@@ -141,7 +141,7 @@ export class CaligraphyClient {
         return res;
       }
       if (Date.now() > deadline) {
-        throw new CaligraphyError(`timed out waiting for job ${id} (last status ${res.status})`, 0, "timeout");
+        throw new CalligraphyError(`timed out waiting for job ${id} (last status ${res.status})`, 0, "timeout");
       }
       await new Promise((r) => setTimeout(r, interval));
       interval = Math.min(interval * 2, maxInterval);
@@ -164,7 +164,7 @@ export class CaligraphyClient {
       const text = await resp.text();
       const data = text ? JSON.parse(text) : {};
       if (!resp.ok && resp.status !== 202) {
-        throw new CaligraphyError(data.message ?? resp.statusText, resp.status, data.error ?? "error");
+        throw new CalligraphyError(data.message ?? resp.statusText, resp.status, data.error ?? "error");
       }
       return data as T;
     } finally {
@@ -174,11 +174,11 @@ export class CaligraphyClient {
 }
 
 /**
- * Verify a Caligraphy callback delivery (the receiver half of http.callback).
+ * Verify a Calligraphy callback delivery (the receiver half of http.callback).
  *
- * Caligraphy signs `${timestamp}.${rawBody}` with HMAC-SHA256 and sends:
- *   X-Caligraphy-Signature: v1=<hex>
- *   X-Caligraphy-Timestamp: <unix seconds>
+ * Calligraphy signs `${timestamp}.${rawBody}` with HMAC-SHA256 and sends:
+ *   X-Calligraphy-Signature: v1=<hex>
+ *   X-Calligraphy-Timestamp: <unix seconds>
  *
  * Verify against the RAW request body bytes — parse after, never before:
  * any JSON re-serialization can reorder keys and change the bytes.

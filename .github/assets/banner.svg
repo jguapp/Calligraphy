@@ -1,4 +1,4 @@
-<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caligraphy">
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Calligraphy">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#16130F"/>
@@ -37,7 +37,7 @@
     <path d="M14 122 C40 114 68 114 92 122" stroke="#E8763A" stroke-width="9" stroke-linecap="round" fill="none" opacity="0.5"/>
   </g>
 
-  <text x="248" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#ECE5DA" font-weight="700">Caligraphy</text>
+  <text x="248" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#ECE5DA" font-weight="700">Calligraphy</text>
   <text x="252" y="214" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" fill="#A89A8A" letter-spacing="0.3">Submit work. Kill the worker. Get the result anyway.</text>
 
   <line x1="92" y1="252" x2="940" y2="252" stroke="#332A21" stroke-width="1.5"/>

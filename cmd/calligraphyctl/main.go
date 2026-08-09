@@ -1,11 +1,11 @@
-// caligraphyctl is the operator's CLI. A thin HTTP client over the same public
+// calligraphyctl is the operator's CLI. A thin HTTP client over the same public
 // API everything else uses -- no privileged back channel, so anything
-// caligraphyctl can do, any authenticated client can do, and the API surface
+// calligraphyctl can do, any authenticated client can do, and the API surface
 // stays the single source of capability.
 //
 // Usage:
 //
-//	caligraphyctl [-api URL] [-token T] <command> [args]
+//	calligraphyctl [-api URL] [-token T] <command> [args]
 //
 //	stats                        job counts + latency percentiles (last hour)
 //	depths                       live queue depths
@@ -21,7 +21,7 @@
 //	resume <worker>              resume fetching
 //	concurrency <worker> <n>     live-resize a worker's pool
 //
-// CALIGRAPHY_API_URL and CALIGRAPHY_API_TOKEN are the flag defaults.
+// CALLIGRAPHY_API_URL and CALLIGRAPHY_API_TOKEN are the flag defaults.
 package main
 
 import (
@@ -36,8 +36,8 @@ import (
 )
 
 func main() {
-	api := flag.String("api", envOr("CALIGRAPHY_API_URL", "http://127.0.0.1:8080"), "caligraphy-api base URL")
-	token := flag.String("token", os.Getenv("CALIGRAPHY_API_TOKEN"), "bearer token")
+	api := flag.String("api", envOr("CALLIGRAPHY_API_URL", "http://127.0.0.1:8080"), "calligraphy-api base URL")
+	token := flag.String("token", os.Getenv("CALLIGRAPHY_API_TOKEN"), "bearer token")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -77,7 +77,7 @@ func main() {
 		err = c.withArg(args, 1, func(w string) error { return c.do("POST", "/api/v1/control/workers/"+w+"/resume", nil) })
 	case "concurrency":
 		if len(args) < 3 {
-			err = fmt.Errorf("usage: caligraphyctl concurrency <worker> <target>")
+			err = fmt.Errorf("usage: calligraphyctl concurrency <worker> <target>")
 			break
 		}
 		body := fmt.Sprintf(`{"target":%s}`, args[2])
@@ -86,7 +86,7 @@ func main() {
 		err = fmt.Errorf("unknown command %q", cmd)
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "caligraphyctl:", err)
+		fmt.Fprintln(os.Stderr, "calligraphyctl:", err)
 		os.Exit(1)
 	}
 }
@@ -143,14 +143,14 @@ func envOr(key, def string) string {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `caligraphyctl -- operate a Caligraphy deployment
+	fmt.Fprintf(os.Stderr, `calligraphyctl -- operate a Calligraphy deployment
 
-usage: caligraphyctl [-api URL] [-token T] <command> [args]
+usage: calligraphyctl [-api URL] [-token T] <command> [args]
 
   stats | depths | workers | live | dlq
   job <id> | attempts <id> | cancel <id> | requeue <id>
   drain <worker> | pause <worker> | resume <worker> | concurrency <worker> <n>
 
-env: CALIGRAPHY_API_URL, CALIGRAPHY_API_TOKEN
+env: CALLIGRAPHY_API_URL, CALLIGRAPHY_API_TOKEN
 `)
 }

@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: caligraphy-worker
-  namespace: caligraphy
+  name: calligraphy-worker
+  namespace: calligraphy
 spec:
   replicas: 7
   selector:
-    matchLabels: { app: caligraphy-worker }
+    matchLabels: { app: calligraphy-worker }
   template:
     metadata:
-      labels: { app: caligraphy-worker }
+      labels: { app: calligraphy-worker }
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9100"
     spec:
-      # Grace period > CALIGRAPHY_DRAIN_TIMEOUT (25s): a rolling update lets
+      # Grace period > CALLIGRAPHY_DRAIN_TIMEOUT (25s): a rolling update lets
       # in-flight jobs finish instead of leaning on the reaper. SIGKILL
       # after this window is survivable by design -- that's what the
       # lease/reaper machinery is for -- but graceful is cheaper.
       terminationGracePeriodSeconds: 40
       containers:
         - name: worker
-          image: caligraphy-worker:latest # --build-arg BINARY=caligraphy-worker
+          image: calligraphy-worker:latest # --build-arg BINARY=calligraphy-worker
           ports:
             - { containerPort: 9100, name: metrics }
           envFrom:
-            - configMapRef: { name: caligraphy-config }
+            - configMapRef: { name: calligraphy-config }
           env:
-            - name: CALIGRAPHY_DATABASE_URL
-              valueFrom: { secretKeyRef: { name: caligraphy-secrets, key: database-url } }
-            - name: CALIGRAPHY_CALLBACK_SECRET
-              valueFrom: { secretKeyRef: { name: caligraphy-secrets, key: callback-secret, optional: true } }
+            - name: CALLIGRAPHY_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: calligraphy-secrets, key: database-url } }
+            - name: CALLIGRAPHY_CALLBACK_SECRET
+              valueFrom: { secretKeyRef: { name: calligraphy-secrets, key: callback-secret, optional: true } }
             # Worker identity from the pod name: unique, stable for the
-            # pod's life, and legible in `caligraphyctl live` output.
-            - name: CALIGRAPHY_WORKER_ID
+            # pod's life, and legible in `calligraphyctl live` output.
+            - name: CALLIGRAPHY_WORKER_ID
               valueFrom: { fieldRef: { fieldPath: metadata.name } }
           livenessProbe:
             httpGet: { path: /healthz, port: metrics }
