@@ -13,8 +13,10 @@ import (
 	"time"
 
 	"github.com/jguapp/forge/internal/config"
+	"github.com/jguapp/forge/internal/control"
 	"github.com/jguapp/forge/internal/handlers"
 	"github.com/jguapp/forge/internal/metrics"
+	"github.com/jguapp/forge/internal/scale"
 	"github.com/jguapp/forge/internal/worker"
 )
 
@@ -36,7 +38,7 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	reg := handlers.NewRegistry(handlers.Config{
+	reg := handlers.NewRegistry(handlers.Config{ //nolint:staticcheck // stop is reused by OnDrain below
 		CallbackSecret:       cfg.CallbackHMACSecret,
 		CallbackAllowedHosts: cfg.CallbackAllowedHosts,
 	})
@@ -50,6 +52,37 @@ func run() error {
 		return err
 	}
 	m.RegisterWorkerGauges(cfg.WorkerID, w.Pool())
+
+	// Control plane: optional (the worker is fully functional without it;
+	// jobs flow through Redis either way -- this only adds operability).
+	if cfg.ControlAddr != "" {
+		cc := &control.Client{
+			Addr: cfg.ControlAddr, WorkerID: cfg.WorkerID, Types: reg.Types(),
+			Pool: w.Pool(), Log: log,
+			OnDrain: stop, // a drain command IS a graceful shutdown
+		}
+		go cc.Run(ctx)
+	}
+
+	// Queue-depth autoscaling: also optional, also composable with the
+	// control plane (an operator's SetConcurrency just becomes the next
+	// baseline the scaler adjusts from).
+	if cfg.AutoscaleEnabled {
+		as := &scale.Autoscaler{
+			Cfg:  scale.DefaultConfig(cfg.MinConcurrency, cfg.MaxConcurrency),
+			Pool: w.Pool(), Log: log,
+			Depths: func(dctx context.Context) (int64, error) {
+				d, err := w.Queue().Depths(dctx)
+				if err != nil {
+					return 0, err
+				}
+				return d.TotalReady(), nil
+			},
+		}
+		go as.Run(ctx)
+		log.Info("forge-worker: autoscaling enabled",
+			"min", cfg.MinConcurrency, "max", cfg.MaxConcurrency)
+	}
 
 	// The worker's own tiny HTTP surface: metrics + liveness. No API here
 	// -- workers pull work; nothing should ever need to call INTO one.
