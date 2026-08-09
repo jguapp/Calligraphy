@@ -12,6 +12,7 @@
     --code-bg: #FAF7F1; --code-border: #DDD5C7;
     --warn-bg: #FBEFD9; --warn-border: #E0B84A;
     --bug-bg: #F7E3DC; --bug-border: #C97B5A; --danger: #B3432E;
+    --try-bg: #E7EEE3; --try-border: #5E8A5E;
     --good: #2E6B3F;
     --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -26,26 +27,29 @@
       --code-bg: #1B1712; --code-border: #332A21;
       --warn-bg: #2A2416; --warn-border: #6B5A22;
       --bug-bg: #2A1D16; --bug-border: #7A4A33; --danger: #D97A63;
+      --try-bg: #1C241C; --try-border: #5E8A5E;
       --good: #8FBF7F;
     }
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--paper); color: var(--ink);
-         font-family: var(--sans); line-height: 1.65; font-size: 17px; }
+         font-family: var(--sans); line-height: 1.68; font-size: 17px; }
   a { color: var(--accent-strong); }
 
-  .layout { display: grid; grid-template-columns: 280px minmax(0,1fr);
-            max-width: 1400px; margin: 0 auto; }
+  .layout { display: grid; grid-template-columns: 300px minmax(0,1fr);
+            max-width: 1440px; margin: 0 auto; }
   @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } }
 
   nav.toc { position: sticky; top: 0; align-self: start; height: 100vh;
             overflow-y: auto; padding: 28px 20px 60px 28px;
-            border-right: 1px solid var(--border); font-size: 14px; }
+            border-right: 1px solid var(--border); font-size: 13.5px; }
   nav.toc .toc-title { font-family: var(--serif); font-weight: 700; font-size: 18px; margin-bottom: 4px; }
-  nav.toc .toc-sub { color: var(--ink-faint); font-size: 12.5px; margin-bottom: 20px; }
+  nav.toc .toc-sub { color: var(--ink-faint); font-size: 12.5px; margin-bottom: 18px; }
+  nav.toc .toc-h { color: var(--ink-faint); font-size: 11px; font-weight: 700;
+                   text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 4px 8px; }
   nav.toc ol { list-style: none; margin: 0; padding: 0; }
-  nav.toc a { display: block; padding: 5px 8px; border-radius: 6px;
+  nav.toc a { display: block; padding: 4px 8px; border-radius: 6px;
               color: var(--ink-muted); text-decoration: none; font-weight: 600; }
   nav.toc a:hover { background: var(--surface-2); color: var(--ink); }
 
@@ -58,9 +62,10 @@
   .cover .subtitle { color: var(--ink-muted); font-size: 19px; max-width: 46em; }
   .cover .meta { color: var(--ink-faint); font-size: 14px; margin-top: 16px; }
 
-  h2 { font-family: var(--serif); font-size: 30px; margin: 56px 0 10px;
-       padding-top: 18px; border-top: 1px solid var(--border); }
-  h3 { font-family: var(--serif); font-size: 22px; margin: 34px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 30px; margin: 60px 0 10px;
+       padding-top: 20px; border-top: 1px solid var(--border); }
+  h3 { font-family: var(--serif); font-size: 22px; margin: 36px 0 8px; }
+  h4 { font-family: var(--serif); font-size: 18px; margin: 26px 0 6px; }
   p, li { max-width: 46em; }
   code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg);
          border: 1px solid var(--code-border); border-radius: 4px; padding: 1px 5px; }
@@ -77,12 +82,15 @@
              border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 20px 0; max-width: 48em; }
   .callout.warn { border-left-color: var(--warn-border); background: var(--warn-bg); }
   .callout.bug { border-left-color: var(--bug-border); background: var(--bug-bg); }
+  .callout.try { border-left-color: var(--try-border); background: var(--try-bg); }
   .callout .label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em;
                     text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+  .callout pre { margin: 10px 0 4px; }
   .kicker { color: var(--accent-strong); font-weight: 700; font-size: 13px;
             letter-spacing: 0.08em; text-transform: uppercase; }
   .good { color: var(--good); font-weight: 600; }
   .bad { color: var(--danger); font-weight: 600; }
+  .src { color: var(--ink-faint); font-size: 13px; font-family: var(--mono); margin: -6px 0 10px; }
 </style>
 </head>
 <body>
@@ -90,20 +98,35 @@
 
 <nav class="toc">
   <div class="toc-title">Calligraphy</div>
-  <div class="toc-sub">The complete technical documentation</div>
+  <div class="toc-sub">The complete technical documentation — second edition</div>
+  <div class="toc-h">The problem &amp; the shape</div>
   <ol>
-    <li><a href="#part-0">0 · How to read this</a></li>
-    <li><a href="#part-1">1 · Why Calligraphy exists</a></li>
-    <li><a href="#part-2">2 · The shape of the system</a></li>
-    <li><a href="#part-3">3 · The life of a job</a></li>
-    <li><a href="#part-4">4 · Failure is the design</a></li>
-    <li><a href="#part-5">5 · Retries &amp; idempotency</a></li>
-    <li><a href="#part-6">6 · The worker runtime</a></li>
-    <li><a href="#part-7">7 · Observing &amp; operating it</a></li>
-    <li><a href="#part-8">8 · The benchmarks</a></li>
-    <li><a href="#part-9">9 · Deployment choices</a></li>
-    <li><a href="#part-10">10 · A history of mistakes</a></li>
-    <li><a href="#part-11">11 · Glossary, in plain words</a></li>
+    <li><a href="#part-0">0 · How to use this document</a></li>
+    <li><a href="#part-1">I · Why Calligraphy exists</a></li>
+    <li><a href="#part-2">II · The shape of the system</a></li>
+  </ol>
+  <div class="toc-h">The technologies, taught</div>
+  <ol>
+    <li><a href="#part-3">III · Go: concurrency as a language</a></li>
+    <li><a href="#part-4">IV · PostgreSQL: the truth machine</a></li>
+    <li><a href="#part-5">V · Redis: the moving parts</a></li>
+    <li><a href="#part-6">VI · gRPC &amp; Protocol Buffers</a></li>
+    <li><a href="#part-7">VII · HTTP APIs in Go</a></li>
+    <li><a href="#part-8">VIII · Prometheus &amp; Grafana</a></li>
+    <li><a href="#part-9">IX · Docker: shipping a process</a></li>
+    <li><a href="#part-10">X · Kubernetes: running a fleet</a></li>
+  </ol>
+  <div class="toc-h">The mechanisms</div>
+  <ol>
+    <li><a href="#part-11">XI · The life of a job</a></li>
+    <li><a href="#part-12">XII · Failure is the design</a></li>
+    <li><a href="#part-13">XIII · Retries &amp; idempotency</a></li>
+    <li><a href="#part-14">XIV · The benchmarks</a></li>
+  </ol>
+  <div class="toc-h">The record</div>
+  <ol>
+    <li><a href="#part-15">XV · A history of mistakes</a></li>
+    <li><a href="#part-16">XVI · Glossary, in plain words</a></li>
   </ol>
 </nav>
 
@@ -111,21 +134,40 @@
 
 <div class="cover">
   <h1>Calligraphy: The Complete Technical Documentation</h1>
-  <div class="subtitle">How a distributed job platform works when you assume every
-  worker will eventually die mid-job — and what building one teaches you.
-  Covers not just the design but the bugs, the measurements that
-  contradicted the plan, and the trade-offs written down while they were
-  being made.</div>
+  <div class="subtitle">A distributed job platform, used as a textbook. This
+  document teaches every technology in the stack from zero — what it is, how
+  it actually works underneath, and how this codebase uses it — then walks
+  the mechanisms built on top, the measurements that contradicted the plan,
+  and every bug the build produced. You should be able to arrive knowing
+  none of it and leave able to explain all of it.</div>
   <div class="meta">Go 1.25 · PostgreSQL 16 · Redis 7 · gRPC · Prometheus ·
-  Docker · Kubernetes — v1, August 2026</div>
+  Grafana · Docker · Kubernetes — v2, August 2026</div>
 </div>
 
-<h2 id="part-0">Part 0 · How to read this document</h2>
+<h2 id="part-0">Part 0 · How to use this document</h2>
 <p>This is the long-form companion to the README. The README advertises;
-this explains. It is written to be readable by someone who has never
-built a queue, in order, but every part stands alone if you arrive from a
-link.</p>
-<p>Three kinds of callout appear throughout:</p>
+this teaches. It is long on purpose: each technology gets a real
+from-zero treatment, not a paragraph of hand-waving, because "I used
+Redis Streams" is a claim while "here is what a pending-entries list is,
+why it exists, and what mine looked like when I killed a worker" is
+knowledge.</p>
+<p>Three reading paths, depending on what you came for:</p>
+<table>
+<tr><th>You are…</th><th>Read…</th></tr>
+<tr><td>New to most of this stack</td><td>Straight through. The technology
+parts (III–X) assume nothing and build on each other only lightly; the
+mechanism parts (XI–XIV) assume the technology parts.</td></tr>
+<tr><td>Preparing to explain this project in an interview</td><td>Parts
+XI–XIV first (the mechanisms are what interviewers probe), then the
+technology part for whatever you feel least able to defend, then Part XV —
+"what went wrong and what did you learn" is the most predictable senior
+question there is.</td></tr>
+<tr><td>Operating a deployment</td><td>Parts VIII (dashboards), XII
+(what recovery does on your behalf), IX–X (the containers), and the
+<span class="kicker">try it yourself</span> boxes throughout, which double
+as a diagnostic cookbook.</td></tr>
+</table>
+<p>Four kinds of callout appear throughout:</p>
 <div class="callout"><div class="label">Decision</div>
 A choice that could have gone another way, with the reasoning recorded at
 the moment it was made — so a future reader argues with the reasoning,
@@ -135,49 +177,85 @@ Something given up on purpose. Every real system is a pile of these; the
 dishonest ones just don't label them.</div>
 <div class="callout bug"><div class="label">Bug — found and fixed</div>
 A real defect from this project's history, kept because the mistake
-teaches more than the fix. Part 10 collects all of them.</div>
+teaches more than the fix. Part XV collects all ten.</div>
+<div class="callout try"><div class="label">Try it yourself</div>
+A real command against the running stack (<code>docker compose up</code>
+first, or the native processes). Reading about a pending-entries list is
+nothing like watching your own entry sit in one.</div>
 
-<h2 id="part-1">Part 1 · Why Calligraphy exists</h2>
+<h2 id="part-1">Part I · Why Calligraphy exists</h2>
+
+<h3>1.1 · What a "background job" actually is</h3>
+<p>Start from a web request. A user clicks save; the server has, by
+convention and by timeout, a couple of seconds to answer. Anything that
+must happen but doesn't fit in that window — a fifteen-second page fetch,
+a minute of CPU, a call to a flaky third party that needs retries — has to
+happen <em>somewhere else, later, reliably</em>. That triple is the whole
+definition of a background job: work detached from the request that
+created it, carrying an obligation to eventually happen anyway.</p>
+<p>The word doing all the work in that sentence is <em>reliably</em>.
+Detaching work from a request is trivial — one line in any language.
+Detaching it <em>without losing it</em> when the process restarts, the
+handler throws, the machine dies, or the same message arrives twice is an
+entire engineering discipline, and it's the one this document teaches.</p>
+
+<h3>1.2 · The four gaps that made it concrete</h3>
 <p>Calligraphy was built as the asynchronous tier for
 <a href="https://github.com/jguapp/Booklet">Booklet</a>, a read-it-later
-platform. Booklet's own source comments document four places where
-background work is either blocking a user or quietly droppable:</p>
+platform whose own source comments document four places where background
+work is either blocking a user or quietly droppable:</p>
 <table>
-  <tr><th>Where</th><th>Booklet's own words / behavior</th></tr>
-  <tr><td>Article extraction</td><td>Runs <em>on the save request</em>:
-  up to a 15-second page fetch, Readability parsing, and as many as 30
-  image downloads while the user watches a spinner. A failure is recorded
-  and the work is simply gone.</td></tr>
+  <tr><th>Where</th><th>Booklet's own words / behavior</th><th>The missing property</th></tr>
+  <tr><td>Article extraction</td><td>Runs <em>on the save request</em>: up
+  to a 15-second page fetch, Readability parsing, and as many as 30 image
+  downloads while the user watches a spinner. A failure is recorded and
+  the work is simply gone.</td><td>Detachment + retry</td></tr>
   <tr><td>Embedding indexing</td><td>A fire-and-forget promise:
   <i>"failures are logged and dropped… a backfill script re-attempts
-  anything missed."</i> The recovery plan is a human remembering to run a
-  script.</td></tr>
+  anything missed."</i> The recovery plan is a human remembering a
+  script.</td><td>Durability</td></tr>
   <tr><td>Webhook delivery</td><td><i>"At-least-once, no retry queue yet —
   a receiving endpoint being briefly down loses that one delivery."</i>
-  (As written it is actually at-most-once.)</td></tr>
+  (As written it is actually at-most-once.)</td><td>Retry with backoff</td></tr>
   <tr><td>Feed polling</td><td><i>"There's no background worker in this
-  app to poll feeds on a schedule."</i></td></tr>
+  app to poll feeds on a schedule."</i></td><td>Scheduling</td></tr>
 </table>
-<p>Four features, one missing piece of infrastructure: somewhere to put
-work that <em>must</em> happen, must survive a crash, may fail
-transiently, and must never make a user wait. That is the entire product
-definition of Calligraphy — and the reason it is a separate service with a
-public API rather than a Booklet module. Infrastructure that imports your
-product's code isn't infrastructure; it's a big product.</p>
+<p>Four features, one missing piece of infrastructure. That is the entire
+product definition of Calligraphy — and the reason it is a separate
+service with a public API rather than a Booklet module. Infrastructure
+that imports your product's code isn't infrastructure; it's a bigger
+product.</p>
 <div class="callout"><div class="label">Decision</div>
 Calligraphy contains none of Booklet's business logic and never touches
-Booklet's database. For work whose logic must stay in Booklet
-(extraction needs Readability), Calligraphy holds the schedule, retries, and
-dead-letter queue, and calls Booklet back over signed HTTP — the Cloud
-Tasks model. That's what keeps Calligraphy reusable by any application.</div>
+Booklet's database. For work whose logic must stay in Booklet (extraction
+needs Readability and a DOM), Calligraphy holds the schedule, the
+retries, and the dead-letter queue, and calls Booklet back over signed
+HTTP — the Cloud Tasks model. That boundary is what keeps it reusable by
+any application, and it is why every example in this document speaks
+plain HTTP and JSON at the edges.</div>
 
-<h2 id="part-2">Part 2 · The shape of the system</h2>
-<p>The whole architecture fits in three sentences, and everything else in
+<h3>1.3 · Why not an existing queue?</h3>
+<p>Sidekiq, Celery, BullMQ, River, and a dozen others exist and are good.
+Two honest reasons this was built instead of adopted. First, the project
+is a demonstration of understanding — the point is to be able to explain
+every mechanism, which you can only fully do for machinery you built and
+measured. Second, and more transferable: the shape here (queue in Redis,
+record in Postgres, workers in Go, HTTP at the edge) is roughly what
+you'd converge on assembling any of those tools into a real deployment
+anyway, so building it once, honestly, teaches what all of them are doing
+under their APIs. Where an existing tool genuinely differs (RabbitMQ's
+native acks, Kafka's replayable log), Part V says so and says why the
+trade fell where it did.</p>
+
+<h2 id="part-2">Part II · The shape of the system</h2>
+
+<h3>2.1 · Three sentences, then everything else</h3>
+<p>The whole architecture fits in three sentences, and every other page of
 this document is a footnote to them:</p>
 <p><span class="kicker">Redis moves the work.</span> Jobs travel as
 self-contained envelopes through Redis Streams, so dispatching work never
-requires a database read. Redis is fast, and it is allowed to be merely
-fast because it is not the record.</p>
+requires a database read. Redis is fast, and it is <em>allowed</em> to be
+merely fast because it is not the record.</p>
 <p><span class="kicker">Postgres records the truth.</span> Every job,
 every attempt, every state change lives in four tables, forever. When
 Redis and Postgres disagree — and in crash windows they briefly can —
@@ -186,434 +264,1799 @@ Postgres wins, and three repair sweeps exist to make it so.</p>
 stream up; drain/pause/resize commands stream down. Jobs never travel
 there — a control channel that grows job-delivery ambitions becomes a
 second, worse queue.</p>
-<h3>Why a stream and a database, not one or the other</h3>
+
+<h3>2.2 · The pieces and where they live</h3>
+<pre><code>cmd/
+  calligraphy-api      HTTP API + recovery leader + gRPC control plane
+  calligraphy-worker   the fleet: pool, runner, handlers, metrics
+  calligraphy-bench    the load generator with honesty properties
+  calligraphyctl       operator CLI (a plain HTTP client, on purpose)
+internal/
+  job/        the domain: record, state machine, error taxonomy   (imports nothing)
+  store/      Postgres: fenced writes, batched recording           (imports job)
+  queue/      Redis Streams: priorities, delayed set, DLQ, leases  (imports job)
+  worker/     bounded pool + runner: claim→execute→record→ack      (imports all three)
+  recovery/   reaper, promoter, repair sweeps (leader-elected)
+  handler/s   the one-method Handler interface + built-ins
+  api/ control/ scale/ metrics/ retry/ config/</code></pre>
+<p>The dependency arrows only point down. <code>internal/job</code>
+imports nothing, which is what lets the state machine be tested with no
+database or queue in sight; <code>store</code> and <code>queue</code>
+each import only <code>job</code>, so neither knows the other exists;
+the worker composes all three. When you read the code, read it in that
+order — it's the order the system was built in, one merged PR per
+layer.</p>
+
+<h3>2.3 · Why two stores instead of one</h3>
 <p>A queue alone can't answer "what happened to job X yesterday" — that's
 a SQL question. A database alone makes a poor queue — polling a table for
-work means either hammering it or adding latency, and row locks under
-concurrent claimants get ugly. Using each for what it's good at costs one
-real thing: <em>seams</em>. Every operation that writes to both (submit =
-INSERT + XADD; retry = UPDATE + ZADD) can crash between the two writes.
-Calligraphy's answer is to make each seam's failure detectable and repairable
-(Part 4) rather than pretending atomicity across two systems.</p>
+work means either hammering it or adding latency, and row-lock contention
+under many concurrent claimants gets ugly. Using each for what it's good
+at costs one real thing: <em>seams</em>. Every operation that writes to
+both (submit = INSERT then XADD; retry = UPDATE then ZADD) can crash
+between the two writes, and each of those windows needs a name and a
+repair mechanism. Part XII enumerates all four; Parts IV and V teach the
+store-level machinery the repairs are built from.</p>
 <div class="callout warn"><div class="label">Trade-off</div>
 Two stores means two things to operate and a class of repair machinery a
 single-store design wouldn't need. The alternative — Postgres-only with
-<code>SELECT … FOR UPDATE SKIP LOCKED</code> — is a legitimate design at
-small scale and would have been simpler. Streams were chosen because the
-consumer-group machinery (per-message acks, idle-time reclaim) solves the
-crashed-worker problem natively, and because the target deployment
-already operates Redis.</div>
+<code>SELECT … FOR UPDATE SKIP LOCKED</code> — is legitimate at small
+scale and simpler. Streams were chosen because the consumer-group
+machinery (per-message acks, idle-time reclaim) solves the crashed-worker
+problem natively, and because the application this serves already
+operates Redis. Reasonable people pick the other branch; the point is to
+know you're choosing.</div>
 
-<h2 id="part-3">Part 3 · The life of a job</h2>
-<p>A job is born over HTTP (<code>POST /api/v1/jobs</code>), becomes a
-row (durable) and an envelope (in motion), gets claimed by exactly one
-worker at a time, and ends in one of four terminal states. The state
-machine is an explicit allow-list — a literal Go map of legal edges — and
-every one of the 49 possible (from, to) pairs is tested, the illegal ones
-as thoroughly as the legal ones.</p>
-<pre><code>PENDING ──► RUNNING ──► COMPLETED
-   │            ├──────► FAILED        (handler said: permanent)
-   │            ├──────► RETRYING ──► PENDING   (backoff elapsed)
-   │            ├──────► DEAD_LETTER   (attempts exhausted)
-   │            └──────► CANCELLED     (cooperative)
-   └──► CANCELLED                      DEAD_LETTER ──► PENDING (operator)</code></pre>
-<h3>Claim arbitration: the database as referee</h3>
-<p>Under at-least-once delivery, the same job can legitimately have two
-stream entries in flight (a redelivery, a repair sweep re-enqueueing
-something whose first enqueue's receipt was lost). Which worker wins?
-The claim is a conditional UPDATE:</p>
-<pre><code>UPDATE jobs SET status='RUNNING', lease_epoch = lease_epoch + 1, …
-WHERE id = $1 AND status IN ('PENDING','RETRYING')</code></pre>
-<p>Whoever's UPDATE matches first wins. Everyone else matches zero rows,
-which is not an error — it's the database saying <em>someone else got
-here first</em> — and the losing delivery is simply acknowledged away.
-One idea, used everywhere: races are resolved by conditional writes, and
-"zero rows affected" is a signal, not a failure.</p>
-<div class="callout"><div class="label">Decision</div>
-<code>attempt_count</code> increments <em>at claim time</em>, not at
-completion. A worker that dies mid-attempt has still consumed an attempt.
-Counting at completion undercounts crashes — which are precisely the
-failures retry budgets exist to bound.</div>
-<h3>The one ordering rule</h3>
-<p>When a job finishes, two things must happen: its outcome becomes
-durable in Postgres, and its stream entry is acknowledged in Redis. The
-order is fixed, everywhere, forever: <strong>record first, ack
-second.</strong> Crash between them and the job re-runs (annoying,
-promised by at-least-once, handled by idempotency). Reverse the order and
-a crash between them <em>loses the job</em> — acknowledged in Redis,
-never recorded, invisible. One of those failure modes is a shrug and the
-other is the worst thing a job system can do.</p>
+<h2 id="part-3">Part III · Go: concurrency as a language</h2>
 
-<h2 id="part-4">Part 4 · Failure is the design</h2>
-<p>The scenario every queue must answer without hand-waving: a worker
-claims a job and dies — SIGKILL, OOM, kernel panic, unplugged. No
-goodbye, no ack. Postgres says <code>RUNNING</code>. Now what?</p>
-<h3>Leases: permission to be trusted, with an expiry</h3>
-<p>A claim is not ownership; it's a <em>lease</em>. While a handler
-genuinely runs, its worker renews the lease every TTL/3 — in Redis by
-resetting the stream entry's idle clock (<code>XCLAIM JUSTID</code>), in
-Postgres by extending <code>lease_expires_at</code>. A healthy
-long-running job renews forever. A dead worker stops renewing, and the
-silence is the signal.</p>
-<div class="callout"><div class="label">Decision</div>
-The lease TTL is sized to <em>crash-detection latency</em>, never to job
-duration. Long jobs don't need long leases — they need heartbeats. This
-is what lets a 10-second TTL coexist with a 10-minute job: the job renews
-30 times, and a crash is still detected within ~10 seconds.</div>
-<h3>The reaper, and the zombie it must expect</h3>
-<p>A leader-elected loop asks Redis for entries whose consumer has been
-idle past the lease (<code>XAUTOCLAIM</code> — the visibility timeout,
-built into the data type). For each, the <em>database</em> decides:
-attempts left → <code>RETRYING</code> with backoff; exhausted →
-<code>DEAD_LETTER</code>. Either way, one more thing happens in that
-UPDATE: <code>lease_epoch = lease_epoch + 1</code>.</p>
-<p>That increment is the <strong>fencing token</strong>, and it exists
-for the worker that wasn't dead — just stalled (GC pause, CPU
-starvation, network partition) — and wakes up <em>after</em> its job was
-given away, still holding a result it wants to write. Its write carries
-the epoch it was issued at claim time:</p>
-<pre><code>UPDATE jobs SET status='COMPLETED', result=$3, …
-WHERE id = $1 AND lease_epoch = $2 AND status='RUNNING'</code></pre>
-<p>The row's epoch has moved on. Zero rows match. The zombie's write
-lands on nothing, it logs, it moves on. <strong>The job may execute
-twice; its result is written exactly once.</strong> No amount of
-wall-clock lease tuning achieves this — the zombie doesn't know it's a
-zombie — only the token does.</p>
-<h3>The crash windows, enumerated</h3>
-<p>Every two-store operation has a seam. Calligraphy's posture is to name each
-one and assign it a repair mechanism, because "we assume that doesn't
-happen" is how jobs vanish:</p>
-<table>
-<tr><th>Window</th><th>Symptom</th><th>Repair</th></tr>
-<tr><td>Submit: INSERT landed, XADD didn't</td><td>PENDING row, no
-delivery ever</td><td>Orphan sweep: rows past 30s with no enqueue receipt
-are re-enqueued. If the XADD actually succeeded and only its receipt was
-lost, the duplicate delivery collapses at claim arbitration.</td></tr>
-<tr><td>Retry: UPDATE landed, ZADD didn't</td><td>RETRYING row waiting
-for a promotion that will never come</td><td>Stuck-retry sweep: overdue
-RETRYING rows are enqueued directly, skipping the long-passed
-backoff.</td></tr>
-<tr><td>Crash mid-run</td><td>Silent PEL entry, expired lease</td>
-<td>The reaper (above), on the PEL's own idle clock.</td></tr>
-<tr><td>Crash between ack and record flush</td><td>RUNNING row, no PEL
-entry left</td><td>DB-side sweep: long-expired RUNNING rows are reaped
-from the row itself (the envelope is rebuilt from the columns — which is
-why the sweep query returns full rows, not bare ids).</td></tr>
-</table>
-<div class="callout"><div class="label">Decision</div>
-Leadership (a Redis lock) gates these duties as an <em>optimization, not
-a correctness requirement</em>. Every duty is idempotent and fenced, so a
-split-brain moment during lock handover duplicates effort, never results.
-Recovery that requires a perfect leader election has just moved the hard
-problem, not solved it.</div>
-<h3>Proof by kill -9</h3>
-<p>All of the above is enforced by a test that does the actual thing:
-re-execute the test binary as a real child worker process, wait until it
-has provably claimed a job and begun executing, <code>SIGKILL</code> it,
-start the reaper and a healthy worker, and assert the job completes with
-the attempt history reading <code>lease_expired (doomed-worker)</code> →
-<code>completed (healthy-worker)</code>. It runs in CI on every push, and
-the same mechanism was exercised at scale in the 10,000-job benchmark:
-two workers killed mid-run, 8 in-flight jobs reaped, all 8 completed.</p>
+<h3>3.1 · The problem concurrency solves here</h3>
+<p>A worker's day is mostly waiting. An <code>article.analysis</code> job
+waits on Postgres to return the article; an <code>http.callback</code> job
+waits on someone else's server; even a CPU-heavy job waits on the database
+to record its result. If a worker ran one job at a time, the CPU would
+idle through all of that waiting — the I/O benchmark in Part XIV puts a
+number on it: one worker at concurrency 1 moves 16 jobs/s, the same worker
+with a concurrent pool moves 123. The entire gap is waiting that stopped
+blocking the line.</p>
+<p>So the real requirement is: <em>run many jobs at once, but never more
+than a chosen number, and be able to stop cleanly.</em> Everything this
+part teaches — goroutines, channels, <code>select</code>,
+<code>context</code> — exists to make that sentence implementable in about
+a hundred lines.</p>
 
-<h2 id="part-5">Part 5 · Retries &amp; idempotency</h2>
-<h3>Full jitter, because retries synchronize</h3>
-<p>When a dependency blips, hundreds of jobs fail in the same second.
-Fixed backoff retries all of them at the same instant, forever, in
-lockstep — each wave landing on a dependency that's trying to recover.
-Calligraphy draws each delay uniformly from
-<code>[0, min(cap, base·2^(attempt−1)))</code> — "full jitter", the
-variant AWS's published measurements found best for both server load and
-completion time. The retry <em>storm</em> becomes retry <em>drizzle</em>.</p>
-<h3>Not all failures deserve a retry</h3>
-<p>Handlers classify: an unmarked error retries (the default leans toward
-the recoverable mistake — wrongly retrying a permanent failure wastes
-attempts and surfaces in the DLQ where a human sees it; wrongly dropping
-a transient one silently loses work). <code>NonRetryable(err)</code>
-routes straight to <code>FAILED</code> — retrying a malformed payload
-five times is just five identical failures. HTTP callbacks map status
-codes: 5xx/408/429 retry, other 4xx are permanent, redirects are refused
-outright (replaying a signed POST to a redirect target would vouch for a
-body to a host nobody registered).</p>
-<h3>What Calligraphy guarantees, and what it refuses to claim</h3>
-<table>
-<tr><th>Guaranteed</th><th>Explicitly not claimed</th></tr>
-<tr><td>
-• At-least-once execution<br>
-• Exactly-once <em>result persistence</em> (fencing)<br>
-• Idempotent submission: same (type, key) → the original job, ever after<br>
-• Every job terminal or visibly stuck; none silently lost
-</td><td>
-• Exactly-once <em>execution</em> — no queue can promise this from
-outside the handler, and docs claiming it are hiding a dedup layer.
-If a handler emails someone and dies before acking, the email went out
-and the job will run again. Only an idempotent handler fixes that,
-which is why the handler contract says so in bold.
-</td></tr>
-</table>
+<h3>3.2 · Goroutines: threads, priced differently</h3>
+<p>A goroutine is a function running concurrently with the rest of the
+program. Conceptually it is a thread; economically it is not. An OS
+thread costs a megabyte-ish of pre-reserved stack and a kernel context
+switch (microseconds, through the scheduler) every time it blocks. A
+goroutine starts with a ~2&nbsp;KB stack that grows and shrinks as needed,
+and is scheduled by the Go runtime itself in user space.</p>
+<p>The runtime's scheduler is an <strong>M:N multiplexer</strong>: it runs
+<em>N</em> goroutines on top of <em>M</em> OS threads, where M is roughly
+your core count (<code>GOMAXPROCS</code>). Three letters name the moving
+parts in every writeup you'll find: <strong>G</strong> (a goroutine),
+<strong>M</strong> (an OS thread), <strong>P</strong> (a "processor" — a
+scheduling token, one per core, each with its own run queue of Gs). An M
+must hold a P to run Go code; idle Ps steal work from busy Ps' queues, so
+cores stay fed without a global lock.</p>
+<p>The detail that makes worker pools natural in Go: <strong>blocking is
+cheap</strong>. When a goroutine blocks on a channel or a network read,
+the runtime parks that G and hands its M/P to another G — no kernel
+involvement for channels, and network I/O goes through an event loop (the
+netpoller) so a thousand goroutines waiting on a thousand sockets consume
+one epoll, not a thousand threads. This is why Calligraphy can say "one
+goroutine per in-flight job" and mean it literally, where a C++ or Java
+design of the same shape would reach for an explicit event loop or a
+thread pool with queued callbacks.</p>
+
+<h3>3.3 · Channels and select: communication as synchronization</h3>
+<p>A channel is a typed conduit: <code>ch := make(chan int)</code> makes
+one, <code>ch &lt;- 3</code> sends, <code>v := &lt;-ch</code> receives. The
+crucial property is that an <em>unbuffered</em> channel is a rendezvous —
+the send blocks until a receiver is ready, and vice versa — so passing a
+value is also a synchronization event. You don't lock a mutex around the
+data and signal a condition variable; handing the value over <em>is</em>
+the signal. That's the slogan "don't communicate by sharing memory; share
+memory by communicating."</p>
+<p>A <em>buffered</em> channel (<code>make(chan T, n)</code>) decouples
+the two ends by up to n values. And <code>select</code> waits on several
+channel operations at once, proceeding with whichever becomes ready first
+— it is the tool for "wake up when a job finishes, or a timer ticks, or
+shutdown begins, whichever happens first," which is precisely the wait
+in the pool loop below.</p>
+<p>Two idioms from that loop worth naming now, since they read strangely
+the first time:</p>
+<pre><code>// idiom 1: closing a channel broadcasts. Every receiver of a closed
+// channel unblocks immediately -- close(done) wakes all waiters at once.
+
+// idiom 2: non-blocking send. Try to send; if nobody's ready and the
+// buffer is full, do nothing rather than wait.
+select {
+case p.completions &lt;- struct{}{}:
+default:
+}</code></pre>
+<p>Calligraphy also uses <code>sync/atomic</code> for the two hot counters
+(<code>target</code>, <code>active</code>) — single-word values read and
+written from many goroutines, where a mutex would be ceremony — and
+<code>sync.WaitGroup</code> to wait for "all in-flight goroutines are
+done" at drain. Those three primitives (channels, atomics, WaitGroup) are
+the entire concurrency toolbox this codebase needs.</p>
+
+<h3>3.4 · context.Context: cancellation as a tree</h3>
+<p>Go has no way to kill a goroutine from outside — deliberately, because
+a killed thread leaves locks held and invariants broken (this is why
+<code>Thread.stop()</code> is deprecated in Java). Cancellation is instead
+<em>cooperative</em>, and <code>context.Context</code> is its carrier: a
+value passed as the first argument to everything, carrying a done-channel
+that closes when some ancestor decides to cancel. Contexts form a tree —
+<code>context.WithCancel(parent)</code>, <code>WithTimeout</code>,
+<code>WithCancelCause</code> — and cancelling a node cancels its whole
+subtree. Every blocking API in the codebase (pgx queries, go-redis calls,
+<code>http.Request</code>) accepts a context and returns early when it's
+cancelled, so cancellation propagates through I/O, not just through
+polite loops.</p>
+<p>The runner gives each job execution its own timed context
+(<code>ExecTimeout</code>, default 5m); the pool receives one context for
+fetching and a second for jobs; a cancelled job can distinguish
+<em>why</em> it died via <code>context.Cause</code> — which mattered
+enough to produce one of the ten bugs in Part XV (a cancelled job read
+the cause from the wrong context and retried instead of cancelling).</p>
+
+<h3>3.5 · The bounded pool, line by line</h3>
+<div class="src">internal/worker/pool.go</div>
+<p>Here is the heart of the worker, minus logging and error backoff:</p>
+<pre><code>for fetchCtx.Err() == nil {
+    free := int(p.target.Load() - p.active.Load())
+    if free &lt;= 0 {
+        // Full. Sleep until a completion, a resize tick, or shutdown.
+        select {
+        case &lt;-fetchCtx.Done():
+        case &lt;-p.completions:
+        case &lt;-time.After(250 * time.Millisecond):
+        }
+        continue
+    }
+
+    n := min(free, p.batchMax)
+    deliveries, err := p.fetch(fetchCtx, n)   // blocking XREADGROUP, ≤ n
+    ...
+    for _, d := range deliveries {
+        p.active.Add(1)
+        p.wg.Add(1)
+        go func() {
+            defer func() {
+                p.active.Add(-1)
+                p.processed.Add(1)
+                p.wg.Done()
+                select {                       // nudge the loop awake
+                case p.completions &lt;- struct{}{}:
+                default:
+                }
+            }()
+            p.run(jobCtx, d)
+        }()
+    }
+}
+p.wg.Wait()</code></pre>
+<p>Read it as a contract. <code>free = target − active</code> is computed
+<em>before every fetch</em>, and the fetch never asks Redis for more than
+<code>free</code>. Consequences, in order of importance:</p>
+<p><strong>The bound is structural.</strong> There is no path that creates
+a goroutine without incrementing <code>active</code>, so more than
+<code>target</code> jobs simply cannot run. Nobody audits a semaphore
+that's acquired in some places; the loop is the only entrance.</p>
+<p><strong>Backpressure falls out for free.</strong> When all slots are
+busy, the worker stops <em>asking</em>. Backlog therefore accumulates in
+Redis — where it is visible as queue depth, durable across a worker
+crash, and claimable by any other worker — rather than inside this
+process's memory, where it would be none of those things. The pool
+deliberately has no internal buffer channel of claimed work; Part V's
+lease machinery only has to cover jobs that are actually <em>running</em>,
+because claimed-but-parked jobs don't exist.</p>
+<p><strong>Resizing is a number, not an event.</strong>
+<code>SetTarget</code> is one atomic store. The loop re-reads
+<code>target</code> every iteration, so growth takes effect at the next
+fetch and shrinkage just means fetches pause until enough jobs finish.
+Nothing in flight is touched — which is what lets the control plane
+(Part VI) and the autoscaler resize a live worker mid-load.</p>
+<p><strong>The idle path is quiet.</strong> When the pool is full, the
+<code>select</code> parks the loop on three events. The
+<code>completions</code> channel exists only as a wake-up nudge — a
+finishing job does a non-blocking send, and if the buffer is full, fine:
+the loop is about to wake anyway. The 250ms timer is a belt-and-braces
+tick so a missed nudge costs a quarter second, never a hang.</p>
+
+<h3>3.6 · Two contexts, two-phase shutdown</h3>
+<div class="src">internal/worker/worker.go</div>
+<p><code>Pool.Run(fetchCtx, jobCtx)</code> takes two contexts because
+shutdown has two distinct phases with a policy decision between them:</p>
+<pre><code>&lt;-ctx.Done()                      // SIGTERM arrived
+stopFetch()                       // phase 1: no new claims; drain begins
+
+select {
+case &lt;-poolDone:                  // in-flight jobs finished on their own
+case &lt;-time.After(w.cfg.DrainTimeout):
+    stopJobs(context.Cause(ctx))  // phase 2: cancel what's still running
+    ...
+}</code></pre>
+<p>Phase one cancels only the fetch context: the worker stops taking work
+but lets running jobs finish, for up to <code>DrainTimeout</code>
+(default 25s). Only if jobs outlive that does phase two cancel the job
+context, which every handler sees through its own execution context. A
+handler that ignores even that is abandoned to the reaper — the worker
+logs it and exits anyway, because the recovery machinery (Part XII)
+exists precisely so that an ungraceful exit is safe. Kubernetes' grace
+period is set to 40s &gt; 25s so phase one usually wins (Part X).</p>
+<p>One more containment detail lives in the runner: each job goroutine
+runs the handler under <code>defer/recover</code>. A handler that panics
+— nil map write, out-of-range index — does not take down the other seven
+jobs in the pool or the worker itself; the panic is caught, classified as
+its own outcome (<code>OutcomePanicked</code>), recorded, and retried
+with backoff like any transient failure. A worker process should die for
+infrastructure reasons, never because one payload found a bug in one
+handler.</p>
+<div class="callout"><div class="label">Decision</div>
+No buffered channel of claimed jobs between fetcher and executors, even
+though that's the textbook worker-pool diagram. A buffer would smooth
+fetch latency, but every buffered delivery is a job that is claimed (its
+PEL entry ticking toward the lease timeout, Part V) yet not running —
+invisible to queue-depth metrics, lost to this process on crash, and
+un-claimable by an idle peer worker. The fetch-what's-free loop keeps
+"claimed" and "running" the same set, which makes the lease story in
+Part XII tell no lies.</div>
+<div class="callout try"><div class="label">Try it yourself</div>
+Watch the bound behave like a bound. With the stack up (Part 0), submit
+200 slow jobs and resize the pool while they run:
+<pre><code># 200 one-second sleepers
+for i in $(seq 200); do
+  curl -s -XPOST localhost:8080/api/v1/jobs -H 'Authorization: Bearer dev-token' \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"bench.sleep","payload":{"ms":1000}}' &gt; /dev/null
+done
+
+watch -n1 'curl -s localhost:9100/metrics | grep -E "worker_(active_jobs|target_concurrency)"'
+
+# in another terminal: live-resize worker w1 to 12
+curl -XPOST localhost:8080/api/v1/control/workers/w1/concurrency \
+  -H 'Authorization: Bearer dev-token' -d '{"target":12}'</code></pre>
+<code>active_jobs</code> tracks <code>target_concurrency</code> exactly —
+never above it, and it climbs to the new target within one fetch of the
+resize. Kill the watch and drain the worker
+(<code>…/workers/w1/drain</code>) to see phase-one shutdown: active
+falls to zero, then the process exits.</div>
+
+<h2 id="part-4">Part IV · PostgreSQL: the truth machine</h2>
+
+<h3>4.1 · What a database promises, without the acronym</h3>
+<p>Strip the ACID acronym to what it buys this system.
+<strong>Atomicity</strong>: a transaction's writes land together or not
+at all — the batcher (4.6) leans on this to make 128 job results durable
+as one unit. <strong>Consistency</strong>: declared rules (the status
+CHECK constraint, the unique dedupe index) cannot be violated by any
+sequence of writes. <strong>Isolation</strong>: concurrent transactions
+behave as if ordered — the claim UPDATE (4.4) is built directly on this.
+<strong>Durability</strong>: once <code>COMMIT</code> returns, the data
+survives a crash, because of the WAL (4.3).</p>
+<p>Calligraphy's division of labor, stated once more precisely: Postgres
+holds the <em>truth</em> — every job's current status, payload, result,
+attempt history, lease bookkeeping — and Redis holds the
+<em>motion</em>. Every question that starts "what happened…" is a SQL
+query; every question that starts "what should run next…" is a stream
+read. When the two disagree, Postgres wins and the repair sweeps
+(Part XII) make Redis agree again.</p>
+
+<h3>4.2 · MVCC: readers and writers, out of each other's way</h3>
+<p>Postgres implements isolation with <strong>multi-version concurrency
+control</strong>. An UPDATE does not overwrite the row; it writes a
+<em>new version</em> of it, stamped with the writing transaction's ID,
+and leaves the old version in place for transactions that started
+earlier. Readers never block writers and writers never block readers —
+each transaction sees the newest version visible to its snapshot.
+(The garbage this generates — dead row versions — is what
+<code>VACUUM</code> exists to reclaim; a table like
+<code>jobs</code>, where every row is updated several times through its
+lifecycle, is exactly the shape autovacuum earns its keep on.)</p>
+<p>Two writers, though, <em>do</em> contend: if two transactions UPDATE
+the same row, the second blocks until the first commits or aborts, then
+re-evaluates its WHERE clause against the new version. Hold that
+sentence — it is the entire mechanism behind claim arbitration in 4.4.</p>
+
+<h3>4.3 · The WAL: why commit means fsync</h3>
+<p>Durability is implemented with a <strong>write-ahead log</strong>:
+before any change touches the table files, a record of it is appended to
+a sequential log, and <code>COMMIT</code> returns only after that log has
+been <code>fsync</code>'d to disk. Table pages can then be written back
+lazily; after a crash, replaying the WAL reconstructs everything the log
+had. The performance shape this creates is the single most important
+fact for a write-heavy system: <em>the cost of a commit is dominated by
+one disk flush, largely independent of how much data is in it</em>. Ten
+one-row transactions pay ten flushes; one ten-row transaction pays one.
+Postgres already groups concurrent commits opportunistically (group
+commit), but an application that batches deliberately can do much better
+— that arithmetic is the entire case for 4.6.</p>
+
+<h3>4.4 · One UPDATE as an arbiter</h3>
+<div class="src">internal/store/store.go — ClaimJob</div>
+<p>Under at-least-once delivery (Part XIII), two workers will sometimes
+hold deliveries for the <em>same job</em> — a redelivery after a crash, a
+repair re-enqueue racing the original. Exactly one of them may run it.
+Calligraphy does not use an explicit lock, a lock table, or an advisory
+lock for this; it uses the WHERE clause:</p>
+<pre><code>UPDATE jobs SET
+    status = 'RUNNING',
+    worker_id = $2,
+    lease_epoch = lease_epoch + 1,
+    lease_expires_at = now() + make_interval(secs =&gt; $3),
+    started_at = COALESCE(started_at, now()),
+    attempt_count = attempt_count + 1,
+    updated_at = now()
+WHERE id = $1 AND status IN ('PENDING','RETRYING')
+RETURNING lease_epoch, attempt_count, max_attempts, now()</code></pre>
+<p>Run this from two workers at once and MVCC (4.2) arbitrates: the
+second UPDATE waits for the first to commit, re-checks its WHERE against
+the new row version, finds <code>status = 'RUNNING'</code>, matches zero
+rows. In Go that surfaces as <code>pgx.ErrNoRows</code> and the losing
+worker's whole handling is: ack the redundant delivery away and move on.
+<strong>"Zero rows affected" is not an error — it is the answer.</strong>
+The database's own concurrency control is the mutex, the arbitration is
+a single round trip, and there is no lock to leak if a worker dies
+mid-claim (the transaction just aborts).</p>
+<p>Notice <code>attempt_count</code> increments <em>at claim</em>, not at
+completion. A worker that dies mid-attempt has still spent an attempt —
+counting at completion would give crashing jobs unlimited retries, and
+crashes are precisely what retry budgets exist to bound.</p>
+
+<h3>4.5 · Fencing: the lease_epoch column</h3>
+<p>Claiming solves who <em>starts</em>; fencing solves who may
+<em>finish</em>. The failure it exists for: worker A claims job X with a
+30-second lease, then stalls — a long GC pause, a network partition, a
+laptop lid, anything. The lease expires; the reaper re-queues X; worker B
+claims it and runs it. Then A wakes up, finishes its copy, and writes
+"COMPLETED, result = …". If that write lands, B's later, correct write
+collides with it — or worse, A's stale result overwrites B's fresh one.
+A is a <strong>zombie</strong>: a process acting on ownership it lost.</p>
+<p>The defense is a <strong>fencing token</strong>: a number that
+increases every time ownership changes hands, checked on every write.
+The claim UPDATE above does <code>lease_epoch = lease_epoch + 1</code> —
+A claimed at epoch 6, so the reaper's requeue and B's claim move it to 8
+— and every terminal write carries the epoch its writer believes it
+holds:</p>
+<pre><code>UPDATE jobs SET status = 'COMPLETED', result = $3, error = NULL,
+    completed_at = now(), lease_expires_at = NULL, updated_at = now()
+WHERE id = $1 AND lease_epoch = $2 AND status = 'RUNNING'</code></pre>
+<p>A's write arrives with <code>epoch = 6</code>, matches zero rows, and
+<em>nothing happens</em>. The zombie wasn't detected, wasn't killed,
+wasn't coordinated with — its write was simply void. Complete, fail,
+cancel, retry, dead-letter, and lease renewal all match on
+<code>(id, lease_epoch, status = 'RUNNING')</code>; the fenced-write
+counter (<code>calligraphy_writes_fenced_total</code>, Part VIII) counts
+how often the fence actually caught something. This is the standard
+remedy for the distributed-locks-with-leases problem — locks with
+timeouts are unsafe without a token the resource itself checks, and here
+the "resource" is the jobs row, which makes the check one predicate.</p>
+<p>The same trick, run backwards, powers the reaper: when it re-queues an
+expired lease it also bumps the epoch, which <em>revokes</em> the old
+worker's write ability atomically with the decision to reassign. There
+is no window in which both the zombie and the new owner hold valid
+credentials.</p>
 <div class="callout warn"><div class="label">Trade-off</div>
-The 10k benchmark retried 485 jobs — at-least-once means <em>at least</em>.
-The system's honesty budget is spent making duplicates safe (fencing,
-idempotency keys, per-attempt coordinates handlers can dedupe on) rather
-than pretending they don't occur.</div>
+Fencing gives Calligraphy exactly-once <em>result persistence</em> — at
+most one attempt's write wins — while execution remains at-least-once:
+worker A still <em>ran</em> its doomed copy, spent CPU, and produced any
+side effects the handler had. The fence protects the record, not the
+world; protecting the world is idempotency, and that boundary is drawn
+carefully in Part XIII.</div>
 
-<h2 id="part-6">Part 6 · The worker runtime</h2>
-<h3>The pool is the limiter</h3>
-<p>The fetch loop computes <code>free = target − active</code> before
-every fetch and never asks Redis for more. That single line is the
-concurrency bound <em>and</em> the backpressure mechanism: there is no
-internal buffer channel, so claimed-but-unstarted work cannot pile up
-invisibly inside a process. Backlog stays in Redis — visible in queue
-depth, durable, claimable by any worker with capacity. Resizing is an
-atomic store the loop re-reads each iteration; shrinking just stops
-fetching until enough jobs drain.</p>
+<h3>4.6 · Batched recording: amortizing the flush</h3>
+<div class="src">internal/store/batch.go</div>
+<p>Recording an outcome takes three statements — update the jobs row,
+insert an attempt row, and (for retries) reschedule. At high throughput,
+paying a WAL flush per job (4.3) makes the database the bottleneck. The
+<code>Batcher</code> is a classic coalescing writer: outcomes go into a
+channel; one goroutine collects them and flushes a batch as one
+transaction whenever it holds <code>BatchMaxSize</code> ops (128) or
+<code>BatchInterval</code> elapses (20ms), whichever comes first. Size
+bounds the transaction; the interval bounds added latency. A failed
+flush retries once, then falls back to writing ops individually so one
+poisoned statement can't wedge the batch.</p>
+<p>The interface seam matters more than the mechanism: the runner records
+through a <code>store.Recorder</code>, with <code>SyncRecorder</code>
+(write now) and <code>Batcher</code> (write soon) as the two
+implementations, switched by the <code>CALLIGRAPHY_BATCH_WRITES</code>
+flag. That flag is why the ablation benchmark (Part XIV) can measure
+batching's contribution honestly — and the measurement bit back: at one
+worker, batching <em>lost</em> 13% (adding latency nobody needed), and
+even at the full fleet it bought almost no throughput because the
+submission path, not recording, was the bottleneck on that host. The
+optimization is real; the bottleneck it optimizes just wasn't the live
+one there. It ships default-on (the multi-host deployments it exists for
+are write-bound), with the single-host verdict recorded honestly in
+Part XIV: measure yours.</p>
+<p>Durability honesty: while an outcome sits in the batcher, the job's
+truth exists only in this process. The window is bounded (≤20ms + one
+flush), drain flushes everything before exit, and a SIGKILL inside the
+window loses only the <em>record</em> of an attempt, not the job — the
+lease expires and the reaper re-runs it, exactly like a crash one moment
+before the write. At-least-once absorbs the batcher's window into a
+window it already had.</p>
+
+<h3>4.7 · Details that earn their keep</h3>
+<p><strong>Dedupe as a partial unique index.</strong> Submission
+idempotency (Part XIII) rests on
+<code>ON CONFLICT (type, idempotency_key) WHERE idempotency_key IS NOT
+NULL DO NOTHING</code> — a partial unique index, so jobs without a key
+opt out entirely. The API then re-reads the existing row and returns it
+with <code>200</code> (vs <code>201</code> for a fresh insert), so a
+client retrying a timed-out submit gets the same job back, not a twin.</p>
+<p><strong>Migrations embedded, under an advisory lock.</strong> Schema
+files compile into the binaries (<code>//go:embed</code>); every binary
+runs the migrator at boot inside
+<code>pg_advisory_lock</code>, so N processes starting against an empty
+database serialize politely and N−1 of them find nothing to do.
+Compose and Kubernetes then need no "run migrations first" orchestration
+step — any start order works.</p>
+<p><strong>jsonb is semantic, not textual.</strong> Payloads are stored
+as <code>jsonb</code>, which parses and canonicalizes: key order isn't
+preserved, whitespace is gone, <code>1e2</code> becomes <code>100</code>.
+Comparing a stored payload to an incoming one byte-for-byte is therefore
+wrong — found the hard way (Bug 6, Part XV); the fix compares decoded
+values, not bytes.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+Watch arbitration and fencing with your own hands, no workers involved.
+Open two <code>psql</code> sessions
+(<code>docker compose exec postgres psql -U calligraphy</code>):
+<pre><code>-- session 1                          -- session 2
+BEGIN;
+UPDATE jobs SET status='RUNNING',
+  lease_epoch = lease_epoch + 1
+WHERE id='&lt;some-pending-id&gt;'
+  AND status IN ('PENDING','RETRYING');
+--&gt; UPDATE 1                          BEGIN;
+                                      UPDATE jobs SET status='RUNNING',
+                                        lease_epoch = lease_epoch + 1
+                                      WHERE id='&lt;same-id&gt;'
+                                        AND status IN ('PENDING','RETRYING');
+                                      --&gt; (blocks, waiting on session 1)
+COMMIT;
+                                      --&gt; UPDATE 0        ← lost, cleanly</code></pre>
+Session 2 blocked on the row, re-checked its WHERE after session 1's
+commit, and matched nothing: that <code>UPDATE 0</code> is the same
+verdict a losing worker reads. Then try a zombie write: note the row's
+<code>lease_epoch</code>, subtract one, and run the COMPLETED update
+above with the stale epoch — <code>UPDATE 0</code> again. The fence holds
+against a human, too.</div>
+
+<h2 id="part-5">Part V · Redis: the moving parts</h2>
+
+<h3>5.1 · What Redis actually is</h3>
+<p>Redis is a server holding data structures in memory — strings, hashes,
+sorted sets, streams — that you manipulate with commands over TCP. The
+architectural fact everything else follows from: <strong>command
+execution is single-threaded</strong>. One event loop reads commands from
+all clients and executes them one at a time. That sounds like a
+limitation and is actually the superpower: because operations on
+in-memory structures take microseconds, one thread sustains hundreds of
+thousands of them per second, and because nothing interleaves,
+<em>every command is atomic by construction</em>. No locks, no torn
+reads, no compare-and-swap loops. When 7 workers hammer XREADGROUP on
+the same stream (Part XIV's fleet run), Redis never hands the same entry
+to two of them within a group — not because of clever locking, but
+because there is no concurrency to defend against.</p>
+<p>Persistence exists (RDB snapshots, AOF append logs with configurable
+fsync) but Calligraphy deliberately doesn't lean on it: Redis here is
+<em>transport</em>, and the design survives Redis losing everything —
+Part XII's repair sweeps rebuild queue state from Postgres, the truth
+(Part IV). This is a freeing decision: tuning Redis durability trades
+throughput for a guarantee the architecture gets elsewhere for free.</p>
+
+<h3>5.2 · Streams, from zero</h3>
+<p>A stream is an append-only log inside Redis. <code>XADD mystream *
+k v</code> appends an entry and returns its ID — <code>1723180800123-0</code>,
+a millisecond timestamp plus a sequence number, so IDs are unique and
+totally ordered. Entries are read by ID range, and unlike pub/sub
+(fire-and-forget: miss it and it's gone), entries persist until trimmed.
+So far, a log.</p>
+<p>What makes streams a <em>work queue</em> is <strong>consumer
+groups</strong>. A group (created with <code>XGROUP CREATE</code>) is a
+named cursor over the stream plus per-consumer bookkeeping. Its three
+verbs:</p>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>XREADGROUP GROUP g c … &gt;</code></td><td>Hand the next
+unread entries to consumer <code>c</code>, advance the group cursor, and
+record each entry in the <strong>pending entries list (PEL)</strong>:
+"delivered to c at time t, delivery-count n." Two consumers reading the
+same group never receive the same entry.</td></tr>
+<tr><td><code>XACK g id</code></td><td>Remove the entry from the PEL:
+work finished, bookkeeping closed.</td></tr>
+<tr><td><code>XAUTOCLAIM g c min-idle</code></td><td>Scan the PEL for
+entries whose delivery is older than <code>min-idle</code> and hand them
+to consumer <code>c</code>, bumping their delivery count. This is how
+work escapes a dead consumer.</td></tr>
+</table>
+<p>Read that table again as a systems statement: <strong>the PEL is a
+crash detector</strong>. Claimed-but-unacked work is exactly the set of
+entries in the PEL, each with a timestamp of when its consumer went
+quiet. A consumer that dies mid-job leaves its entries pending; their
+idle clocks tick; XAUTOCLAIM finds them. SQS calls this same idea a
+"visibility timeout" — the entry is invisible to others while claimed,
+and reappears if not deleted in time. Streams give you the machinery
+with the dials exposed.</p>
+
+<h3>5.3 · How Calligraphy maps onto streams</h3>
+<div class="src">internal/queue/queue.go</div>
+<p>The mapping, piece by piece:</p>
+<p><strong>Three streams, one per priority.</strong>
+<code>calligraphy:stream:high|default|low</code>, one consumer group
+(<code>workers</code>) on each. Priority is implemented in the fetch
+order, not in Redis: <code>Fetch</code> first drains
+high-then-default-then-low with non-blocking reads (<code>Block: -1</code>),
+and only if all three come back empty does it issue one <em>blocking</em>
+XREADGROUP on all three keys at once (up to 2s). Under backlog the
+non-blocking pass runs strict priority; when idle, the blocking pass
+wakes on whichever stream produces first — a wake-up race Redis doesn't
+arbitrate across keys, accepted because strict ordering matters under
+load, not in the instant an idle worker stirs.</p>
+<p><strong>Ack is XACK + XDEL, pipelined.</strong> A pure log would keep
+acked entries for replay; Calligraphy's stream is transport, and the
+job's history lives in Postgres. Deleting on ack keeps stream memory
+proportional to in-flight + backlog, not to history.</p>
+<p><strong>Lease renewal is XCLAIM JUSTID to yourself.</strong> A
+30-second lease (matching the Postgres lease) with jobs that can run
+minutes would mean every long job gets stolen by XAUTOCLAIM mid-run. So
+while a handler runs, the runner heartbeats both stores at LeaseTTL/3:
+extend the SQL lease (fenced, 4.5), and reset the PEL idle clock —
+<code>XCLAIM</code> with <code>JUSTID</code> by the <em>current</em>
+consumer, which resets idle time and changes nothing else. A worker that
+dies stops heartbeating both, and both clocks agree it's gone.</p>
+<p><strong>Poison entries are acked away.</strong> An entry whose payload
+won't decode would otherwise redeliver forever — each claim crashing a
+worker's decode path, each XAUTOCLAIM finding it again. The fetch path
+logs it and acks it into oblivion; the job row (if one exists) is caught
+by the stale-RUNNING sweep instead.</p>
+
+<h3>5.4 · The delayed set and the Lua promoter</h3>
+<p>Streams have no "deliver at time T." Retries with backoff and
+<code>scheduledAt</code> jobs need one, so delay is a <strong>sorted
+set</strong> per priority: <code>ZADD calligraphy:delayed:default
+&lt;due-ms&gt; &lt;envelope&gt;</code> — member is the encoded envelope, score is
+its due time. Sorted sets are ordered by score, so "everything due by
+now" is one <code>ZRANGEBYSCORE key -inf now</code>.</p>
+<p>Moving a due member onto its stream takes three commands — read,
+XADD, ZREM — and the promoter may run on several API replicas while one
+of them crashes mid-move. Interleave those and members vanish (ZREM
+before a crash that lost the XADD) or multiply more than necessary. The
+fix is the standard Redis idiom for multi-step atomicity:
+<strong>a Lua script</strong>, because Redis executes a script exactly
+like one command — nothing interleaves with it:</p>
+<pre><code>local due = redis.call('ZRANGEBYSCORE', KEYS[1], '-inf', ARGV[1],
+                       'LIMIT', 0, tonumber(ARGV[2]))
+for i, member in ipairs(due) do
+  redis.call('XADD', KEYS[2], '*', 'j', member)
+  redis.call('ZREM', KEYS[1], member)
+end
+return due</code></pre>
+<p>Within the script, XADD-then-ZREM means a crash <em>between</em> the
+two is impossible; a crash before the script ran leaves the member
+delayed (retried next tick); the script returns the moved members so the
+caller can flip their rows RETRYING → PENDING in Postgres. Note the
+crash <em>after</em> XADD inside a failed script response can still
+double-deliver — and that's fine, because delivery was at-least-once
+before the promoter existed (Part XIII).</p>
+<p><strong>Leader election, minimum viable.</strong> Recovery duties
+(promote, reap, sweeps — Part XII) run on whichever API replica holds
+<code>SET calligraphy:leader:recovery &lt;id&gt; NX EX 15</code> — the
+classic NX lock with a TTL, renewed at TTL/3, released by a
+compare-and-delete. The textbook warning about Redis locks (a paused
+leader's lock expires; two leaders act at once) is real, and the answer
+here is not a fancier lock but the same move as everywhere else:
+<em>every duty is idempotent and every write is fenced</em>, so dual
+leadership costs duplicated effort, never duplicated results.
+Leadership is an optimization — one process doing housekeeping instead
+of N colliding — not a correctness requirement. That's why a 15-second
+lock is enough where a lease on <em>work</em> needed an epoch fence.</p>
+<p><strong>The DLQ is a capped stream.</strong> Dead-lettered envelopes
+append to one stream with <code>MAXLEN ~ 10000</code> (the <code>~</code>
+lets Redis trim lazily at node boundaries, which is cheaper). It's an
+operator inbox, browsable and re-queueable via API/ctl; the authoritative
+DEAD_LETTER status lives in the row.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+Watch the PEL catch a murdered worker.
+<pre><code>redis-cli XLEN calligraphy:stream:default          # backlog
+redis-cli XPENDING calligraphy:stream:default workers
+# submit a slow job, then, while it runs:
+docker compose kill -s SIGKILL worker-1            # no goodbye
+redis-cli XPENDING calligraphy:stream:default workers
+# → 1 entry, consumer worker-1, idle time climbing…
+# within ~LeaseTTL the reaper XAUTOCLAIMs it; watch it drain:
+watch -n2 'redis-cli XPENDING calligraphy:stream:default workers'
+# and confirm the job still completed:
+curl -s localhost:8080/api/v1/jobs/&lt;id&gt; -H 'Authorization: Bearer dev-token'</code></pre>
+The job's attempt history will show attempt 1 abandoned
+(lease_expired) and attempt 2 completing on the surviving worker —
+the whole of Part XII in two commands.</div>
+
+<h2 id="part-6">Part VI · gRPC &amp; Protocol Buffers</h2>
+
+<h3>6.1 · Protobuf: a schema with a wire format</h3>
+<p>Protocol Buffers are two things wearing one name. First, a
+<strong>schema language</strong>: you declare messages and their fields
+in a <code>.proto</code> file, each field with a type and a
+<em>number</em>. Second, a <strong>binary wire format</strong>: an
+encoded message is just a sequence of (field number, value) pairs —
+integers as varints (small numbers take one byte), strings and nested
+messages length-prefixed. Field <em>names</em> never travel; the wire
+carries <code>3: 8</code>, and both ends use the schema to know that
+field 3 of <code>WorkerHello</code> is <code>pid</code>.</p>
+<p>Numbers-not-names is what makes protobuf evolvable: a receiver that
+sees an unknown field number skips it (the wire format is
+self-delimiting), so adding fields never breaks old readers, and
+renaming a field is free because the name was never on the wire. The
+discipline it demands in exchange: <em>never reuse a field number</em>,
+because the number is the identity. From <code>proto/control.proto</code>:</p>
+<pre><code>message WorkerStats {
+  int32  active      = 1;
+  int32  target      = 2;
+  uint64 processed   = 3;
+  double utilization = 4;
+  bool   paused      = 5;
+}</code></pre>
+<p>A code generator (<code>protoc</code> with <code>protoc-gen-go</code>)
+turns the schema into Go structs plus encode/decode — which is why
+generated <code>.pb.go</code> files are artifacts, not source. During
+the project rename, a find-and-replace was run across the repo and
+corrupted the generated files: the old package name was embedded inside
+a <em>length-prefixed</em> descriptor blob, so changing its bytes without
+updating the length prefix made the file lie about itself, and every
+binary panicked at init. The fix — regenerate from the renamed
+<code>.proto</code>, never edit generated bytes — is Bug 9 in Part XV,
+and it's a better protobuf lesson than any tutorial: the wire format's
+length prefixes are load-bearing.</p>
+
+<h3>6.2 · gRPC: RPC over HTTP/2, with streams</h3>
+<p>gRPC is remote procedure calls where the transport is HTTP/2 and the
+payloads are protobuf. HTTP/2 matters because it multiplexes many
+independent <em>streams</em> over one TCP connection — so one
+long-lived connection can carry a call that stays open forever, in both
+directions, without head-of-line blocking between calls. That enables
+the four gRPC call shapes: unary (request→response), server-streaming,
+client-streaming, and <strong>bidirectional streaming</strong> — both
+sides send message sequences on one open call, interleaved however they
+like. The generated code gives each side typed <code>Send</code>/<code>Recv</code>
+methods; keepalive pings detect a silently dead peer.</p>
+
+<h3>6.3 · The control plane, and what it refuses to carry</h3>
+<div class="src">proto/control.proto · internal/control</div>
+<p>Calligraphy uses exactly one RPC, and it's bidirectional:</p>
+<pre><code>service Control {
+  rpc WorkerStream(stream WorkerMessage) returns (stream Command);
+}</code></pre>
+<p>Each worker dials the API at boot and holds this stream for its
+lifetime. Upstream: a <code>WorkerHello</code> (identity, capacity,
+handled types), then <code>WorkerStats</code> every few seconds, and
+<code>CommandAck</code>s. Downstream: <code>Drain</code>,
+<code>Pause</code>, <code>Resume</code>,
+<code>SetConcurrency&#123;target&#125;</code> — each applied to the pool
+from Part III (a drain cancels the fetch context; a resize is that one
+atomic store). The API keeps a hub of connected sessions; the operator
+reaches it through plain HTTP (<code>POST
+/api/v1/control/workers/w1/drain</code>), so <code>calligraphyctl</code>
+stays a dumb HTTP client and the gRPC stream remains a private
+worker↔API affair.</p>
+<p>Why gRPC here at all? The push direction. Worker→API stats could be
+HTTP POSTs. But API→worker commands over HTTP would mean workers
+<em>poll</em> for pending commands, and "drain worker 3" would take
+effect a poll interval later. Over a held-open stream, it takes effect
+<em>now</em> — sub-second, no polling loop on either side, one
+connection per worker total. That latency difference is the entire
+justification, and it's enough: drain-before-deploy is the hot path of
+operating a fleet.</p>
 <div class="callout"><div class="label">Decision</div>
-No <code>go handle(msg)</code> per message, ever. Unbounded goroutines
-mean memory and scheduler pressure scale with queue depth — the busiest
-moment becomes the moment the worker falls over. The bound is structural:
-the loop cannot create more than <code>target</code> goroutines because
-the loop is the only thing that creates them.</div>
-<h3>Graceful drain, and the honest limits of grace</h3>
-<p>SIGTERM stops fetching; in-flight jobs get <code>DrainTimeout</code>
-to finish on their own; then their contexts cancel (handlers see it;
-well-behaved ones return promptly); a short grace later, anything still
-running is abandoned <em>to the reaper</em> — which is fine, because
-surviving ungraceful death is the whole Part 4. Grace is an optimization
-that saves a retry, not a correctness requirement.</p>
-<h3>Panics are attempts, not funerals</h3>
-<p>A panicking handler is caught, its stack preserved in the attempt row,
-and the attempt classified <code>panicked</code> (retryable — if it
-panics every time, the attempt budget routes it to the DLQ where the
-stack is waiting). One bad payload must not take down a worker running
-seven other jobs.</p>
-<h3>The built-in handlers</h3>
-<table>
-<tr><th>Handler</th><th>What it's for</th></tr>
-<tr><td><code>article.analysis</code></td><td>The flagship: real CPU
-work with no API bill. TextRank (PageRank over text — one shared
-power-iteration serves both keyword and sentence graphs), Flesch-Kincaid
-readability, stopword-ratio language detection. Real work is what makes
-the CPU-bound benchmark an honest benchmark.</td></tr>
-<tr><td><code>http.callback</code></td><td>What makes Calligraphy generic
-infrastructure: deliver the payload to any HTTP endpoint with an
-HMAC-SHA256 signature (timestamp folded into the MAC against replay),
-status-code classification, redirect refusal. Booklet keeps its logic;
-Calligraphy supplies durability and retries.</td></tr>
-<tr><td><code>bench.sleep/cpu/flaky</code></td><td>The measurement
-handlers. Flaky's failures are deterministic hashes of (job, attempt) —
-reliability runs reproduce bit-for-bit, and retries usually clear, like
-real transients.</td></tr>
-</table>
+Jobs never travel over gRPC — the temptation to "just push work down the
+stream we already have" is refused, twice over. Work must be durable and
+claimable: a job pushed over a stream to a worker that dies is a job
+<em>lost</em> unless you rebuild redelivery, acking, and idle-detection —
+which is re-implementing Part V's PEL, badly, on a transport that loses
+everything when the connection drops. The stream carries only
+<em>ephemeral truth</em> (stats a second stale are harmless; a lost
+command is re-issued by the operator). Corollary: a worker whose control
+stream is down keeps processing jobs — the data plane doesn't know the
+control plane exists.</div>
+<p>One bug lived here, worth its cross-reference: when a worker
+reconnected, the hub evicted the old session by deleting the map entry —
+but never closed the old stream's send loop, leaking a goroutine per
+reconnect that occasionally delivered a command to a ghost. The fix
+gives each session a <code>done</code> channel closed exactly once by an
+idempotent <code>terminate()</code>; eviction, natural disconnect, and
+shutdown all converge there (Bug 4, Part XV). The general lesson:
+<em>in a session registry, removing from the map and ending the session
+are different operations</em>, and forgetting the second is invisible
+until you count goroutines.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+Drive the control plane end to end:
+<pre><code>calligraphyctl live                    # connected sessions, stats seconds old
+calligraphyctl pause w1                # w1 stops fetching (jobs finish)
+watch -n1 'redis-cli XLEN calligraphy:stream:default'   # backlog grows
+calligraphyctl resume w1               # backlog drains
+calligraphyctl concurrency w1 12       # Part III's atomic store, remotely
+calligraphyctl drain w1                # phase-one shutdown, then exit</code></pre>
+Between pause and resume, submit jobs and watch queue depth climb while
+<code>active_jobs</code> sits at zero — the clearest demonstration that
+backpressure lives in Redis, not in worker memory.</div>
 
-<h2 id="part-7">Part 7 · Observing &amp; operating it</h2>
-<h3>The metric that matters most is a gap</h3>
-<p>Calligraphy records two duration histograms per job type: execution time
-(inside the handler) and end-to-end time (enqueue → done). Their p95s
-plotted together are the dashboard's most useful panel, because <em>the
-distance between the lines is time spent waiting, not working</em>.
-Execution flat while e2e climbs means you need capacity, not faster
-handlers — backpressure drawn as two lines.</p>
-<h3>The control plane, and why gRPC is confined to it</h3>
-<p>Each worker holds one bidirectional stream open to the API: stats up
-every 5 seconds, commands (<code>drain / pause / resume /
-set-concurrency</code>) down the moment an operator issues them. Push is
-what earns gRPC its place — "drain worker 3 <em>now</em>" over polled
-HTTP waits out a poll interval. The boundary is strict: jobs never travel
-here, and a worker that loses the control plane keeps processing jobs
-indefinitely (it reconnects with backoff; losing control costs
-operability, never throughput).</p>
-<h3>Scaling: two composable axes</h3>
-<p>Each worker can autoscale its own concurrency from queue depth — grow
-eagerly (+half per interval when backlog ≥ 2× capacity), shrink
-reluctantly (five consecutive idle observations, −1 at a time), and one
-subtlety with its own test: <em>a busy pool with an empty queue is not
-idle</em> — it's working at exactly capacity, and shrinking it would cut
-throughput. Horizontally, workers are identical and stateless-ish
-(identity from hostname), so <code>--scale worker=7</code> or a k8s HPA
-adds capacity with zero per-replica config.</p>
+<h2 id="part-7">Part VII · HTTP APIs in Go</h2>
 
-<h2 id="part-8">Part 8 · The benchmarks</h2>
-<p>Full methodology and tables live in <code>bench/BENCHMARKS.md</code>;
-seventeen result files with embedded provenance live in
-<code>bench/results/</code>. The design principle: <em>a harness that
-cannot flatter the system</em>. Pure API client (every job pays full
-freight), exact percentiles from real timestamps, a wall clock that
-rounds against itself, refusal to start dirty or end incomplete.</p>
-<table>
-<tr><th>Finding</th><th>Number</th><th>Why it matters</th></tr>
-<tr><td>I/O-bound scaling</td><td class="good">54 → 370 jobs/s, 1→7
-workers (6.8×)</td><td>Near-linear because waiting workers don't compete
-for cores — the case for the worker-fleet architecture.</td></tr>
-<tr><td>CPU-bound turnover</td><td class="bad">190.9 → 188.2 jobs/s from
-4→7 workers; exec p50 73→130ms</td><td>Past core count, more workers buy
-contention, not throughput. Published on purpose; the same lesson
-Booklet's TTS pool learned (a fixed pool of 3 on a 2-vCPU host measured
-2.86× slowdown), reproduced experimentally here.</td></tr>
-<tr><td>Pooling alone</td><td>+0%</td><td>A pool of 8 connections serving
-a concurrency-1 consumer is capacity nothing uses. Pooling
-<em>enables</em>; concurrency <em>delivers</em>.</td></tr>
-<tr><td>Concurrency</td><td class="good">+670%</td><td>The entire case
-for Go's concurrency model, as a measurement.</td></tr>
-<tr><td>Write batching</td><td class="bad">−13% at low rates; neutral at
-the ceiling</td><td>Its flush interval costs ack latency that fsync
-amortization can't repay until the DB write path — not ingest — is the
-bottleneck. On this 4-core host it never was; the report says "measure
-yours".</td></tr>
-<tr><td>Single-host ceiling</td><td>~1,280 jobs/s</td><td>Submission-side
-(API ingest), identified by both fleet configs converging on it.</td></tr>
-<tr><td>Reliability</td><td class="good">10,000 jobs, 99.04% completed, 0
-lost</td><td>Under 5% transient + 1% permanent injected failure with two
-workers SIGKILLed mid-run. The 96 failures are exactly the injected
-permanent population; 485 transients all retried to completion; the 8
-jobs that died with their workers all recovered.</td></tr>
-</table>
+<h3>7.1 · net/http, and why there's no framework here</h3>
+<p>Go's standard library ships a production HTTP server. Its model is
+one interface —
+<code>Handler: ServeHTTP(ResponseWriter, *Request)</code> — and one
+router, <code>ServeMux</code>, which since Go 1.22 matches method and
+path patterns with wildcards natively:</p>
+<div class="src">internal/api/server.go</div>
+<pre><code>mux.HandleFunc("GET /healthz",  s.handleHealthz)
+mux.HandleFunc("GET /readyz",   s.handleReadyz)
+mux.Handle("GET /metrics",      s.Meters.Handler())
+
+mux.Handle("POST   /api/v1/jobs",               authed(s.handleSubmit))
+mux.Handle("GET    /api/v1/jobs/{id}",          authed(s.handleGetJob))
+mux.Handle("GET    /api/v1/jobs/{id}/result",   authed(s.handleGetResult))
+mux.Handle("GET    /api/v1/jobs/{id}/attempts", authed(s.handleGetAttempts))
+mux.Handle("DELETE /api/v1/jobs/{id}",          authed(s.handleCancel))
+mux.Handle("GET    /api/v1/queues/depths",      authed(s.handleDepths))
+mux.Handle("GET    /api/v1/dlq",                authed(s.handleListDLQ))
+mux.Handle("POST   /api/v1/dlq/{id}/requeue",   authed(s.handleRequeueDLQ))
+...
+return s.recoverMW(s.logMW(mux))</code></pre>
+<p>The server runs one goroutine per connection — Part III's economics
+are why that's fine at any load this system sees — and each handler
+reads path parameters with <code>r.PathValue("id")</code>. No chi, no
+gin, no echo: the standard library now covers method routing and
+wildcards, which is most of what routers sold, and every dependency in
+the hot path is a dependency someone must someday upgrade under a CVE.
+The framework-shaped needs that remain are met the way the stdlib
+intends — <strong>middleware as function wrapping</strong>. The last
+line above is the whole stack: a panic-recovery wrapper outermost (a
+handler bug becomes a 500 and a log line, never a dead process), request
+logging inside it, then the mux; <code>authed</code> wraps individual
+routes with bearer-token checking so health and metrics stay open for
+probes and Prometheus.</p>
+
+<h3>7.2 · The shape of a good JSON API, enforced</h3>
+<p>Conventions the surface holds to, each for a defendable reason:</p>
+<p><strong>Errors are one envelope.</strong> Every failure returns
+<code>{"error":{"code":"…","message":"…"}}</code> with a stable
+machine-readable code (<code>invalid_json</code>, <code>unknown_type</code>,
+<code>not_found</code>, <code>payload_too_large</code>…). Clients switch on
+<code>code</code>; humans read <code>message</code>; nobody parses prose.</p>
+<p><strong>Request bodies are bounded.</strong> Payloads ride to Redis
+and back on every delivery, so the API caps bodies with
+<code>http.MaxBytesReader</code> (256&nbsp;KB). The subtlety is
+<em>reporting</em> it: the size limit trips during <code>Decode</code>,
+so naive code reports "invalid JSON" for a perfectly valid oversized
+document. The decode path checks <code>errors.As(err,
+*http.MaxBytesError)</code> first and answers <code>413
+payload_too_large</code> — Bug 5 in Part XV, and a two-line illustration
+of why error <em>classification</em> deserves tests, not just error
+<em>presence</em>.</p>
+<p><strong>Statuses mean things.</strong> Fresh submit → <code>201</code>.
+Deduped replay (Part XIII) → <code>200</code> with the original job, so
+the client can even tell which happened. Cancel of an already-terminal
+job → conflict, not silent success. And submission validates
+<em>eagerly</em> — unknown job type, malformed payload, bad priority are
+rejected at the door with a 4xx, because a bad job caught at submit
+costs one round trip, while the same job caught by a worker costs a
+claim, an execution, a recorded failure, and an operator's attention.</p>
+<p><strong>Timeouts everywhere, shutdown graceful.</strong> The server
+sets read-header/read/write/idle timeouts (a client that sends one byte
+per minute is an attack, not a user), and SIGTERM triggers
+<code>http.Server.Shutdown</code>: stop accepting, finish in-flight
+responses, then exit — the API's small sibling of the worker's
+two-phase drain.</p>
+
+<h3>7.3 · healthz vs readyz — two different questions</h3>
+<pre><code>func (s *Server) handleReadyz(w http.ResponseWriter, r *http.Request) {
+    ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+    defer cancel()
+    if err := s.Store.Ping(ctx); err != nil {
+        writeErr(w, http.StatusServiceUnavailable, "not_ready", "database unreachable")
+        return
+    }
+    if err := s.Queue.Ping(ctx); err != nil {
+        writeErr(w, http.StatusServiceUnavailable, "not_ready", "redis unreachable")
+        return
+    }
+    writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+}</code></pre>
+<p><code>/healthz</code> answers "is this process alive?" — it checks
+nothing external, because the remedy attached to failing it (Part X:
+restart the pod) fixes nothing about a down database.
+<code>/readyz</code> answers "can this instance serve a real request
+right now?" — both dependencies, bounded to 2s so the probe itself can't
+hang. Conflating them is a classic outage amplifier: put the DB check in
+liveness and a database blip makes Kubernetes restart every API pod in a
+loop, turning one failure into two. The remedy for "not ready" is to
+stop sending traffic, and that's exactly what readiness gates.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+<pre><code># the full client lifecycle in four calls
+curl -s -XPOST localhost:8080/api/v1/jobs \
+  -H 'Authorization: Bearer dev-token' -H 'Content-Type: application/json' \
+  -d '{"type":"bench.sleep","payload":{"ms":3000},"maxAttempts":3}' | jq .id
+curl -s localhost:8080/api/v1/jobs/&lt;id&gt; -H 'Authorization: Bearer dev-token' | jq .status
+curl -s localhost:8080/api/v1/jobs/&lt;id&gt;/attempts -H 'Authorization: Bearer dev-token' | jq
+curl -s -XDELETE localhost:8080/api/v1/jobs/&lt;id&gt; -H 'Authorization: Bearer dev-token' | jq
+
+# and the two probes disagreeing on purpose:
+docker compose stop postgres
+curl -si localhost:8080/healthz | head -1     # 200 — process is fine
+curl -si localhost:8080/readyz  | head -1     # 503 — can't serve you
+docker compose start postgres</code></pre></div>
+
+<h2 id="part-8">Part VIII · Prometheus &amp; Grafana</h2>
+
+<h3>8.1 · The pull model, and why it's backwards on purpose</h3>
+<p>Prometheus inverts the arrangement most people expect from
+monitoring. Applications don't send metrics anywhere; they expose a
+<code>/metrics</code> endpoint serving a plain-text snapshot of named
+numbers, and the Prometheus server <em>scrapes</em> every target on an
+interval (here: 5s), storing each value as a timestamped sample in its
+time-series database. Pull buys three things: instrumented processes
+stay trivial (no buffering, no delivery retries, no metrics outage when
+the collector is down); the scrape itself is a health check (a dead
+target shows as <code>up == 0</code> — you learn about death from the
+<em>absence</em> going somewhere); and one config file lists everything
+being watched.</p>
+<p>A sample is identified by a metric name plus <strong>labels</strong> —
+<code>calligraphy_jobs_completed_total{type="demo.sleep"}</code> — and
+every distinct label combination is its own time series. Labels are the
+query language's pivot (sum by type, rate per worker), and also the
+classic self-inflicted wound: a label with unbounded values (job ID,
+URL) mints unbounded series and eats the server. Calligraphy labels by
+job <em>type</em> and worker ID — small, fixed sets — never by job.</p>
+
+<h3>8.2 · The three instrument types that matter</h3>
+<div class="src">internal/metrics/metrics.go</div>
+<p>A <strong>counter</strong> only goes up
+(<code>jobs_submitted_total</code>, <code>jobs_completed_total</code>,
+<code>jobs_retried_total</code>, <code>writes_fenced_total</code>…). Its
+absolute value is boring; its <em>slope</em> is the signal, and
+<code>rate(jobs_completed_total[1m])</code> is throughput. Counters
+survive restarts gracefully because <code>rate()</code> detects the
+reset instead of reporting a negative spike.</p>
+<p>A <strong>gauge</strong> goes both ways
+(<code>worker_active_jobs</code>, <code>worker_target_concurrency</code>,
+<code>worker_utilization</code>). The worker exports these as
+<code>GaugeFunc</code>s reading the pool's atomics directly — the scrape
+reads the live value, no bookkeeping between.</p>
+<p>A <strong>histogram</strong> answers distribution questions.
+Internally it is just counters: a set of cumulative buckets
+(<code>le="0.128"</code> = "observations ≤ 128ms") plus sum and count.
+Buckets aggregate perfectly across workers (sum the counters), and
+quantiles are <em>estimated</em> at query time by
+<code>histogram_quantile()</code>, with error bounded by bucket width —
+which is why bucket layout is a design decision, not a default to
+accept. Both duration histograms here use
+<code>ExponentialBuckets(0.001, 2, 18)</code>: 1ms doubling to ~2
+minutes, equal <em>relative</em> error everywhere on a scale where jobs
+legitimately span five orders of magnitude.</p>
+
+<h3>8.3 · The one query this system is designed around</h3>
+<p>Two histograms measure every job:
+<code>job_duration_seconds</code> (execution: claim to outcome) and
+<code>job_e2e_duration_seconds</code> (submit to terminal, measured from
+row timestamps). Neither alone diagnoses anything; their <em>gap</em>
+is the system's most important derived signal:</p>
+<pre><code>histogram_quantile(0.95, sum(rate(calligraphy_job_e2e_duration_seconds_bucket[5m])) by (le))
+  -
+histogram_quantile(0.95, sum(rate(calligraphy_job_duration_seconds_bucket[5m])) by (le))</code></pre>
+<p>That difference is <strong>queue wait</strong> — time spent owned by
+the system but not executing. Execution p95 rising means jobs got
+slower: look at handlers and dependencies. E2E p95 rising while
+execution holds flat means jobs <em>wait</em>: capacity, not code — add
+workers or raise concurrency. Part XIV's reliability run shows the
+signature at full amplitude: execution p50 of 38ms under an e2e p50 of
+5.4s — a healthy fleet digesting a burst that arrived nine times faster
+than it drains.
+The distinction — <em>slow system vs. saturated system</em> — is the
+first question in any queue incident, and these two histograms answer
+it in one glance.</p>
+
+<h3>8.4 · Grafana, provisioned as code</h3>
+<p>Grafana renders PromQL as dashboards. The only decision worth
+documenting: the dashboard is <em>provisioned</em> — JSON committed to
+the repo, mounted via Grafana's provisioning directory, so
+<code>docker compose up</code> yields a populated dashboard with zero
+clicking. Dashboards built by hand in a UI die with the volume; this one
+is code-reviewed like everything else. Panels: throughput by outcome,
+the two p95s and their gap, queue depths (high/default/low + delayed +
+DLQ), per-worker active vs target, retry and dead-letter rates, and the
+fence counter — which should read zero for weeks and then explain an
+incident.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+<pre><code>curl -s localhost:9100/metrics | grep '^calligraphy_' | sort | head -25
+
+# then in Prometheus (localhost:9090), paste each and think about shape:
+rate(calligraphy_jobs_completed_total[1m])          # throughput, by type
+calligraphy_worker_active_jobs                       # the pool, live
+histogram_quantile(0.95,
+  sum(rate(calligraphy_job_duration_seconds_bucket[5m])) by (le))
+
+# make the gap move: pause both workers (Part VI), submit 500 jobs,
+# resume, and watch e2e p95 spike while exec p95 never flinches.</code></pre>
+Grafana is at localhost:3000 (admin/admin), dashboard "Calligraphy" —
+already there, because provisioning, not because anyone clicked.</div>
+
+<h2 id="part-9">Part IX · Docker: shipping a process</h2>
+
+<h3>9.1 · What a container actually is</h3>
+<p>A container is not a virtual machine. There is no guest kernel, no
+hypervisor, no emulated hardware — a container is an ordinary Linux
+process that the kernel has been told to lie to, using three mechanisms
+that predate Docker. <strong>Namespaces</strong> scope what the process
+can <em>see</em>: its own PID table (it thinks it's PID 1), its own
+network stack, its own mount table, its own hostname.
+<strong>Cgroups</strong> scope what it can <em>use</em>: memory ceilings,
+CPU shares — the knobs Kubernetes resource limits turn (Part X).
+<strong>Layered filesystems</strong> (overlayfs) give it its own root
+directory, assembled from stacked read-only layers plus one writable
+layer on top. Docker's contribution was packaging: the <em>image</em>
+format that bundles a filesystem with metadata, the registry protocol
+for moving images, and a UX that made the kernel features usable in one
+command.</p>
+<p>Because a container is just a process, its economics are process
+economics: starts in milliseconds, no per-VM memory tax, hundreds fit
+on a laptop. That's what makes "the dev environment <em>is</em> the prod
+topology" (9.3) reasonable where a VM per service never was.</p>
+
+<h3>9.2 · Images, layers, and the two-stage trick</h3>
+<div class="src">deploy/docker/Dockerfile</div>
+<p>An image is a stack of layers, one per Dockerfile instruction, each
+layer content-addressed and cached: if the instruction and its inputs
+haven't changed, the layer is reused. Layer thinking explains the first
+half of the Dockerfile:</p>
+<pre><code>FROM golang:1.25-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download          # its own layer: deps change rarely
+COPY . .                     # source changes often -- cache breaks here
+ARG BINARY=calligraphy-api
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/app ./cmd/${BINARY}</code></pre>
+<p>Copying <code>go.mod</code>/<code>go.sum</code> <em>before</em> the
+source means the expensive module download re-runs only when
+dependencies change; day-to-day builds skip straight to the compile.
+One parameterized Dockerfile builds all four binaries via
+<code>--build-arg BINARY=…</code> — four near-identical Dockerfiles
+would drift apart within a month.</p>
+<p>The second half is the part with a philosophy:</p>
+<pre><code>FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /out/app /app
+USER 65534:65534
+ENTRYPOINT ["/app"]</code></pre>
+<p><strong>Multi-stage</strong> means the golang toolchain image
+(~800MB) exists only during the build; what ships is the second stage.
+And the second stage is <code>FROM scratch</code> — the empty image.
+This works because Go cross-compiles to a fully static binary:
+<code>CGO_ENABLED=0</code> removes the libc dependency, so the binary
+needs literally nothing else. The runtime image is ~15MB and contains
+exactly two files: the binary, and CA certificates (the
+<code>http.callback</code> handler speaks TLS to the outside world and
+must verify who it's talking to). No shell, no package manager, no
+libc. The security arithmetic is blunt: a scanner can find no vulnerable
+packages where there are no packages, and an attacker who somehow gains
+code execution finds no <code>/bin/sh</code> to spawn.
+<code>USER 65534</code> is numeric because scratch has no
+<code>/etc/passwd</code> to resolve a name in — and it means even that
+hypothetical attacker isn't root.</p>
+<p>Two deliberate absences: no tzdata (everything in Calligraphy is UTC,
+enforced at the edges) and no wget/curl — which has an operational
+consequence taken with eyes open: nothing inside the container can run
+a healthcheck. Kubernetes doesn't care (its httpGet probes originate
+from the kubelet, outside the container — Part X); compose gates
+startup on Postgres/Redis health instead, and the binaries retry their
+dependencies at boot anyway (4.7's any-order migrator is part of the
+same posture).</p>
+
+<h3>9.3 · Compose: the topology as one file</h3>
+<div class="src">deploy/compose/docker-compose.yml</div>
+<p>Compose declares the whole development topology declaratively:
+Postgres 16 and Redis 7 with healthchecks, the API, two workers
+(<code>worker-1</code>, <code>worker-2</code> — two on purpose, so
+rebalancing after a kill is observable), Prometheus with its scrape
+config, Grafana with the provisioned dashboard. One network, DNS by
+service name (<code>postgres:5432</code>, <code>redis:6379</code>),
+<code>depends_on: condition: service_healthy</code> for ordering. Every
+"try it yourself" box in this document assumes this stack:
+<code>docker compose up</code> is the lab bench.</p>
 <div class="callout warn"><div class="label">Trade-off</div>
-All numbers are from a single 4-core host running everything at once —
-honest for what they claim (relative scaling, mechanism verification),
-not portable as absolute throughput. That's why provenance is embedded in
-every result file, and why the report ends with a section titled "what
-these numbers do <em>not</em> support".</div>
+Honesty note, recorded in the compose file's own header: the environment
+this project was built in blocks container-registry pulls, so the full
+compose stack could not be booted end-to-end <em>there</em> — the file
+is validated with <code>docker compose config</code>, the images build,
+and every runtime claim in this document was verified against natively
+run binaries with real Postgres/Redis (including live Prometheus
+scrapes). Nothing here is aspirational; it's just attested from native
+processes rather than containers. On an unrestricted machine, compose
+is the intended path.</div>
+<div class="callout try"><div class="label">Try it yourself</div>
+<pre><code>docker build -f deploy/docker/Dockerfile --build-arg BINARY=calligraphy-worker \
+  -t calligraphy-worker .
+docker images calligraphy-worker --format '&#123;&#123;.Size&#125;&#125;'   # ~15MB
+docker run --rm calligraphy-worker sh                       # fails: no shell. Good.
+docker compose -f deploy/compose/docker-compose.yml config  # full topology, resolved</code></pre></div>
 
-<h2 id="part-9">Part 9 · Deployment choices</h2>
-<h3>Redis configured as a queue, not a cache</h3>
-<p>The compose and k8s manifests set <code>appendonly yes</code> and
-<code>maxmemory-policy noeviction</code> — the exact opposite of a cache
-deployment (Booklet's TTS cache runs <code>allkeys-lru</code>). The
-reasoning: a cache under memory pressure should drop cold entries; a
-<em>queue</em> under memory pressure must refuse writes and page a human,
-because "evicted" here would mean "silently deleted someone's job".
-Same technology, opposite configuration, because the data means the
-opposite thing.</p>
-<h3>Scratch images, and what they cost</h3>
-<p>One multi-stage Dockerfile builds any binary into a
-<code>FROM scratch</code> image: the static binary, CA certificates,
-a numeric non-root user — ~15MB, no shell, no package manager, no CVE
-surface beyond the binary. The cost is documented where it bites: no
-shell means no <code>docker exec</code> debugging and no compose
-healthcheck exec, so compose gates on the stores' health and Kubernetes
-uses <code>httpGet</code> probes (which need nothing inside the
-container).</p>
-<h3>The probe split that saves fleets</h3>
-<p>Liveness (<code>/healthz</code>) is process-local and dependency-free
-<em>on purpose</em>: it answers "can this process run code", and restart
-is the only cure for failing it. Wiring the database into liveness turns
-a Postgres blip into a full API fleet restart — a recoverable dependency
-outage converted into an outage of everything. Readiness
-(<code>/readyz</code>) is the different question — "can this instance
-serve right now" — and checks both stores, bounded.</p>
+<h2 id="part-10">Part X · Kubernetes: running a fleet</h2>
 
-<h2 id="part-10">Part 10 · A history of mistakes</h2>
-<p>Every one of these shipped to a branch, was caught by a test or a
-measurement, and taught something. They're kept because a project that
-documents only its successes is documenting half of what happened.</p>
+<h3>10.1 · The idea: desired state, reconciled forever</h3>
+<p>Kubernetes inverts imperative operations the way Prometheus inverts
+metrics delivery. You never tell it "start a worker"; you write into its
+API "there exist 3 worker replicas," and controllers run reconciliation
+loops that compare desired state to observed state and act on the
+difference, forever. Kill a pod and the ReplicaSet controller notices
+3 ≠ 2 and starts another; drain a node and its pods reappear elsewhere.
+The chain for a stateless app: a <strong>Deployment</strong> (desired
+template + replica count, plus rollout strategy) manages
+<strong>ReplicaSets</strong> (one per template revision) manage
+<strong>Pods</strong> (one or more containers sharing a network
+namespace — the unit that actually runs). A <strong>Service</strong>
+gives a stable virtual IP/DNS name that load-balances across
+whatever pods currently match its selector, because pod IPs are
+ephemeral by design.</p>
+<p>The reason this maps so cleanly onto Calligraphy: the system was
+<em>already</em> built for members dying and appearing at any moment —
+that's Parts IV, V, and XII. Kubernetes churn (rollouts, evictions,
+node failures) is just the crash-recovery story happening on a
+schedule. The manifests in <code>deploy/k8s/</code> are namespace,
+config, Postgres and Redis (dev-grade, single-replica), the API
+Deployment + Service, the worker Deployment, and an HPA.</p>
 
-<div class="callout bug"><div class="label">Bug 1 · The panic outcome that never was</div>
-The design defined <code>OutcomePanicked</code>; the classifier never
-produced it. A recovered panic surfaced as a plain error, classified
-generically retryable — the attempt history <em>lied about panics</em>.
-Caught by the integration test asserting history reads
-<code>panicked → completed</code>. Lesson: an enum value nothing routes
-to is a claim, not a feature; test the history, not the intention.</div>
+<h3>10.2 · Probes: wiring Part VII into the platform</h3>
+<div class="src">deploy/k8s/api.yaml · deploy/k8s/worker.yaml</div>
+<pre><code>livenessProbe:
+  httpGet: { path: /healthz, port: http }
+  periodSeconds: 10
+readinessProbe:
+  httpGet: { path: /readyz, port: http }
+  periodSeconds: 5</code></pre>
+<p>Liveness failing → kubelet restarts the container ("process wedged;
+turn it off and on"). Readiness failing → the Service stops routing to
+this pod, <em>without</em> restarting it ("alive but can't serve —
+usually a dependency; wait"). The API declares both, pointing at
+Part VII's two endpoints, and the split earns its keep in exactly the
+scenario 7.3 warned about: Postgres blips, every API pod goes
+not-ready, traffic stops, Postgres returns, pods go ready — zero
+restarts, no crash-loop amplifying a database problem into an
+application outage. The workers declare only liveness (on the metrics
+port): they receive no traffic, so readiness would gate nothing — their
+version of "ready" is claiming jobs, which the queue itself
+load-balances. And httpGet probes are why the scratch image (9.2) gets
+away with having no shell: the kubelet makes the HTTP call from
+outside; an <code>exec</code>-style probe would have nothing to
+execute.</p>
 
-<div class="callout bug"><div class="label">Bug 2 · Cancellation read from the wrong context</div>
-The runner captured <code>context.Cause()</code> from the pool's context,
-but the heartbeat cancels the <em>execution</em> context. Cooperative
-cancels recorded as generic failures, and cancelled jobs went to
-<code>RETRYING</code> instead of <code>CANCELLED</code>. With nested
-contexts, <em>which</em> context you interrogate is a correctness
-decision, not a style one.</div>
+<h3>10.3 · Shutdown, with a deadline that must out-wait the drain</h3>
+<pre><code># worker.yaml
+terminationGracePeriodSeconds: 40   # DrainTimeout is 25s; 40 &gt; 25 + margin</code></pre>
+<p>Pod termination is a fixed ritual: the pod is removed from Service
+endpoints, PID 1 receives <strong>SIGTERM</strong>, and after
+<code>terminationGracePeriodSeconds</code> whatever remains receives
+uncatchable <strong>SIGKILL</strong>. The worker's SIGTERM handler is
+Part III's two-phase drain, which needs up to 25s of phase one plus a
+short phase two — so the grace period is 40. Get that inequality
+backwards (grace &lt; drain) and every routine deploy SIGKILLs
+mid-flight jobs, silently converting rollouts into the crash path. The
+crash path <em>works</em> — that's Part XII's whole point, and the
+reliability run proves it — but it costs lease-expiry latency on the
+affected jobs, and paying it on purpose, on every deploy, is an
+unforced error. Rollouts here are: new pod starts → probes pass → old
+pod drains gracefully → repeat. Jobs never notice.</p>
 
-<div class="callout bug"><div class="label">Bug 3 · json.Unmarshal merges maps — the bench that waited forever</div>
-The bench's drain loop unmarshalled each poll into a shared struct.
-<code>encoding/json</code> <em>merges</em> into existing maps: when jobs
-finished and their statuses vanished from the response, the stale
-<code>PENDING: 15</code> entry survived — and the bench waited forever
-for 15 jobs that had completed a minute earlier, while <code>psql</code>
-showed a clean table. Fresh struct per poll. The debugging path (two
-simultaneous readers of the same endpoint disagreeing) is the part worth
-remembering.</div>
+<h3>10.4 · Two autoscalers, two different questions</h3>
+<div class="src">deploy/k8s/hpa.yaml · internal/scale</div>
+<pre><code>minReplicas: 2
+maxReplicas: 12
+metrics:
+- resource: { name: cpu, target: { averageUtilization: 75 } }</code></pre>
+<p>The <strong>HorizontalPodAutoscaler</strong> adjusts the worker
+<em>replica count</em> to hold average CPU near 75%. CPU is the honest
+choice for the metric actually available out of the box, and for
+CPU-bound handlers it's correct. But Part XIV's data shows why CPU is
+the wrong signal for I/O-bound fleets: an I/O-heavy worker can be
+drowning in queued jobs at 8% CPU. The right external signal would be
+queue depth (via an adapter feeding custom metrics to the HPA — noted in
+the manifests as the production upgrade path). Meanwhile, inside each
+worker, Calligraphy's own autoscaler answers the <em>other</em> scaling
+question: not "how many pods" but "how much concurrency per pod" —
+nudging the pool target (Part III) up when the queue is deep and
+utilization is high, down when idle, within
+[<code>MinConcurrency</code>, <code>MaxConcurrency</code>]. The two
+compose because they operate on different variables at different
+speeds: concurrency moves in seconds and is free; replicas move in tens
+of seconds and cost nodes.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+On any cluster (kind/minikube included):
+<pre><code>kubectl apply -f deploy/k8s/
+kubectl -n calligraphy get pods -w        # watch desired state converge
 
-<div class="callout bug"><div class="label">Bug 4 · Evicting a session didn't sever its stream</div>
-The control hub's first reconnect test hung: eviction deleted the map
-entry but left the gRPC stream open, so the client never learned anything
-was wrong and never reconnected. Sessions now carry a
-<code>done</code> channel closed exactly once; eviction actively
-terminates the stream. In connection registries, forgetting a connection
-and closing it are different operations, and only one of them tells the
-far end.</div>
+# the reconciliation loop, demonstrated:
+kubectl -n calligraphy delete pod -l app=calligraphy-worker --wait=false
+kubectl -n calligraphy get pods -w        # replacement appears unbidden
 
-<div class="callout bug"><div class="label">Bug 5 · The 413 that reported as invalid JSON</div>
-<code>http.MaxBytesReader</code> trips mid-decode, so an oversized
-payload surfaced as <code>400 invalid_json</code>. "Your payload is too
-big" and "your JSON is broken" demand different client fixes; the API now
-detects <code>*http.MaxBytesError</code> and answers 413 with the limit.</div>
+# rollout = graceful drain, live:
+kubectl -n calligraphy rollout restart deploy/calligraphy-worker
+kubectl -n calligraphy logs -f deploy/calligraphy-worker | grep drain</code></pre>
+Submit a batch of slow jobs first (Part III's box) and verify after the
+rollout that every one still reached COMPLETED — the platform churned,
+the jobs didn't care.</div>
 
-<div class="callout bug"><div class="label">Bug 6 · Testing Postgres's pretty-printer by accident</div>
-Store tests compared payloads byte-for-byte; <code>jsonb</code>
-canonicalizes (<code>{"n":1}</code> → <code>{"n": 1}</code>) and the
-tests failed while the code was right. Comparisons became semantic.
-Asserting on an exact serialized form couples the test to a formatting
-choice nobody made.</div>
+<h2 id="part-11">Part XI · The life of a job</h2>
 
-<div class="callout bug"><div class="label">Bug 7 · The ghost entry in the DLQ test</div>
-A test claimed a job through the store directly, without consuming its
-queue delivery — then counted queue depths and found one entry too many:
-its own ghost. Test setups that bypass half the pipeline create states
-the real system never produces. The fix consumed the delivery the way a
-real worker would.</div>
+<h3>11.1 · The happy path, end to end</h3>
+<p>Everything from Parts III–X, spliced into one timeline. A client
+submits a job; ~40 milliseconds later (fleet p50, Part XIV) it is
+COMPLETED. What actually happened:</p>
+<pre><code>client                api                 postgres              redis                worker
+  │  POST /api/v1/jobs  │                     │                    │                    │
+  ├────────────────────►│ validate: type      │                    │                    │
+  │                     │ known? payload sane?│                    │                    │
+  │                     ├────────────────────►│ INSERT jobs        │                    │
+  │                     │   (dedupe: ON CONFLICT DO NOTHING)       │                    │
+  │                     ├─────────────────────┼───────────────────►│ XADD stream        │
+  │                     ├────────────────────►│ record stream id   │                    │
+  │  201 {id, PENDING}  │                     │                    │                    │
+  │◄────────────────────┤                     │                    │   XREADGROUP       │
+  │                     │                     │                    │◄───────────────────┤
+  │                     │                     │  UPDATE … WHERE status IN               │
+  │                     │                     │◄───────────────────┼─── claim ──────────┤
+  │                     │                     │  RUNNING, epoch+1  │                    │
+  │                     │                     │                    │     handler runs   │
+  │                     │                     │   (heartbeats: SQL lease + XCLAIM)      │
+  │                     │                     │◄───────────────────┼─── record ─────────┤
+  │                     │                     │  COMPLETED (fenced)│                    │
+  │  GET /jobs/{id}     │                     │                    │◄── XACK + XDEL ────┤
+  ├────────────────────►│                     │                    │                    │
+  │◄── COMPLETED ───────┤                     │                    │                    │</code></pre>
+<p>Order matters in two places, and both are load-bearing. At submission,
+<strong>INSERT before XADD</strong>: the row is the job's birth
+certificate, so a crash between the two leaves a job that exists but
+isn't moving — repairable (Part XII), whereas the other order leaves a
+moving job that doesn't exist, which is a delivery with no truth to
+update. At completion, <strong>record before ack</strong>: a crash
+between the two leaves a completed job still claimable — the redelivery
+loses the claim arbitration or gets fenced, costing a duplicate
+execution at worst. The other order (ack, then crash before record)
+loses the outcome entirely with nothing left in Redis to redeliver:
+that's the one window the DB-side sweep exists for.</p>
 
-<div class="callout bug"><div class="label">Bug 8 · Integer math in the reviewer's head</div>
-An autoscaler test expected 9 + 9/2 = 14. Go says 13. The test was wrong,
-the code was right, and the lesson is old: when a test disagrees with
-arithmetic, check the test's arithmetic first.</div>
-
-<h2 id="part-11">Part 11 · Glossary, in plain words</h2>
+<h3>11.2 · The runner's outcome routing</h3>
+<div class="src">internal/worker/runner.go · internal/job/errors.go</div>
+<p>When a handler returns (or doesn't), the runner classifies the attempt
+into one of seven outcomes, and each outcome is a routing decision:</p>
 <table>
-<tr><th>Term</th><th>Plain meaning</th></tr>
-<tr><td><b>Consumer group / PEL</b></td><td>Redis's built-in ledger of
-"handed out but not yet finished". Reading moves an entry into the
-pending-entries list; acknowledging removes it. The PEL <em>is</em>
-Calligraphy's in-flight set — nothing hand-rolled.</td></tr>
-<tr><td><b>Visibility timeout</b></td><td>How long a handed-out job stays
-invisible to other workers before the system assumes its holder died and
-offers it again. In Calligraphy: <code>XAUTOCLAIM</code> with a minimum idle
-time.</td></tr>
-<tr><td><b>Lease</b></td><td>Time-boxed permission to work on a job,
-renewed by heartbeat while work genuinely runs. Silence past the TTL is
-how death is detected without anyone saying goodbye.</td></tr>
-<tr><td><b>Fencing token</b></td><td>A counter bumped on every ownership
-change, presented with every write. A worker that lost its lease holds a
-stale token, so its late write matches nothing. Turns "the job ran twice"
-into "the result was written once".</td></tr>
-<tr><td><b>At-least-once</b></td><td>The honest delivery guarantee:
-nothing is lost, but duplicates can happen (crash after doing the work,
-before acknowledging it). The pairing that makes it safe is idempotent
-handlers.</td></tr>
-<tr><td><b>Idempotency</b></td><td>Doing something twice has the effect
-of doing it once. Submission-side: same (type, key) returns the original
-job. Execution-side: fenced writes. Handler-side: the handler's own
-responsibility, with job id + attempt number provided as the dedupe
-coordinates.</td></tr>
-<tr><td><b>Backpressure</b></td><td>Refusing to take on more than you can
-handle, so overload queues where it's visible instead of hiding in
-buffers until something bursts. In Calligraphy: fetch never exceeds free
-slots.</td></tr>
-<tr><td><b>Dead-letter queue</b></td><td>Where jobs go after exhausting
-retries — parked with full history, inspectable, requeueable. The
-alternative to a DLQ is an infinite retry loop or silent loss.</td></tr>
-<tr><td><b>Full jitter</b></td><td>Backoff drawn uniformly from
-[0, ceiling) so simultaneous failures retry spread out instead of in
-synchronized waves.</td></tr>
-<tr><td><b>Lease epoch vs. wall clock</b></td><td>Clocks answer "how
-long"; epochs answer "who currently owns". Recovery needs both: the
-clock to suspect death, the epoch to make the suspicion safe when it's
-wrong.</td></tr>
+<tr><th>Outcome</th><th>Meaning</th><th>Routed to</th></tr>
+<tr><td><code>completed</code></td><td>handler returned nil; result
+captured</td><td>COMPLETED (fenced write)</td></tr>
+<tr><td><code>failed</code></td><td>handler said
+<code>job.NonRetryable(err)</code>: more attempts would fail
+identically</td><td>FAILED, no retry</td></tr>
+<tr><td><code>retryable</code></td><td>any unclassified error</td>
+<td>RETRYING with backoff — or DEAD_LETTER if attempts are
+exhausted</td></tr>
+<tr><td><code>panicked</code></td><td>handler panicked; recovered by the
+runner</td><td>as retryable, but recorded distinctly — a panic is a bug,
+and hiding it inside "error" cost a real debugging session
+(Bug 1)</td></tr>
+<tr><td><code>cancelled</code></td><td>cooperative cancel observed
+mid-run</td><td>CANCELLED, terminal</td></tr>
+<tr><td><code>interrupted</code></td><td>the <em>worker</em> was shutting
+down, not the job failing</td><td>retry with near-zero backoff —
+backing off would punish the job for something the platform did</td></tr>
+<tr><td><code>lease_expired</code></td><td>the fence rejected our
+completion: ownership was lost mid-run</td><td>nothing — the new owner's
+truth stands; record the attempt for the audit trail</td></tr>
+</table>
+<p>The default classification deserves its sentence: <strong>an
+unclassified error retries</strong>. The costs are asymmetric — wrongly
+retrying a permanent failure wastes attempts and lands in the DLQ where
+a human sees it; wrongly <em>not</em> retrying a transient failure
+silently loses work that would have succeeded. Defaults should be chosen
+by failure mode, not by frequency.</p>
+
+<h3>11.3 · The state machine is an allow-list</h3>
+<div class="src">internal/job/statemachine.go</div>
+<pre><code>PENDING ────────► RUNNING          claim won
+PENDING ────────► CANCELLED        cancelled before any claim
+RUNNING ────────► COMPLETED | RETRYING | FAILED | DEAD_LETTER | CANCELLED
+RETRYING ───────► PENDING          backoff elapsed; promoter moved it
+RETRYING ───────► RUNNING          a live redelivery claimed it first
+RETRYING ───────► CANCELLED
+DEAD_LETTER ────► PENDING          operator requeue
+COMPLETED / FAILED / CANCELLED     no exits. Terminal means terminal.</code></pre>
+<p>Every transition in the codebase goes through this table; anything
+not listed is an error, and the tests enumerate all 49 (from, to) pairs
+and assert each one's verdict. The odd-looking edge is
+<code>RETRYING → RUNNING</code>, which seems to skip PENDING: it exists
+because under at-least-once delivery a retrying job can legitimately
+still have a second stream entry in flight (a repair re-enqueue racing
+the original), and the claim UPDATE accepts
+<code>status IN ('PENDING','RETRYING')</code> precisely so whichever
+delivery arrives first wins. An honest state machine names the edges
+reality uses, rather than modeling the world you wish you had.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+Trace one job through every layer it touches:
+<pre><code>ID=$(curl -s -XPOST localhost:8080/api/v1/jobs -H 'Authorization: Bearer dev-token' \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"bench.sleep","payload":{"ms":4000}}' | jq -r .id)
+redis-cli XPENDING calligraphy:stream:default workers   # in-flight: 1, owned
+psql -h localhost -U calligraphy -c \
+  "SELECT status, worker_id, lease_epoch, attempt_count FROM jobs WHERE id='$ID'"
+# … four seconds later:
+curl -s localhost:8080/api/v1/jobs/$ID/attempts -H 'Authorization: Bearer dev-token' | jq
+redis-cli XPENDING calligraphy:stream:default workers   # gone: acked and deleted</code></pre></div>
+
+<h2 id="part-12">Part XII · Failure is the design</h2>
+
+<h3>12.1 · Naming the windows instead of hoping</h3>
+<p>Part II admitted the cost of two stores: every operation that writes
+both can crash between the writes. The design response is to refuse
+vagueness — enumerate every window, and pair each with a repair duty
+that (a) detects it from durable state alone and (b) is safe to run
+even when nothing is wrong. There are four:</p>
+<table>
+<tr><th>#</th><th>Window</th><th>What's left behind</th><th>Repair</th></tr>
+<tr><td>1</td><td>Submit: INSERT committed, XADD never happened</td>
+<td>PENDING row, no stream entry — a job that exists but will never be
+fetched</td><td><code>repairUnenqueued</code>: find PENDING rows past an
+age with no confirmed enqueue; re-XADD from the row itself</td></tr>
+<tr><td>2</td><td>Retry: row flipped RETRYING, ZADD to the delayed set
+lost</td><td>RETRYING row whose promotion never comes</td>
+<td><code>repairStuckRetrying</code>: RETRYING rows whose
+<code>scheduled_at</code> is long past — re-park or re-enqueue</td></tr>
+<tr><td>3</td><td>Worker dies mid-run (SIGKILL, OOM, node loss)</td>
+<td>RUNNING row + PEL entry, both with ticking clocks and a consumer
+that will never ack</td><td>the reaper: <code>XAUTOCLAIM</code> past
+min-idle finds the entry (5.2); the row's lease expiry agrees; epoch is
+bumped (revoking the zombie, 4.5) and the job is re-enqueued</td></tr>
+<tr><td>4</td><td>Completion: acked, then crashed before the record
+landed</td><td>RUNNING row with <em>no</em> PEL entry anywhere — Redis
+has forgotten the job while Postgres thinks it's running</td>
+<td><code>sweepStaleRunning</code>: RUNNING rows whose lease is long
+expired and which the reaper can't see; re-enqueued from the row</td></tr>
+</table>
+<p>Plus one bookkeeping duty (mark heartbeat-silent workers
+<code>gone</code>) and the promoter itself (5.4), which is less a repair
+than the scheduled half of the retry mechanism. All of it runs on
+whichever API replica holds the leader lock — and per 5.4, leadership is
+an optimization: every duty is conditional-UPDATE-guarded, fenced, and
+idempotent, so two leaders in a handover moment duplicate effort, not
+results.</p>
+
+<h3>12.2 · The deliberate redundancy</h3>
+<p>Windows 3 and 4 overlap on purpose: the reaper watches from Redis's
+side (PEL idle time), the sweep from Postgres's side (lease expiry, no
+PEL entry). Either alone almost covers worker death; together they cover
+it from both directions, and the sweep additionally catches window 4,
+which the reaper structurally cannot see (there is no PEL entry left to
+claim). When both fire on the same job — reaper first, sweep later —
+the second finds a row whose status and epoch already moved on, matches
+zero rows, and does nothing. Idempotency is what lets you afford
+overlapping safety nets; without it, redundancy would be a bug
+generator.</p>
+
+<h3>12.3 · What the reliability run actually proved</h3>
+<div class="src">bench/results/20260809-213609-reliability-10k.json · Part XIV for the full table</div>
+<p>The claim "crash-safe" is tested, not asserted: 10,000 jobs with 5%
+injected transient failures and ~1% injected permanent failures, and two
+workers SIGKILLed mid-load (no drain, no goodbye — the kill the design
+is for). Outcome: every submitted job reached a terminal state; 9,904
+completed; 96 failed — every one an <em>injected</em> permanent failure,
+none collateral; 0 dead-lettered, 0 lost, 0 stuck. Eight jobs were
+in-flight on the murdered workers; all eight were reaped
+(<code>lease_expired</code> attempts in their history) and completed on
+survivors. The attempt ledger balances: 10,485 attempts = 10,000 first
+tries + 485 retries. That last number is the audit that matters —
+"nothing lost" is provable only because every attempt leaves a row
+(<code>ON CONFLICT (job_id, attempt) DO NOTHING</code>, so even repair
+re-records collapse into one truth).</p>
+<div class="callout bug"><div class="label">Bug — found and fixed</div>
+The chaos harness itself produced one of Part XV's bugs: its drain loop
+polled queue depths into a <em>reused</em> struct, and
+<code>encoding/json</code> merges into existing maps rather than
+replacing them — so a priority whose count dropped to zero kept its
+stale nonzero value forever, and the harness reported jobs stuck that
+had long completed (Bug 3). Verification code is code; it gets bugs of
+its own, and a false "system is broken" costs the same debugging hours
+as a true one.</div>
+<div class="callout try"><div class="label">Try it yourself</div>
+Run the whole argument yourself — it's one command:
+<pre><code>bench/scripts/matrix.sh reliability
+# boots api + 7 workers, submits 10k bench.flaky jobs, SIGKILLs workers
+# 3 and 6 mid-run ("chaos: SIGKILLed worker 3"), then audits:
+# submitted == terminal, deadLettered == 0, lost == 0</code></pre>
+The bench refuses to exit until every job is accounted for; if the
+recovery machinery were broken, this command would hang rather than
+print a flattering number — which is the property that makes it a test
+and not a demo. For a smaller manual version: submit a few hundred
+<code>bench.flaky</code> jobs and <code>kill -9</code> a worker
+yourself, then check <code>/attempts</code> on what it was holding.</div>
+
+<h2 id="part-13">Part XIII · Retries &amp; idempotency</h2>
+
+<h3>13.1 · Why at-least-once isn't a choice</h3>
+<p>A worker executes a job, then tells the system it's done. Those are
+two events with a gap between them, and the process can die in the gap.
+When it does, the system holds an executed-but-unacknowledged job and
+faces a binary decision with no third option: deliver it again (risking
+a duplicate execution) or don't (risking a lost job). That's the whole
+theorem, and no protocol sophistication escapes it — acknowledging the
+acknowledgment just moves the gap. Calligraphy chooses redelivery —
+<strong>at-least-once</strong> — because a duplicate is a nuisance you
+can engineer away one layer up, while a loss is invisible and
+unrecoverable by definition. Every mechanism in this document that
+smelled redundant — arbitration (4.4), fencing (4.5), the
+<code>RETRYING → RUNNING</code> edge (11.3), idempotent repairs (12.2) —
+is the system being honest about that choice.</p>
+<p>What about "exactly-once," which several commercial queues print on
+the box? Read their fine print and it's at-least-once delivery plus
+deduplication at a boundary — which is real and useful and <em>not</em>
+exactly-once execution of arbitrary side effects. Calligraphy's claim
+is deliberately precise: at-least-once <em>execution</em>, exactly-once
+<em>result persistence</em> (the fence guarantees at most one attempt's
+write wins), and duplicate-safe <em>submission</em> (13.4). Side effects
+inside handlers are the handler author's contract, stated next.</p>
+
+<h3>13.2 · The retry policy, and its shape under a real outage</h3>
+<div class="src">internal/retry/backoff.go</div>
+<pre><code>delay = uniform(0, min(cap, base · 2^(attempt−1)))     // "full jitter"</code></pre>
+<p>Exponential growth is the uncontroversial half: consecutive failures
+usually mean a struggling dependency, so attempts spread out — base 2s
+doubling toward a 5-minute cap (both configurable). The jitter choice is
+the interesting half. Deterministic exponential backoff has a herd
+problem: 500 jobs failing against one downed service in the same second
+retry in the same <em>later</em> second, in lockstep, forever — each
+synchronized wave landing on a dependency mid-recovery. Full jitter
+draws uniformly from [0, ceiling], spreading each wave across its whole
+window; AWS's published measurements found it best among the variants
+for both total load and time-to-completion. The cost — some retries
+fire near zero delay — is acceptable: against a blip they succeed;
+against an outage they spend one attempt whose successor draws from a
+window twice as wide. One deliberate exception: <code>interrupted</code>
+outcomes (worker shutdown, 11.2) retry with near-zero backoff, because
+the job did nothing wrong.</p>
+<p>Attempts are bounded (<code>maxAttempts</code>, default 5, counted at
+claim — 4.4), and exhaustion routes to the <strong>DLQ</strong>: status
+DEAD_LETTER in Postgres, envelope appended to the capped DLQ stream
+(5.4) as an operator inbox. Requeueing (API or ctl) resets
+<code>attempt_count</code> to 0 and bumps the epoch — a fresh budget,
+because an operator requeues <em>after fixing the cause</em>, and a jail
+you can't leave isn't an inbox.</p>
+
+<h3>13.3 · Idempotency: the handler's half of the contract</h3>
+<p>The platform guarantees attempts ≥ 1; the handler must make attempts
+&gt; 1 harmless. That property is <strong>idempotency</strong> — f(f(x))
+= f(x) — and it's a per-handler design obligation, not a library you
+import. The built-in handlers model the three standard techniques:</p>
+<p><strong>Natural idempotency.</strong> <code>article.analysis</code>
+computes a summary and writes it keyed by article ID. Running it twice
+writes the same value twice — the operation is idempotent because
+"set X to V" is, and where you can shape work into that form, do
+nothing further.</p>
+<p><strong>Dedupe material for the receiver.</strong>
+<code>http.callback</code> can't make someone else's server idempotent,
+so it forwards the means: every delivery carries
+<code>X-Calligraphy-Job-Id</code> and <code>X-Calligraphy-Attempt</code>,
+and is signed — <code>X-Calligraphy-Signature: v1=HMAC-SHA256(secret,
+timestamp‖body)</code> with the timestamp echoed in a header, so the
+receiver can verify authenticity, reject stale replays, and deduplicate
+on job ID. That's the webhook idiom used by Stripe et al., and it turns
+"my endpoint got called twice" from a platform bug into a receiver
+checkbox.</p>
+<p><strong>Fencing, when only one writer may win.</strong> For effects
+that must land at most once <em>and</em> live where you control the
+schema, the pattern is 4.5's: a token checked in the write predicate.
+The platform applies it to its own result writes; handlers with similar
+needs (e.g. "apply this payment") should carry the job ID into the
+target table's unique key and let the database refuse the duplicate.</p>
+
+<h3>13.4 · Submission dedupe closes the loop</h3>
+<p>The client is a distributed-systems participant too: its POST can
+time out after the INSERT landed, and its retry would mint a second job
+— duplicate <em>work</em>, invisible to per-execution idempotency. Hence
+<code>idempotencyKey</code>: the partial unique index (4.7) makes
+(type, key) collide, <code>ON CONFLICT DO NOTHING</code> makes the
+collision silent, and the API returns the original job with 200 (vs 201
+fresh). The TS client generates keys automatically for Booklet's
+submissions. End to end, every hop is now duplicate-safe: client→API by
+idempotency key, API→queue by windows 1–2's repairs being conditional,
+queue→worker by claim arbitration, worker→truth by the fence.</p>
+<div class="callout try"><div class="label">Try it yourself</div>
+<pre><code># 1. dedupe: run this twice; same id both times, 201 then 200
+curl -si -XPOST localhost:8080/api/v1/jobs -H 'Authorization: Bearer dev-token' \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"bench.sleep","payload":{"ms":100},"idempotencyKey":"receipt-42"}' \
+  | grep -E 'HTTP|"id"'
+
+# 2. exhaustion: failRate 1.0 = every attempt fails transiently;
+#    three attempts with jittered backoff, then the DLQ
+curl -s -XPOST localhost:8080/api/v1/jobs -H 'Authorization: Bearer dev-token' \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"bench.flaky","payload":{"failRate":1.0},"maxAttempts":3}' | jq -r .id
+# watch its attempts fill with full-jitter gaps, then:
+curl -s localhost:8080/api/v1/dlq -H 'Authorization: Bearer dev-token' | jq
+curl -s -XPOST localhost:8080/api/v1/dlq/&lt;id&gt;/requeue -H 'Authorization: Bearer dev-token'
+# fresh budget: attempt_count reset, epoch bumped, back in PENDING</code></pre></div>
+
+<h2 id="part-14">Part XIV · The benchmarks</h2>
+
+<h3>14.1 · Methodology, and what a number is allowed to mean</h3>
+<div class="src">bench/BENCHMARKS.md · bench/results/*.json · bench/scripts/matrix.sh</div>
+<p>Every number in this part comes from a committed result file with its
+environment, git SHA, scenario, and timestamp recorded — seventeen JSONs,
+reproducible via <code>bench/scripts/matrix.sh</code>. The environment
+was one 4-core Linux host running everything: API, workers, Postgres,
+Redis, and the load generator. That makes <em>relative</em> numbers
+(scaling curves, ablation deltas) meaningful and <em>absolute</em>
+numbers non-portable — your hardware will produce different ones, and
+BENCHMARKS.md maintains an explicit list of claims the runs do and do
+not support. The load generator itself is built for honesty: it submits
+through the public API like any client, waits for every job to reach a
+terminal state (it cannot exit early and report a flattering partial),
+and computes latencies from the database's own timestamps rather than
+its own clocks.</p>
+
+<h3>14.2 · The sweep: two curves, one lesson each</h3>
+<p>3,000 I/O-bound jobs (50–70ms simulated downstream call) and 1,500
+CPU-bound jobs (~18ms of SHA-256 chaining), at 1 / 2 / 4 / 7 worker
+processes × concurrency 4:</p>
+<table>
+<tr><th>workers</th><th>I/O jobs/s</th><th>I/O speedup</th>
+<th>CPU jobs/s</th><th>CPU speedup</th><th>CPU exec p50</th></tr>
+<tr><td>1</td><td>54.4</td><td>1.0×</td><td>108.7</td><td>1.0×</td><td>38ms</td></tr>
+<tr><td>2</td><td>107.7</td><td>2.0×</td><td>164.8</td><td>1.5×</td><td>38ms</td></tr>
+<tr><td>4</td><td>205.2</td><td>3.8×</td><td>190.9</td><td>1.8×</td><td>73ms</td></tr>
+<tr><td>7</td><td><strong>370.5</strong></td><td><strong>6.8×</strong></td>
+<td>188.2</td><td>1.7×</td><td><strong>130ms</strong></td></tr>
+</table>
+<p><strong>I/O-bound work scales almost linearly</strong> — 6.8× at 7
+workers is 97% efficiency — because workers that are <em>waiting</em>
+don't compete for cores; this is Part III's goroutine economics measured
+at fleet scale. <strong>CPU-bound work saturates at core count, then
+degrades:</strong> from 4→7 workers, throughput went <em>down</em> 1.4%
+while per-job execution time rose 78% (73ms → 130ms) — 28 goroutines
+fighting 4 cores is contention, not concurrency. The turnover is
+published deliberately: a benchmark that only shows the rising part of
+the curve is an advertisement. It is also the direct justification for
+10.4's claim that scaling policy must know the work's shape.</p>
+
+<h3>14.3 · The ablation: what each optimization was actually worth</h3>
+<p>1,000 I/O-bound jobs, <em>one</em> worker process, one lever changed
+at a time — the experimental design that separates belief from
+measurement:</p>
+<table>
+<tr><th>config</th><th>jobs/s</th><th>vs baseline</th></tr>
+<tr><td>v0 — serial baseline (conc 1, pools 1, sync writes, fetch 1)</td>
+<td>16.0</td><td>—</td></tr>
+<tr><td>v1 — v0 + connection pooling (pg 8, redis 8)</td><td>16.0</td>
+<td><strong>+0%</strong></td></tr>
+<tr><td>v2 — v1 + goroutine concurrency 8 + batched fetch</td>
+<td><strong>123.2</strong></td><td><strong>+670%</strong></td></tr>
+<tr><td>v3 — v2 + batched terminal writes</td><td>106.9</td>
+<td>+568% (−13% vs v2)</td></tr>
+</table>
+<p>And at fleet scale (7 workers × concurrency 8, 8,000 jobs of
+20–30ms):</p>
+<table>
+<tr><th>config</th><th>jobs/s</th><th>e2e p50</th></tr>
+<tr><td>fleet, sync writes</td><td>1257.3</td><td><strong>42ms</strong></td></tr>
+<tr><td>fleet, batched writes</td><td>1284.6</td><td>731ms</td></tr>
+</table>
+<p>Three honest readings, two of which flatter nothing:</p>
+<p><strong>Pooling alone bought 0%.</strong> A pool of 8 connections
+serving a concurrency-1 consumer is capacity nothing uses. Pooling is an
+<em>enabler</em> for concurrency, not an optimization by itself — v2 is
+impossible without v1, but v1 without v2 is inventory.</p>
+<p><strong>Concurrency is the lever.</strong> +670% from goroutines
+alone: the entire case for Go in this system, as a number.</p>
+<p><strong>Batching regressed 13% at one worker and was
+throughput-neutral at the fleet's 1,280 jobs/s</strong> — its flush
+interval adds ack latency (visible in the fleet table: e2e p50 42ms →
+731ms) that fsync savings couldn't repay, because on this host the
+ceiling at that rate was API-side submission, not the write path. The
+fsync-amortization argument (4.6) is sound <em>where Postgres is the
+bottleneck</em>; here it wasn't, and the measurement says so. A
+supplementary pair of runs makes the shape-dependence point from the
+other side: the I/O-tuned configuration applied to genuinely CPU-bound
+work (real TextRank over 4KB articles) <em>lowered</em> throughput from
+299.7 to 193.8 jobs/s while multiplying per-job execution time — tuning
+is not a property of the platform, it's a property of the
+(platform, workload) pair.</p>
+
+<h3>14.4 · The reliability run: the numbers behind Part XII</h3>
+<p>One run, everything at once: 10,000 <code>bench.flaky</code> jobs
+with deterministic per-(job, attempt) failure draws — 5% transient rate,
+1% permanent rate, 20–30ms of work — on 7 workers × concurrency 4 with
+10-second leases, and two workers SIGKILLed mid-run (t+6s and t+10s),
+never replaced.</p>
+<table>
+<tr><th>metric</th><th>value</th></tr>
+<tr><td>submitted</td><td>10,000</td></tr>
+<tr><td>completed</td><td><strong>9,904 (99.04%)</strong></td></tr>
+<tr><td>failed (the injected permanent population)</td><td>96 (0.96%)</td></tr>
+<tr><td>dead-lettered</td><td>0</td></tr>
+<tr><td>lost / non-terminal</td><td><strong>0</strong></td></tr>
+<tr><td>jobs that needed retries</td><td>485</td></tr>
+<tr><td>total attempts</td><td>10,485</td></tr>
+<tr><td>wall time / throughput under chaos</td><td>41.4s / 239 jobs/s</td></tr>
+<tr><td>e2e p50 / p95 / p99</td><td>5.4s / 12.4s / 15.2s</td></tr>
+<tr><td>exec p50 / p95 / p99</td><td>38ms / 75ms / <strong>11.0s</strong></td></tr>
+</table>
+<p>Read the outliers, because they're where the system explains itself.
+The <strong>e2e p50 of 5.4 seconds</strong> against a 38ms execution
+median is queue wait (8.3): submission ran at 2,107 jobs/s for 4.7
+seconds, nine times faster than the fleet drains, so a healthy backlog
+formed and drained — saturation, not slowness. The <strong>exec p99 of
+11.0 seconds</strong> is crash recovery made visible: the 8 jobs
+mid-execution in the murdered workers waited out the 10-second lease
+before the reaper could prove their owner dead, then completed on
+survivors — every one of the 8 shows a <code>lease_expired</code>
+attempt followed by a completion in <code>job_attempts</code>. That
+tail is the price of crash detection, and it is a tunable
+(<code>CALLIGRAPHY_LEASE_TTL</code>), not a mystery. And the
+<strong>96 failures</strong> are exactly the injected
+permanently-unprocessable population (0.96% observed vs 1% configured,
+deterministic draw), each routed to FAILED on attempt 1 without wasting
+retries — the taxonomy (11.2) doing its job under fire.</p>
+<div class="callout"><div class="label">Decision</div>
+The benchmark suite measures the platform, not the laws of physics, so
+BENCHMARKS.md carries a section titled "what these numbers do and don't
+support" — including the claims that must <em>not</em> be made:
+no absolute throughput promises on other hardware, no batching-as-universal-win,
+and no "exactly-once" anything (485 jobs ran more than once <em>by
+design</em>; the guarantee is at-least-once execution with exactly-once
+result persistence). A measured limitation stated plainly outlasts an
+impressive number that can't be defended.</div>
+
+<h2 id="part-15">Part XV · A history of mistakes</h2>
+<p>Every bug below is real: found during this build, diagnosed, fixed,
+and in most cases converted into a regression test. They are the most
+honest teaching material in this document — each one is a place where a
+correct-sounding mental model met the machine and lost. Kept in the
+order they were found.</p>
+
+<div class="callout bug"><div class="label">Bug 1 · The outcome that could never happen</div>
+The taxonomy defined <code>OutcomePanicked</code>; the runner recovered
+panics and converted them to errors — which the classifier then labeled
+generic <code>retryable</code>. The panicked outcome existed in the enum
+and was unreachable in practice, so panicking handlers were
+indistinguishable from flaky networks in every attempt record. Fix: the
+recover path wraps the panic in a marker error the classifier detects,
+so panics route as retryable <em>and</em> record as what they are.
+Lesson: an enum arm nothing produces is a claim your tests aren't
+checking; assert the <em>routing</em>, not just the recovery.</div>
+
+<div class="callout bug"><div class="label">Bug 2 · Asking the wrong context why it died</div>
+Cancelled jobs were ending up RETRYING instead of CANCELLED. The runner
+read <code>context.Cause(poolCtx)</code> — the pool's context — but the
+cancel flag cancels the per-job <em>execution</em> context; the pool
+context was alive and well, so the cause read as nil and classification
+fell through to "transient". Fix: capture
+<code>context.Cause(execCtx)</code> before cleanup tears the context
+down, and classify from that. Lesson: in a tree of contexts, "why was I
+cancelled" must be asked of the context that was actually cancelled —
+parents don't know what happened to their children.</div>
+
+<div class="callout bug"><div class="label">Bug 3 · json.Unmarshal merges; it does not replace</div>
+The bench's drain-detection loop decoded queue-depth responses into a
+reused struct. <code>encoding/json</code> <em>merges</em> into existing
+maps rather than clearing them, so a priority whose count fell to zero
+— and therefore stopped appearing in the response — kept its stale
+nonzero value forever, and the harness reported jobs stuck at PENDING
+that had completed minutes earlier. Fix: fresh struct per poll. Lesson:
+decoder reuse semantics are real API surface; and verification code is
+code — a false "it's broken" costs the same hours as a true one.</div>
+
+<div class="callout bug"><div class="label">Bug 4 · Removed from the map, alive on the wire</div>
+When a worker reconnected to the control plane, the hub evicted the old
+session by deleting its map entry — but the old stream's send goroutine
+kept running, occasionally delivering a command to a connection nobody
+owned. Fix: sessions carry a <code>done</code> channel closed exactly
+once by an idempotent <code>terminate()</code>; eviction, disconnect,
+and shutdown all converge on it. Lesson: in a session registry,
+forgetting an object and ending its lifecycle are different operations;
+conflating them leaks goroutines you only notice when you count them.</div>
+
+<div class="callout bug"><div class="label">Bug 5 · The 413 that reported as 400</div>
+Oversized submissions returned <code>400 invalid_json</code>. The body
+cap (<code>http.MaxBytesReader</code>) trips <em>during</em> JSON
+decoding, so the decode error path swallowed it. Fix: check
+<code>errors.As(err, *http.MaxBytesError)</code> before concluding
+"malformed" and answer <code>413 payload_too_large</code>. Lesson:
+at API boundaries, test error <em>classification</em>, not just error
+presence — a wrong code sends a client debugging their JSON when their
+JSON is fine.</div>
+
+<div class="callout bug"><div class="label">Bug 6 · jsonb stores values, not bytes</div>
+Submission dedupe verified that a replayed idempotency key carried the
+same payload by comparing stored bytes to incoming bytes. Postgres
+<code>jsonb</code> canonicalizes — key order, whitespace, number forms
+— so equal payloads compared unequal depending on how the client
+serialized. Fix: decode both and compare semantically. Lesson: jsonb's
+parse-on-write is a feature (indexing, containment) with a contract:
+you stored a <em>value</em>, so don't expect your <em>bytes</em> back.</div>
+
+<div class="callout bug"><div class="label">Bug 7 · The test that tested a different pipeline</div>
+A DLQ test enqueued, forced failures, then counted DLQ entries — but
+read the stream directly instead of consuming through the group like a
+worker does, and counted an entry that the real path would have claimed.
+The test passed against broken behavior. Fix: the test consumes its
+delivery exactly as a worker would. Lesson: a test that shortcuts the
+pipeline verifies the shortcut; fidelity to the real read path is what
+makes an integration test integrate.</div>
+
+<div class="callout bug"><div class="label">Bug 8 · 9 + 9/2 is 13 here</div>
+An autoscaler test expected a midpoint of 14 from values the code
+computes as <code>9 + 9/2</code> — which in Go's integer arithmetic is
+9 + 4 = 13. The code was right; the test author's mental floating point
+was wrong. Fix: the test. Lesson: when a test disagrees with the code,
+re-derive the expectation using the machine's arithmetic, not yours —
+and only then decide which side is the bug.</div>
+
+<div class="callout bug"><div class="label">Bug 9 · sed vs the wire format</div>
+The project rename (Forge → Calligraphy) was applied by find-and-replace
+across the repo — including generated <code>.pb.go</code> files, where
+the old name lived inside a <em>length-prefixed</em> protobuf descriptor
+blob. Changing the bytes without updating the prefix made the descriptor
+lie about its own length, and every binary panicked at init with
+<code>slice bounds out of range</code>. Fix: rename the
+<code>.proto</code>, regenerate with protoc, never edit generated bytes.
+Lesson: generated files are build artifacts wearing source-file
+clothing; and length-prefixed formats are load-bearing in a way plain
+text never is (6.1).</div>
+
+<div class="callout bug"><div class="label">Bug 10 · go test runs packages in parallel</div>
+After the rename, integration tests started failing with jobs "stuck at
+PENDING" — but only sometimes, and never alone. Cause: each integration
+package flushes the shared Redis/Postgres in its setup, and
+<code>go test ./...</code> runs <em>packages</em> concurrently by
+default, so one package's flush wiped another's in-flight state
+mid-test. Fix: <code>-p 1</code> for the integration suite (unit tests
+stay parallel). Lesson: test parallelism across packages is a default
+you opted into without noticing; shared external state demands either
+serialization or per-package namespacing, and "flaky" usually means
+"concurrent".</div>
+
+<p>A meta-lesson from the set: five of the ten (1, 2, 3, 7, 8) are bugs
+in <em>testing and verification machinery</em>, not in the system
+proper. That ratio isn't embarrassing, it's the point — the
+verification layer is held to the same standard as the code, because a
+test that lies is worse than no test at all.</p>
+
+<h2 id="part-16">Part XVI · Glossary, in plain words</h2>
+<p>Every term this document leans on, defined without circularity. When
+a definition depends on another entry, the dependency is a real arrow —
+read the glossary as a tiny course.</p>
+<table>
+<tr><th>Term</th><th>Plainly</th></tr>
+<tr><td>ack (acknowledge)</td><td>The consumer telling the queue "this
+delivery is finished; stop tracking it." Until then the queue assumes
+the work may need redelivering.</td></tr>
+<tr><td>advisory lock</td><td>A Postgres lock on a number you invent,
+enforced only among cooperating callers. Used to make N simultaneous
+migrators take turns.</td></tr>
+<tr><td>at-least-once</td><td>The delivery promise "nothing is lost,
+but duplicates can happen." The forced choice once acknowledgments can
+be lost; its complement is at-most-once ("no duplicates, but loss can
+happen").</td></tr>
+<tr><td>backpressure</td><td>A full system slowing its intake instead of
+absorbing unbounded work into memory. Here: the pool fetches only its
+free capacity, so backlog stays in Redis.</td></tr>
+<tr><td>bounded pool</td><td>A worker design where at most N jobs run
+concurrently because the code structurally cannot start an
+(N+1)th.</td></tr>
+<tr><td>claim</td><td>Winning the right to execute a delivery — here, a
+conditional UPDATE where "1 row affected" means you won.</td></tr>
+<tr><td>consumer group</td><td>Redis Streams machinery that lets many
+consumers share one stream, each entry handed to exactly one of them,
+with per-entry pending bookkeeping.</td></tr>
+<tr><td>context</td><td>Go's cancellation carrier: a value passed down
+call chains whose "done" signal tells everything beneath it to stop.</td></tr>
+<tr><td>dead-letter queue (DLQ)</td><td>Where jobs go after exhausting
+retries: out of the traffic, in front of a human, requeueable after the
+cause is fixed.</td></tr>
+<tr><td>delivery</td><td>One handing of a job to a worker. One job can
+have many deliveries (redeliveries); each is a fresh attempt at a
+claim.</td></tr>
+<tr><td>drain</td><td>Graceful shutdown for workers: stop taking new
+work, finish what's running, then exit.</td></tr>
+<tr><td>envelope</td><td>The small encoded record that travels through
+Redis: job ID, type, priority, attempt — the pointer to the truth, not
+the truth.</td></tr>
+<tr><td>fencing token / epoch</td><td>A number that grows each time
+ownership of a resource changes, checked on every write so a stale
+owner's writes land as no-ops. The cure for zombies.</td></tr>
+<tr><td>fsync</td><td>The system call that forces written data to
+physical storage. Durability's price tag; commits pay it.</td></tr>
+<tr><td>full jitter</td><td>Retry delay drawn uniformly from [0,
+ceiling] where the ceiling doubles per attempt — exponential backoff
+that also decorrelates a herd of failures.</td></tr>
+<tr><td>goroutine</td><td>Go's cheap concurrent function: kilobytes of
+stack, scheduled in user space, so "one per job" is a design, not a
+crime.</td></tr>
+<tr><td>heartbeat</td><td>A periodic "still alive, still working"
+signal. Its absence is how the system detects death without anyone
+reporting it.</td></tr>
+<tr><td>histogram (Prometheus)</td><td>A distribution recorded as
+cumulative bucket counters, aggregatable across processes; quantiles
+are estimated from it at query time.</td></tr>
+<tr><td>HPA</td><td>Kubernetes' HorizontalPodAutoscaler: a control loop
+that adjusts replica count to hold a metric near a target.</td></tr>
+<tr><td>idempotency</td><td>The property that doing something twice
+equals doing it once. What handlers must provide so at-least-once
+delivery is safe end to end.</td></tr>
+<tr><td>idempotency key</td><td>A client-chosen string that makes
+resubmitting the same logical work return the original job instead of
+minting a twin.</td></tr>
+<tr><td>lease</td><td>Time-bounded ownership: a claim that expires
+unless renewed, so a dead owner's work becomes reclaimable
+automatically.</td></tr>
+<tr><td>leader election</td><td>Picking one process (here: via an
+expiring Redis lock) to do housekeeping so N replicas don't collide
+doing it N times.</td></tr>
+<tr><td>liveness / readiness</td><td>Kubernetes' two health questions:
+"should I restart this?" vs "should I send this traffic?" Different
+remedies, so different probes.</td></tr>
+<tr><td>MVCC</td><td>Multi-version concurrency control: writers create
+new row versions instead of overwriting, so readers never block
+writers.</td></tr>
+<tr><td>PEL (pending entries list)</td><td>A consumer group's ledger of
+delivered-but-unacked entries, each with owner and idle time. The
+queue's crash detector.</td></tr>
+<tr><td>poison message</td><td>An entry that can never be processed
+(e.g. undecodable) and would redeliver forever if not removed on
+sight.</td></tr>
+<tr><td>promoter</td><td>The loop that atomically moves due delayed
+jobs (retries, scheduled work) from the sorted set back onto their
+stream.</td></tr>
+<tr><td>protobuf</td><td>A schema language plus compact binary encoding
+where fields travel as numbers, making messages small and safely
+evolvable.</td></tr>
+<tr><td>quantile / p95</td><td>The value below which 95% of
+observations fall. Tail latency; the number users feel and averages
+hide.</td></tr>
+<tr><td>reaper</td><td>The recovery duty that reclaims work from
+consumers gone silent past their lease, using the PEL's idle
+clocks.</td></tr>
+<tr><td>scrape</td><td>Prometheus fetching a target's /metrics
+snapshot on an interval. Monitoring by pulling, not pushing.</td></tr>
+<tr><td>SIGTERM / SIGKILL</td><td>The polite and impolite kill signals:
+one is catchable and starts a drain; the other ends the process
+mid-thought — which recovery must survive.</td></tr>
+<tr><td>state machine</td><td>An explicit allow-list of (from, to)
+status transitions where everything absent is an error, not an
+option.</td></tr>
+<tr><td>stream (Redis)</td><td>An append-only log of ID-stamped entries
+inside Redis; with consumer groups, a work queue with delivery
+bookkeeping.</td></tr>
+<tr><td>visibility timeout</td><td>Queue-speak for "claimed work
+returns to the pool if not finished in time" — implemented here by PEL
+idle time plus XAUTOCLAIM.</td></tr>
+<tr><td>WAL (write-ahead log)</td><td>The sequential log a database
+flushes before touching data files, making one fsync stand for a whole
+commit.</td></tr>
+<tr><td>zombie</td><td>A process acting on ownership it lost — paused,
+partitioned, or slow — whose writes fencing turns into no-ops.</td></tr>
+<tr><td>ZSET (sorted set)</td><td>A Redis structure ordering members by
+score. Score = due-time turns it into a time-indexed parking lot for
+delayed work.</td></tr>
 </table>
 
-<p style="margin-top:56px;color:var(--ink-faint);font-size:14px;">
-Calligraphy · MIT © 2026 Joel Vasquez · This document is versioned with the
-code — if it disagrees with the code, the code is right and this is a
-bug report.</p>
+<p>That is the whole system: a bounded pool fed by streams, arbitrated
+and fenced by a relational truth store, repaired by idempotent sweeps,
+measured by two histograms and their gap, shipped as 15MB of static
+binary, and documented — bugs, regressions, and dead ends included —
+the way it was actually built. If you read straight through: you now
+know what a PEL is, why zero rows affected is an answer, and what it
+costs to find out that batching wasn't the bottleneck. That was the
+point.</p>
 
 </div></main>
 </div>
