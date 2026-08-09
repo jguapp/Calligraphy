@@ -13,18 +13,18 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-DB="${FORGE_DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/forge?sslmode=disable}"
-TOKEN="fg_bench_token"
+DB="${CALIGRAPHY_DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/caligraphy?sslmode=disable}"
+TOKEN="cg_bench_token"
 API=http://127.0.0.1:8080
-LOGDIR="${BENCH_LOGDIR:-/tmp/forge-bench-logs}"
+LOGDIR="${BENCH_LOGDIR:-/tmp/caligraphy-bench-logs}"
 mkdir -p "$LOGDIR"
 
 api_pid=""
 worker_pids=()
 
 start_api() {
-  FORGE_DATABASE_URL="$DB" FORGE_API_TOKENS="$TOKEN" \
-    ./bin/forge-api >"$LOGDIR/api.log" 2>&1 &
+  CALIGRAPHY_DATABASE_URL="$DB" CALIGRAPHY_API_TOKENS="$TOKEN" \
+    ./bin/caligraphy-api >"$LOGDIR/api.log" 2>&1 &
   api_pid=$!
   until curl -sf "$API/readyz" >/dev/null 2>&1; do sleep 0.2; done
 }
@@ -33,9 +33,9 @@ start_api() {
 start_workers() {
   local n=$1 conc=$2; shift 2
   for i in $(seq 1 "$n"); do
-    env FORGE_DATABASE_URL="$DB" FORGE_WORKER_ID="bench-w$i" \
-        FORGE_WORKER_METRICS_ADDR=":$((9100 + i))" FORGE_CONCURRENCY="$conc" "$@" \
-        ./bin/forge-worker >"$LOGDIR/worker-$i.log" 2>&1 &
+    env CALIGRAPHY_DATABASE_URL="$DB" CALIGRAPHY_WORKER_ID="bench-w$i" \
+        CALIGRAPHY_WORKER_METRICS_ADDR=":$((9100 + i))" CALIGRAPHY_CONCURRENCY="$conc" "$@" \
+        ./bin/caligraphy-worker >"$LOGDIR/worker-$i.log" 2>&1 &
     worker_pids+=($!)
   done
   sleep 1.5 # registration + group join
@@ -53,7 +53,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-bench() { ./bin/forge-bench -api "$API" -token "$TOKEN" "$@"; }
+bench() { ./bin/caligraphy-bench -api "$API" -token "$TOKEN" "$@"; }
 
 case "${1:-}" in
 sweep-io)
@@ -78,44 +78,44 @@ ablation)
   start_api
   # v0 baseline: one worker, one job at a time, single connections, no
   # batching, one-at-a-time fetch. The honest naive implementation.
-  start_workers 1 1 FORGE_DB_MAX_CONNS=1 FORGE_REDIS_POOL_SIZE=1 \
-    FORGE_BATCH_WRITES=false FORGE_FETCH_BATCH=1
+  start_workers 1 1 CALIGRAPHY_DB_MAX_CONNS=1 CALIGRAPHY_REDIS_POOL_SIZE=1 \
+    CALIGRAPHY_BATCH_WRITES=false CALIGRAPHY_FETCH_BATCH=1
   bench -name "ablation-v0-baseline" -type bench.sleep -jobs 1000 -sleep-ms 50 -jitter-ms 20 \
     -note "v0 baseline: 1 worker, conc=1, pools=1, batch=off, fetch=1"
   stop_workers
   # v1: + connection pooling
-  start_workers 1 1 FORGE_DB_MAX_CONNS=8 FORGE_REDIS_POOL_SIZE=8 \
-    FORGE_BATCH_WRITES=false FORGE_FETCH_BATCH=1
+  start_workers 1 1 CALIGRAPHY_DB_MAX_CONNS=8 CALIGRAPHY_REDIS_POOL_SIZE=8 \
+    CALIGRAPHY_BATCH_WRITES=false CALIGRAPHY_FETCH_BATCH=1
   bench -name "ablation-v1-pooling" -type bench.sleep -jobs 1000 -sleep-ms 50 -jitter-ms 20 \
     -note "v1: v0 + connection pooling (pg 8, redis 8)"
   stop_workers
   # v2: + concurrency (goroutines) and batched fetch
-  start_workers 1 8 FORGE_DB_MAX_CONNS=8 FORGE_REDIS_POOL_SIZE=8 \
-    FORGE_BATCH_WRITES=false FORGE_FETCH_BATCH=8
+  start_workers 1 8 CALIGRAPHY_DB_MAX_CONNS=8 CALIGRAPHY_REDIS_POOL_SIZE=8 \
+    CALIGRAPHY_BATCH_WRITES=false CALIGRAPHY_FETCH_BATCH=8
   bench -name "ablation-v2-concurrency" -type bench.sleep -jobs 1000 -sleep-ms 50 -jitter-ms 20 \
     -note "v2: v1 + goroutine concurrency 8 + fetch batch 8"
   stop_workers
   # v3: + batched writes
-  start_workers 1 8 FORGE_DB_MAX_CONNS=8 FORGE_REDIS_POOL_SIZE=8 \
-    FORGE_BATCH_WRITES=true FORGE_FETCH_BATCH=8
+  start_workers 1 8 CALIGRAPHY_DB_MAX_CONNS=8 CALIGRAPHY_REDIS_POOL_SIZE=8 \
+    CALIGRAPHY_BATCH_WRITES=true CALIGRAPHY_FETCH_BATCH=8
   bench -name "ablation-v3-batching" -type bench.sleep -jobs 1000 -sleep-ms 50 -jitter-ms 20 \
     -note "v3: v2 + batched terminal writes (the fsync-amortization lever)"
   stop_workers
   # Same ladder, CPU-bound workload.
-  start_workers 1 1 FORGE_DB_MAX_CONNS=1 FORGE_REDIS_POOL_SIZE=1 \
-    FORGE_BATCH_WRITES=false FORGE_FETCH_BATCH=1
+  start_workers 1 1 CALIGRAPHY_DB_MAX_CONNS=1 CALIGRAPHY_REDIS_POOL_SIZE=1 \
+    CALIGRAPHY_BATCH_WRITES=false CALIGRAPHY_FETCH_BATCH=1
   bench -name "ablation-cpu-v0-baseline" -type article.analysis -jobs 1000 -text-bytes 4096 \
     -note "v0 baseline, CPU-bound (real TextRank over 4KB)"
   stop_workers
-  start_workers 1 4 FORGE_DB_MAX_CONNS=8 FORGE_REDIS_POOL_SIZE=8 \
-    FORGE_BATCH_WRITES=true FORGE_FETCH_BATCH=8
+  start_workers 1 4 CALIGRAPHY_DB_MAX_CONNS=8 CALIGRAPHY_REDIS_POOL_SIZE=8 \
+    CALIGRAPHY_BATCH_WRITES=true CALIGRAPHY_FETCH_BATCH=8
   bench -name "ablation-cpu-v3-optimized" -type article.analysis -jobs 1000 -text-bytes 4096 \
     -note "optimized, CPU-bound: conc=4 (cores), pools=8, batch=on"
   stop_workers
   ;;
 reliability)
   start_api
-  start_workers 7 4 FORGE_LEASE_TTL=10s
+  start_workers 7 4 CALIGRAPHY_LEASE_TTL=10s
   # Chaos alongside: SIGKILL two workers mid-run and do NOT replace them.
   # The reaper must recover their in-flight jobs (visible afterwards as
   # lease_expired attempt rows) and the run must finish on the surviving

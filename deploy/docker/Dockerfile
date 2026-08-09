@@ -1,11 +1,11 @@
-# One Dockerfile for every Forge binary, selected at build time:
+# One Dockerfile for every Caligraphy binary, selected at build time:
 #
-#   docker build -f deploy/docker/Dockerfile --build-arg BINARY=forge-api .
+#   docker build -f deploy/docker/Dockerfile --build-arg BINARY=caligraphy-api .
 #
 # Multi-stage: the build stage carries the whole toolchain; the runtime
 # image is FROM scratch and carries exactly three things -- the static
 # binary, CA certificates (http.callback speaks TLS to the outside), and
-# tzdata is deliberately NOT one of them (everything in Forge is UTC).
+# tzdata is deliberately NOT one of them (everything in Caligraphy is UTC).
 # Result: ~15MB images with no shell, no package manager, and no CVE
 # surface beyond the binary itself.
 #
@@ -27,7 +27,7 @@ RUN go mod download
 
 COPY . .
 
-ARG BINARY=forge-api
+ARG BINARY=caligraphy-api
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/app ./cmd/${BINARY}
 
 FROM scratch

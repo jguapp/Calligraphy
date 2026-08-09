@@ -1,17 +1,17 @@
 # Non-secret configuration. Secrets (api-tokens, database-url, callback
-# secret) live in the `forge-secrets` Secret -- created imperatively or by
+# secret) live in the `caligraphy-secrets` Secret -- created imperatively or by
 # your secret manager, never committed. See deploy/k8s/README.md.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: forge-config
-  namespace: forge
+  name: caligraphy-config
+  namespace: caligraphy
 data:
-  FORGE_REDIS_ADDR: "redis:6379"
-  FORGE_QUEUE: "default"
-  FORGE_CONCURRENCY: "4"
-  FORGE_AUTOSCALE: "true"
-  FORGE_MIN_CONCURRENCY: "2"
-  FORGE_MAX_CONCURRENCY: "16"
-  FORGE_CONTROL_ADDR: "forge-api:9090"
-  FORGE_DRAIN_TIMEOUT: "25s"
+  CALIGRAPHY_REDIS_ADDR: "redis:6379"
+  CALIGRAPHY_QUEUE: "default"
+  CALIGRAPHY_CONCURRENCY: "4"
+  CALIGRAPHY_AUTOSCALE: "true"
+  CALIGRAPHY_MIN_CONCURRENCY: "2"
+  CALIGRAPHY_MAX_CONCURRENCY: "16"
+  CALIGRAPHY_CONTROL_ADDR: "caligraphy-api:9090"
+  CALIGRAPHY_DRAIN_TIMEOUT: "25s"

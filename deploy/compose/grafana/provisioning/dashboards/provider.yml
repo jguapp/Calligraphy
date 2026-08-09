@@ -1,7 +1,7 @@
 apiVersion: 1
 
 providers:
-  - name: forge
+  - name: caligraphy
     folder: ""
     type: file
     disableDeletion: false

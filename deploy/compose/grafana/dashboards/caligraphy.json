@@ -1,5 +1,5 @@
 {
-  "__comment": "The Forge operations dashboard. Nine panels, each answering one operational question -- the row layout IS the mental model: how much work (top), who is doing it (middle), how well is it going (bottom).",
+  "__comment": "The Caligraphy operations dashboard. Nine panels, each answering one operational question -- the row layout IS the mental model: how much work (top), who is doing it (middle), how well is it going (bottom).",
   "annotations": { "list": [] },
   "editable": true,
   "graphTooltip": 1,
@@ -11,8 +11,8 @@
       "id": 1,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(rate(forge_jobs_submitted_total[1m]))", "legendFormat": "submitted/s" },
-        { "expr": "sum(rate(forge_jobs_completed_total[1m]))", "legendFormat": "completed/s" }
+        { "expr": "sum(rate(caligraphy_jobs_submitted_total[1m]))", "legendFormat": "submitted/s" },
+        { "expr": "sum(rate(caligraphy_jobs_completed_total[1m]))", "legendFormat": "completed/s" }
       ],
       "title": "Throughput: in vs out",
       "description": "When submitted/s outruns completed/s for long, the queue-depth panel to the right is about to explain where the difference went.",
@@ -25,8 +25,8 @@
       "id": 2,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum by (priority) (forge_queue_depth)", "legendFormat": "ready ({{priority}})" },
-        { "expr": "sum(forge_queue_delayed_depth)", "legendFormat": "delayed (backoff/scheduled)" }
+        { "expr": "sum by (priority) (caligraphy_queue_depth)", "legendFormat": "ready ({{priority}})" },
+        { "expr": "sum(caligraphy_queue_delayed_depth)", "legendFormat": "delayed (backoff/scheduled)" }
       ],
       "title": "Queue depth",
       "description": "Ready work by priority, plus everything waiting out a backoff. This is the number the autoscaler steers by.",
@@ -39,8 +39,8 @@
       "id": 3,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(forge_queue_inflight)", "legendFormat": "in flight (claimed, unacked)" },
-        { "expr": "sum(forge_queue_dlq_depth)", "legendFormat": "dead-letter log" }
+        { "expr": "sum(caligraphy_queue_inflight)", "legendFormat": "in flight (claimed, unacked)" },
+        { "expr": "sum(caligraphy_queue_dlq_depth)", "legendFormat": "dead-letter log" }
       ],
       "title": "In flight & DLQ",
       "description": "In-flight tracks the claimed-but-unfinished set (the consumer group PEL). A rising DLQ line is a page, not a curiosity.",
@@ -53,8 +53,8 @@
       "id": 4,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(forge_worker_active_jobs)", "legendFormat": "active (fleet)" },
-        { "expr": "sum(forge_worker_target_concurrency)", "legendFormat": "capacity (fleet)" }
+        { "expr": "sum(caligraphy_worker_active_jobs)", "legendFormat": "active (fleet)" },
+        { "expr": "sum(caligraphy_worker_target_concurrency)", "legendFormat": "capacity (fleet)" }
       ],
       "title": "Fleet load vs capacity",
       "description": "Active hugging capacity means saturated workers (queue wait is growing); capacity moving on its own is the autoscaler working.",
@@ -67,7 +67,7 @@
       "id": 5,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "forge_worker_active_jobs", "legendFormat": "{{worker}}" }
+        { "expr": "caligraphy_worker_active_jobs", "legendFormat": "{{worker}}" }
       ],
       "title": "Active jobs per worker",
       "description": "One line per worker. A flat-zero line among busy peers is a worker that stopped fetching -- paused, draining, or wedged.",
@@ -80,8 +80,8 @@
       "id": 6,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "avg(forge_worker_utilization)", "legendFormat": "fleet avg" },
-        { "expr": "max(forge_worker_utilization)", "legendFormat": "hottest worker" }
+        { "expr": "avg(caligraphy_worker_utilization)", "legendFormat": "fleet avg" },
+        { "expr": "max(caligraphy_worker_utilization)", "legendFormat": "hottest worker" }
       ],
       "title": "Worker utilization",
       "description": "Sustained ~1.0 with queue depth growing = add workers. Sustained near-zero = the autoscaler will shrink, or should.",
@@ -94,9 +94,9 @@
       "id": 7,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum(rate(forge_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.95, sum(rate(forge_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p95" },
-        { "expr": "histogram_quantile(0.99, sum(rate(forge_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p99" }
+        { "expr": "histogram_quantile(0.50, sum(rate(caligraphy_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(caligraphy_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(caligraphy_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "p99" }
       ],
       "title": "End-to-end latency (enqueue → done)",
       "description": "What a submitter experiences, queue wait included.",
@@ -109,8 +109,8 @@
       "id": 8,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum(rate(forge_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "e2e p95" },
-        { "expr": "histogram_quantile(0.95, sum(rate(forge_job_duration_seconds_bucket[2m])) by (le))", "legendFormat": "execution p95" }
+        { "expr": "histogram_quantile(0.95, sum(rate(caligraphy_job_e2e_duration_seconds_bucket[2m])) by (le))", "legendFormat": "e2e p95" },
+        { "expr": "histogram_quantile(0.95, sum(rate(caligraphy_job_duration_seconds_bucket[2m])) by (le))", "legendFormat": "execution p95" }
       ],
       "title": "The queue-wait gap (p95)",
       "description": "The distance between these lines is time spent WAITING, not working. Execution flat while e2e climbs = you need capacity, not faster handlers.",
@@ -123,10 +123,10 @@
       "id": 9,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(rate(forge_jobs_retried_total[1m]))", "legendFormat": "retries/s" },
-        { "expr": "sum(rate(forge_jobs_failed_total[1m]))", "legendFormat": "permanent failures/s" },
-        { "expr": "sum(rate(forge_jobs_dead_lettered_total[1m]))", "legendFormat": "dead-lettered/s" },
-        { "expr": "sum(rate(forge_writes_fenced_total[1m]))", "legendFormat": "fenced writes/s" }
+        { "expr": "sum(rate(caligraphy_jobs_retried_total[1m]))", "legendFormat": "retries/s" },
+        { "expr": "sum(rate(caligraphy_jobs_failed_total[1m]))", "legendFormat": "permanent failures/s" },
+        { "expr": "sum(rate(caligraphy_jobs_dead_lettered_total[1m]))", "legendFormat": "dead-lettered/s" },
+        { "expr": "sum(rate(caligraphy_writes_fenced_total[1m]))", "legendFormat": "fenced writes/s" }
       ],
       "title": "Failures, retries, fences",
       "description": "Retries are normal in moderation. Fenced writes should be near zero outside chaos tests -- each one is a zombie worker meeting the fence.",
@@ -135,11 +135,11 @@
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": ["forge"],
+  "tags": ["caligraphy"],
   "templating": { "list": [] },
   "time": { "from": "now-30m", "to": "now" },
   "timezone": "utc",
-  "title": "Forge — Job Platform",
-  "uid": "forge-main",
+  "title": "Caligraphy — Job Platform",
+  "uid": "caligraphy-main",
   "version": 1
 }

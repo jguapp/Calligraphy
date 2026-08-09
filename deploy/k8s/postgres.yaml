@@ -5,7 +5,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
-  namespace: forge
+  namespace: caligraphy
 spec:
   serviceName: postgres
   replicas: 1
@@ -19,14 +19,14 @@ spec:
         - name: postgres
           image: postgres:16-alpine
           env:
-            - { name: POSTGRES_USER, value: forge }
-            - { name: POSTGRES_PASSWORD, value: forge }
-            - { name: POSTGRES_DB, value: forge }
+            - { name: POSTGRES_USER, value: caligraphy }
+            - { name: POSTGRES_PASSWORD, value: caligraphy }
+            - { name: POSTGRES_DB, value: caligraphy }
           ports: [{ containerPort: 5432 }]
           volumeMounts:
             - { name: data, mountPath: /var/lib/postgresql/data }
           readinessProbe:
-            exec: { command: ["pg_isready", "-U", "forge"] }
+            exec: { command: ["pg_isready", "-U", "caligraphy"] }
             periodSeconds: 5
           resources:
             requests: { cpu: 250m, memory: 256Mi }
@@ -41,7 +41,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: forge
+  namespace: caligraphy
 spec:
   selector: { app: postgres }
   ports: [{ port: 5432 }]

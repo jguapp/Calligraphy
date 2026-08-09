@@ -6,28 +6,28 @@
 # saturates at core count).
 #
 # The BETTER signal for I/O-bound fleets is queue depth, and the worker
-# already exports it (forge_queue_depth). Wiring it into an HPA needs the
+# already exports it (caligraphy_queue_depth). Wiring it into an HPA needs the
 # prometheus-adapter installed; the External metric block below is the
 # exact config, left commented until the adapter exists in your cluster:
 #
 #   prometheus-adapter rule:
-#     seriesQuery: 'forge_queue_depth'
-#     metricsQuery: 'sum(forge_queue_depth)'
+#     seriesQuery: 'caligraphy_queue_depth'
+#     metricsQuery: 'sum(caligraphy_queue_depth)'
 #
 #   - type: External
 #     external:
-#       metric: { name: forge_queue_depth }
+#       metric: { name: caligraphy_queue_depth }
 #       target: { type: AverageValue, averageValue: "20" }   # ~20 ready jobs per pod
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: forge-worker
-  namespace: forge
+  name: caligraphy-worker
+  namespace: caligraphy
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: forge-worker
+    name: caligraphy-worker
   minReplicas: 2
   maxReplicas: 12
   metrics:

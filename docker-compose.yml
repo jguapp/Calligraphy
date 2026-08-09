@@ -1,13 +1,13 @@
 # The whole platform, one command:
 #
-#   cp .env.example .env        # set FORGE_API_TOKENS
+#   cp .env.example .env        # set CALIGRAPHY_API_TOKENS
 #   docker compose up --build
 #
 # Then scale the fleet:
 #
 #   docker compose up -d --scale worker=7
 #
-# What starts: Postgres (truth), Redis (transport), forge-api (HTTP :8080,
+# What starts: Postgres (truth), Redis (transport), caligraphy-api (HTTP :8080,
 # control plane :9090, recovery leader), N workers, Prometheus (:9091),
 # Grafana (:3001, dashboard pre-provisioned, anonymous viewing).
 #
@@ -17,7 +17,7 @@
 # under memory pressure must refuse writes and page a human, because
 # "evicted" here would mean "silently deleted someone's job".
 #
-# Workers get no fixed FORGE_WORKER_ID: the default (hostname-pid) uses
+# Workers get no fixed CALIGRAPHY_WORKER_ID: the default (hostname-pid) uses
 # the container hostname, which compose makes unique per replica -- which
 # is exactly what lets --scale work without a per-replica env stanza.
 # They also publish no host ports, for the same reason; Prometheus
@@ -40,13 +40,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: forge
-      POSTGRES_PASSWORD: forge
-      POSTGRES_DB: forge
+      POSTGRES_USER: caligraphy
+      POSTGRES_PASSWORD: caligraphy
+      POSTGRES_DB: caligraphy
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U forge"]
+      test: ["CMD-SHELL", "pg_isready -U caligraphy"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -66,15 +66,15 @@ services:
     build:
       context: .
       dockerfile: deploy/docker/Dockerfile
-      args: { BINARY: forge-api }
+      args: { BINARY: caligraphy-api }
     ports:
       - "8080:8080"   # HTTP API + /metrics
       - "9090:9090"   # gRPC control plane
     environment:
-      FORGE_DATABASE_URL: postgres://forge:forge@postgres:5432/forge?sslmode=disable
-      FORGE_REDIS_ADDR: redis:6379
-      FORGE_API_TOKENS: ${FORGE_API_TOKENS:?set FORGE_API_TOKENS in .env}
-      FORGE_CALLBACK_SECRET: ${FORGE_CALLBACK_SECRET:-}
+      CALIGRAPHY_DATABASE_URL: postgres://caligraphy:caligraphy@postgres:5432/caligraphy?sslmode=disable
+      CALIGRAPHY_REDIS_ADDR: redis:6379
+      CALIGRAPHY_API_TOKENS: ${CALIGRAPHY_API_TOKENS:?set CALIGRAPHY_API_TOKENS in .env}
+      CALIGRAPHY_CALLBACK_SECRET: ${CALIGRAPHY_CALLBACK_SECRET:-}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -84,16 +84,16 @@ services:
     build:
       context: .
       dockerfile: deploy/docker/Dockerfile
-      args: { BINARY: forge-worker }
+      args: { BINARY: caligraphy-worker }
     environment:
-      FORGE_DATABASE_URL: postgres://forge:forge@postgres:5432/forge?sslmode=disable
-      FORGE_REDIS_ADDR: redis:6379
-      FORGE_CONTROL_ADDR: api:9090
-      FORGE_CONCURRENCY: ${FORGE_CONCURRENCY:-4}
-      FORGE_AUTOSCALE: ${FORGE_AUTOSCALE:-true}
-      FORGE_MIN_CONCURRENCY: ${FORGE_MIN_CONCURRENCY:-2}
-      FORGE_MAX_CONCURRENCY: ${FORGE_MAX_CONCURRENCY:-16}
-      FORGE_CALLBACK_SECRET: ${FORGE_CALLBACK_SECRET:-}
+      CALIGRAPHY_DATABASE_URL: postgres://caligraphy:caligraphy@postgres:5432/caligraphy?sslmode=disable
+      CALIGRAPHY_REDIS_ADDR: redis:6379
+      CALIGRAPHY_CONTROL_ADDR: api:9090
+      CALIGRAPHY_CONCURRENCY: ${CALIGRAPHY_CONCURRENCY:-4}
+      CALIGRAPHY_AUTOSCALE: ${CALIGRAPHY_AUTOSCALE:-true}
+      CALIGRAPHY_MIN_CONCURRENCY: ${CALIGRAPHY_MIN_CONCURRENCY:-2}
+      CALIGRAPHY_MAX_CONCURRENCY: ${CALIGRAPHY_MAX_CONCURRENCY:-16}
+      CALIGRAPHY_CALLBACK_SECRET: ${CALIGRAPHY_CALLBACK_SECRET:-}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
