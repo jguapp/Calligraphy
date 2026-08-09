@@ -64,6 +64,14 @@ func Open(ctx context.Context, dsn string, maxConns int) (*Store, error) {
 func (s *Store) Close()                         { s.pool.Close() }
 func (s *Store) Ping(ctx context.Context) error { return s.pool.Ping(ctx) }
 
+// TruncateForTest wipes every table. Integration suites in other packages
+// (worker, recovery, api) need a clean slate and shouldn't each hold raw
+// SQL that has to track the schema.
+func (s *Store) TruncateForTest(ctx context.Context) error {
+	_, err := s.pool.Exec(ctx, `TRUNCATE jobs, job_attempts, job_events, workers`)
+	return err
+}
+
 // ---------------------------------------------------------------- submission
 
 // CreateResult reports whether the submission created a new job or matched
