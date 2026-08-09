@@ -451,16 +451,17 @@ func (s *Store) ReapJob(ctx context.Context, id string, retryDelay time.Duration
 // ListExpiredRunning finds RUNNING rows whose lease expired more than
 // grace ago -- the DB-side backstop for jobs that vanished from the Redis
 // PEL (acked but never recorded, e.g. a crash between flush and record).
-func (s *Store) ListExpiredRunning(ctx context.Context, grace time.Duration, limit int) ([]string, error) {
+// Returns full Requeueables: reaping one of these means re-enqueueing it,
+// and there is no stream entry left to rebuild the envelope from.
+func (s *Store) ListExpiredRunning(ctx context.Context, grace time.Duration, limit int) ([]Requeueable, error) {
 	rows, err := s.pool.Query(ctx, `
-		SELECT id FROM jobs
+		SELECT `+requeueColumns+` FROM jobs
 		WHERE status = 'RUNNING' AND lease_expires_at < now() - make_interval(secs => $1)
 		LIMIT $2`, grace.Seconds(), limit)
 	if err != nil {
 		return nil, fmt.Errorf("store: listing expired running: %w", err)
 	}
-	defer rows.Close()
-	return scanIDs(rows)
+	return scanRequeueables(rows)
 }
 
 // Requeueable is the minimal shape needed to rebuild an Envelope for a job
