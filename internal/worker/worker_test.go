@@ -14,11 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jguapp/forge/internal/config"
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/config"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
 type testRig struct {
@@ -31,10 +31,10 @@ type testRig struct {
 
 func startRig(t *testing.T, reg *handler.Registry, mutate func(*config.Config)) *testRig {
 	t.Helper()
-	dsn := os.Getenv("FORGE_TEST_DATABASE_URL")
-	addr := os.Getenv("FORGE_TEST_REDIS_ADDR")
+	dsn := os.Getenv("CALIGRAPHY_TEST_DATABASE_URL")
+	addr := os.Getenv("CALIGRAPHY_TEST_REDIS_ADDR")
 	if dsn == "" || addr == "" {
-		t.Skip("FORGE_TEST_DATABASE_URL / FORGE_TEST_REDIS_ADDR not set")
+		t.Skip("CALIGRAPHY_TEST_DATABASE_URL / CALIGRAPHY_TEST_REDIS_ADDR not set")
 	}
 	ctx := context.Background()
 
@@ -44,7 +44,7 @@ func startRig(t *testing.T, reg *handler.Registry, mutate func(*config.Config)) 
 	}
 	cfg.DatabaseURL = dsn
 	cfg.RedisAddr = addr
-	cfg.KeyPrefix = "forgetest"
+	cfg.KeyPrefix = "caligraphytest"
 	cfg.WorkerID = "test-worker"
 	cfg.Concurrency = 4
 	cfg.FetchBlock = 100 * time.Millisecond
@@ -67,7 +67,7 @@ func startRig(t *testing.T, reg *handler.Registry, mutate func(*config.Config)) 
 	if err := st.TruncateForTest(ctx); err != nil {
 		t.Fatal(err)
 	}
-	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "forgetest", Queue: cfg.Queue})
+	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "caligraphytest", Queue: cfg.Queue})
 	if err != nil {
 		t.Fatal(err)
 	}

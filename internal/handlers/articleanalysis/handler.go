@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 // Type is the job type this handler serves. Booklet submits

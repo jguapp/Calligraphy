@@ -3,7 +3,7 @@
 // RUNNING -- now what?
 //
 // Five duties, all idempotent, all fenced, run by whichever process holds
-// the leader lock (forge-api replicas race for it; losing is fine):
+// the leader lock (caligraphy-api replicas race for it; losing is fine):
 //
 //	promote        due delayed envelopes (retries, scheduled jobs) move
 //	               ZSET -> stream, and their rows flip RETRYING -> PENDING
@@ -29,11 +29,11 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/jguapp/forge/internal/config"
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/retry"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/config"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/retry"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
 const (

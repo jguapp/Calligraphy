@@ -1,4 +1,4 @@
-// Package job defines Forge's core domain: the job record, the lifecycle
+// Package job defines Caligraphy's core domain: the job record, the lifecycle
 // state machine, and the error taxonomy handlers use to steer retry
 // behavior.
 //

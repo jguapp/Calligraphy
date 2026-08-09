@@ -1,18 +1,18 @@
 /**
- * @forge/client — the TypeScript client Booklet (or any Node service)
- * uses to talk to Forge.
+ * @caligraphy/client — the TypeScript client Booklet (or any Node service)
+ * uses to talk to Caligraphy.
  *
  * Deliberately dependency-free: `fetch` for transport, `node:crypto` for
  * callback signature verification. A queue client that brings its own
  * HTTP stack and retry framework is a queue client someone has to audit.
  *
- * The shape mirrors Forge's actual guarantees:
+ * The shape mirrors Caligraphy's actual guarantees:
  *  - `submit` with an idempotencyKey is safe to retry blindly — a replay
- *    returns the ORIGINAL job (Forge dedupes on (type, key)).
+ *    returns the ORIGINAL job (Caligraphy dedupes on (type, key)).
  *  - `waitForResult` polls; terminal states resolve (including failures —
  *    a failed JOB is a successful POLL), and only transport errors reject
  *    after retries.
- *  - `verifySignature` implements the receiver half of Forge's
+ *  - `verifySignature` implements the receiver half of Caligraphy's
  *    HMAC-signed callbacks, constant-time, with a replay-window check.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -60,18 +60,18 @@ export interface JobResult {
   error?: string;
 }
 
-export class ForgeError extends Error {
+export class CaligraphyError extends Error {
   constructor(
     message: string,
     public readonly status: number,
     public readonly code: string,
   ) {
     super(message);
-    this.name = "ForgeError";
+    this.name = "CaligraphyError";
   }
 }
 
-export interface ForgeClientOptions {
+export interface CaligraphyClientOptions {
   baseUrl: string;
   token: string;
   /** Per-request timeout. Default 10s. */
@@ -79,13 +79,13 @@ export interface ForgeClientOptions {
   fetch?: typeof fetch;
 }
 
-export class ForgeClient {
+export class CaligraphyClient {
   private readonly base: string;
   private readonly token: string;
   private readonly timeoutMs: number;
   private readonly fetchImpl: typeof fetch;
 
-  constructor(opts: ForgeClientOptions) {
+  constructor(opts: CaligraphyClientOptions) {
     this.base = opts.baseUrl.replace(/\/$/, "");
     this.token = opts.token;
     this.timeoutMs = opts.timeoutMs ?? 10_000;
@@ -141,7 +141,7 @@ export class ForgeClient {
         return res;
       }
       if (Date.now() > deadline) {
-        throw new ForgeError(`timed out waiting for job ${id} (last status ${res.status})`, 0, "timeout");
+        throw new CaligraphyError(`timed out waiting for job ${id} (last status ${res.status})`, 0, "timeout");
       }
       await new Promise((r) => setTimeout(r, interval));
       interval = Math.min(interval * 2, maxInterval);
@@ -164,7 +164,7 @@ export class ForgeClient {
       const text = await resp.text();
       const data = text ? JSON.parse(text) : {};
       if (!resp.ok && resp.status !== 202) {
-        throw new ForgeError(data.message ?? resp.statusText, resp.status, data.error ?? "error");
+        throw new CaligraphyError(data.message ?? resp.statusText, resp.status, data.error ?? "error");
       }
       return data as T;
     } finally {
@@ -174,11 +174,11 @@ export class ForgeClient {
 }
 
 /**
- * Verify a Forge callback delivery (the receiver half of http.callback).
+ * Verify a Caligraphy callback delivery (the receiver half of http.callback).
  *
- * Forge signs `${timestamp}.${rawBody}` with HMAC-SHA256 and sends:
- *   X-Forge-Signature: v1=<hex>
- *   X-Forge-Timestamp: <unix seconds>
+ * Caligraphy signs `${timestamp}.${rawBody}` with HMAC-SHA256 and sends:
+ *   X-Caligraphy-Signature: v1=<hex>
+ *   X-Caligraphy-Timestamp: <unix seconds>
  *
  * Verify against the RAW request body bytes — parse after, never before:
  * any JSON re-serialization can reorder keys and change the bytes.

@@ -1,4 +1,4 @@
-// forge-api is the platform's front door: the HTTP API, the metrics
+// caligraphy-api is the platform's front door: the HTTP API, the metrics
 // endpoint, and — because they are two tickers, not a service — the
 // leader-elected recovery duties. A fourth binary for the reaper and
 // promoter would be a deployment, an image, and a health probe spent on
@@ -18,22 +18,22 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jguapp/forge/internal/api"
-	"github.com/jguapp/forge/internal/config"
-	"github.com/jguapp/forge/internal/control"
-	"github.com/jguapp/forge/internal/handlers"
-	"github.com/jguapp/forge/internal/metrics"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/recovery"
-	"github.com/jguapp/forge/internal/retry"
-	"github.com/jguapp/forge/internal/store"
+	"github.com/jguapp/caligraphy/internal/api"
+	"github.com/jguapp/caligraphy/internal/config"
+	"github.com/jguapp/caligraphy/internal/control"
+	"github.com/jguapp/caligraphy/internal/handlers"
+	"github.com/jguapp/caligraphy/internal/metrics"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/recovery"
+	"github.com/jguapp/caligraphy/internal/retry"
+	"github.com/jguapp/caligraphy/internal/store"
 )
 
 const version = "0.1.0"
 
 func main() {
 	if err := run(); err != nil {
-		slog.Error("forge-api: fatal", "err", err)
+		slog.Error("caligraphy-api: fatal", "err", err)
 		os.Exit(1)
 	}
 }
@@ -72,7 +72,7 @@ func run() error {
 	m := metrics.New()
 	m.MustRegister(metrics.NewDepthCollector(q))
 
-	// The control plane: workers stream in; the API (and forgectl through
+	// The control plane: workers stream in; the API (and caligraphyctl through
 	// it) commands them. Jobs never travel here.
 	hub := control.NewHub(log)
 	grpcSrv := control.NewGRPCServer(hub)
@@ -81,7 +81,7 @@ func run() error {
 		return fmt.Errorf("grpc listen: %w", err)
 	}
 	go func() {
-		log.Info("forge-api: control plane listening", "addr", cfg.GRPCAddr)
+		log.Info("caligraphy-api: control plane listening", "addr", cfg.GRPCAddr)
 		grpcSrv.Serve(grpcLis) //nolint:errcheck // stopped in shutdown below
 	}()
 
@@ -119,7 +119,7 @@ func run() error {
 	}
 	errCh := make(chan error, 1)
 	go func() {
-		log.Info("forge-api: listening", "addr", cfg.HTTPAddr, "version", version)
+		log.Info("caligraphy-api: listening", "addr", cfg.HTTPAddr, "version", version)
 		if err := httpSrv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
@@ -133,11 +133,11 @@ func run() error {
 
 	// Drain in-flight requests, bounded; a request that never finishes
 	// must not hold the deploy open until the platform's kill timer.
-	log.Info("forge-api: shutting down")
+	log.Info("caligraphy-api: shutting down")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := httpSrv.Shutdown(shutdownCtx); err != nil {
-		log.Warn("forge-api: shutdown timed out; closing anyway", "err", err)
+		log.Warn("caligraphy-api: shutdown timed out; closing anyway", "err", err)
 	}
 	grpcSrv.GracefulStop()
 	<-leaderDone

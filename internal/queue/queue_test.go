@@ -1,7 +1,7 @@
 package queue
 
 // Integration tests against a real Redis, env-gated on
-// FORGE_TEST_REDIS_ADDR (same pattern as the store tests). Each test gets
+// CALIGRAPHY_TEST_REDIS_ADDR (same pattern as the store tests). Each test gets
 // a fresh database via FLUSHDB -- the test Redis is dedicated.
 
 import (
@@ -13,17 +13,17 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 func newTestQueue(t *testing.T) *Queue {
 	t.Helper()
-	addr := os.Getenv("FORGE_TEST_REDIS_ADDR")
+	addr := os.Getenv("CALIGRAPHY_TEST_REDIS_ADDR")
 	if addr == "" {
-		t.Skip("FORGE_TEST_REDIS_ADDR not set; skipping queue integration tests")
+		t.Skip("CALIGRAPHY_TEST_REDIS_ADDR not set; skipping queue integration tests")
 	}
 	ctx := context.Background()
-	q, err := New(ctx, Config{Addr: addr, Prefix: "forgetest", Queue: "default"})
+	q, err := New(ctx, Config{Addr: addr, Prefix: "caligraphytest", Queue: "default"})
 	if err != nil {
 		t.Fatalf("new queue: %v", err)
 	}

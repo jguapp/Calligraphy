@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forge — The Complete Technical Documentation</title>
+<title>Caligraphy — The Complete Technical Documentation</title>
 <style>
   :root {
     --paper: #EFEAE2; --surface: #FAF7F1; --surface-2: #F3EEE5;
@@ -89,11 +89,11 @@
 <div class="layout">
 
 <nav class="toc">
-  <div class="toc-title">Forge</div>
+  <div class="toc-title">Caligraphy</div>
   <div class="toc-sub">The complete technical documentation</div>
   <ol>
     <li><a href="#part-0">0 · How to read this</a></li>
-    <li><a href="#part-1">1 · Why Forge exists</a></li>
+    <li><a href="#part-1">1 · Why Caligraphy exists</a></li>
     <li><a href="#part-2">2 · The shape of the system</a></li>
     <li><a href="#part-3">3 · The life of a job</a></li>
     <li><a href="#part-4">4 · Failure is the design</a></li>
@@ -110,7 +110,7 @@
 <main><div class="content">
 
 <div class="cover">
-  <h1>Forge: The Complete Technical Documentation</h1>
+  <h1>Caligraphy: The Complete Technical Documentation</h1>
   <div class="subtitle">How a distributed job platform works when you assume every
   worker will eventually die mid-job — and what building one teaches you.
   Covers not just the design but the bugs, the measurements that
@@ -137,8 +137,8 @@ dishonest ones just don't label them.</div>
 A real defect from this project's history, kept because the mistake
 teaches more than the fix. Part 10 collects all of them.</div>
 
-<h2 id="part-1">Part 1 · Why Forge exists</h2>
-<p>Forge was built as the asynchronous tier for
+<h2 id="part-1">Part 1 · Why Caligraphy exists</h2>
+<p>Caligraphy was built as the asynchronous tier for
 <a href="https://github.com/jguapp/Booklet">Booklet</a>, a read-it-later
 platform. Booklet's own source comments document four places where
 background work is either blocking a user or quietly droppable:</p>
@@ -161,15 +161,15 @@ background work is either blocking a user or quietly droppable:</p>
 <p>Four features, one missing piece of infrastructure: somewhere to put
 work that <em>must</em> happen, must survive a crash, may fail
 transiently, and must never make a user wait. That is the entire product
-definition of Forge — and the reason it is a separate service with a
+definition of Caligraphy — and the reason it is a separate service with a
 public API rather than a Booklet module. Infrastructure that imports your
 product's code isn't infrastructure; it's a big product.</p>
 <div class="callout"><div class="label">Decision</div>
-Forge contains none of Booklet's business logic and never touches
+Caligraphy contains none of Booklet's business logic and never touches
 Booklet's database. For work whose logic must stay in Booklet
-(extraction needs Readability), Forge holds the schedule, retries, and
+(extraction needs Readability), Caligraphy holds the schedule, retries, and
 dead-letter queue, and calls Booklet back over signed HTTP — the Cloud
-Tasks model. That's what keeps Forge reusable by any application.</div>
+Tasks model. That's what keeps Caligraphy reusable by any application.</div>
 
 <h2 id="part-2">Part 2 · The shape of the system</h2>
 <p>The whole architecture fits in three sentences, and everything else in
@@ -193,7 +193,7 @@ work means either hammering it or adding latency, and row locks under
 concurrent claimants get ugly. Using each for what it's good at costs one
 real thing: <em>seams</em>. Every operation that writes to both (submit =
 INSERT + XADD; retry = UPDATE + ZADD) can crash between the two writes.
-Forge's answer is to make each seam's failure detectable and repairable
+Caligraphy's answer is to make each seam's failure detectable and repairable
 (Part 4) rather than pretending atomicity across two systems.</p>
 <div class="callout warn"><div class="label">Trade-off</div>
 Two stores means two things to operate and a class of repair machinery a
@@ -280,7 +280,7 @@ twice; its result is written exactly once.</strong> No amount of
 wall-clock lease tuning achieves this — the zombie doesn't know it's a
 zombie — only the token does.</p>
 <h3>The crash windows, enumerated</h3>
-<p>Every two-store operation has a seam. Forge's posture is to name each
+<p>Every two-store operation has a seam. Caligraphy's posture is to name each
 one and assign it a repair mechanism, because "we assume that doesn't
 happen" is how jobs vanish:</p>
 <table>
@@ -321,7 +321,7 @@ two workers killed mid-run, 8 in-flight jobs reaped, all 8 completed.</p>
 <p>When a dependency blips, hundreds of jobs fail in the same second.
 Fixed backoff retries all of them at the same instant, forever, in
 lockstep — each wave landing on a dependency that's trying to recover.
-Forge draws each delay uniformly from
+Caligraphy draws each delay uniformly from
 <code>[0, min(cap, base·2^(attempt−1)))</code> — "full jitter", the
 variant AWS's published measurements found best for both server load and
 completion time. The retry <em>storm</em> becomes retry <em>drizzle</em>.</p>
@@ -335,7 +335,7 @@ five times is just five identical failures. HTTP callbacks map status
 codes: 5xx/408/429 retry, other 4xx are permanent, redirects are refused
 outright (replaying a signed POST to a redirect target would vouch for a
 body to a host nobody registered).</p>
-<h3>What Forge guarantees, and what it refuses to claim</h3>
+<h3>What Caligraphy guarantees, and what it refuses to claim</h3>
 <table>
 <tr><th>Guaranteed</th><th>Explicitly not claimed</th></tr>
 <tr><td>
@@ -394,11 +394,11 @@ work with no API bill. TextRank (PageRank over text — one shared
 power-iteration serves both keyword and sentence graphs), Flesch-Kincaid
 readability, stopword-ratio language detection. Real work is what makes
 the CPU-bound benchmark an honest benchmark.</td></tr>
-<tr><td><code>http.callback</code></td><td>What makes Forge generic
+<tr><td><code>http.callback</code></td><td>What makes Caligraphy generic
 infrastructure: deliver the payload to any HTTP endpoint with an
 HMAC-SHA256 signature (timestamp folded into the MAC against replay),
 status-code classification, redirect refusal. Booklet keeps its logic;
-Forge supplies durability and retries.</td></tr>
+Caligraphy supplies durability and retries.</td></tr>
 <tr><td><code>bench.sleep/cpu/flaky</code></td><td>The measurement
 handlers. Flaky's failures are deterministic hashes of (job, attempt) —
 reliability runs reproduce bit-for-bit, and retries usually clear, like
@@ -407,7 +407,7 @@ real transients.</td></tr>
 
 <h2 id="part-7">Part 7 · Observing &amp; operating it</h2>
 <h3>The metric that matters most is a gap</h3>
-<p>Forge records two duration histograms per job type: execution time
+<p>Caligraphy records two duration histograms per job type: execution time
 (inside the handler) and end-to-end time (enqueue → done). Their p95s
 plotted together are the dashboard's most useful panel, because <em>the
 distance between the lines is time spent waiting, not working</em>.
@@ -573,10 +573,10 @@ arithmetic, check the test's arithmetic first.</div>
 <tr><td><b>Consumer group / PEL</b></td><td>Redis's built-in ledger of
 "handed out but not yet finished". Reading moves an entry into the
 pending-entries list; acknowledging removes it. The PEL <em>is</em>
-Forge's in-flight set — nothing hand-rolled.</td></tr>
+Caligraphy's in-flight set — nothing hand-rolled.</td></tr>
 <tr><td><b>Visibility timeout</b></td><td>How long a handed-out job stays
 invisible to other workers before the system assumes its holder died and
-offers it again. In Forge: <code>XAUTOCLAIM</code> with a minimum idle
+offers it again. In Caligraphy: <code>XAUTOCLAIM</code> with a minimum idle
 time.</td></tr>
 <tr><td><b>Lease</b></td><td>Time-boxed permission to work on a job,
 renewed by heartbeat while work genuinely runs. Silence past the TTL is
@@ -596,7 +596,7 @@ responsibility, with job id + attempt number provided as the dedupe
 coordinates.</td></tr>
 <tr><td><b>Backpressure</b></td><td>Refusing to take on more than you can
 handle, so overload queues where it's visible instead of hiding in
-buffers until something bursts. In Forge: fetch never exceeds free
+buffers until something bursts. In Caligraphy: fetch never exceeds free
 slots.</td></tr>
 <tr><td><b>Dead-letter queue</b></td><td>Where jobs go after exhausting
 retries — parked with full history, inspectable, requeueable. The
@@ -611,7 +611,7 @@ wrong.</td></tr>
 </table>
 
 <p style="margin-top:56px;color:var(--ink-faint);font-size:14px;">
-Forge · MIT © 2026 Joel Vasquez · This document is versioned with the
+Caligraphy · MIT © 2026 Joel Vasquez · This document is versioned with the
 code — if it disagrees with the code, the code is right and this is a
 bug report.</p>
 

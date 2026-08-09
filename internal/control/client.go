@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/jguapp/forge/internal/control/pb"
+	"github.com/jguapp/caligraphy/internal/control/pb"
 )
 
 // PoolControls is what the client needs from the worker's pool -- defined

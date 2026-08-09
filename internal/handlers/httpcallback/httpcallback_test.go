@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jguapp/forge/internal/job"
+	"github.com/jguapp/caligraphy/internal/job"
 )
 
 func newJob(payload string) *job.Job {
@@ -37,10 +37,10 @@ func TestSuccessfulDeliveryIsSignedAndVerifiable(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got.body = make([]byte, r.ContentLength)
 		r.Body.Read(got.body)
-		got.sig = r.Header.Get("X-Forge-Signature")
-		got.ts = r.Header.Get("X-Forge-Timestamp")
-		got.event = r.Header.Get("X-Forge-Event")
-		got.jobID = r.Header.Get("X-Forge-Job-Id")
+		got.sig = r.Header.Get("X-Caligraphy-Signature")
+		got.ts = r.Header.Get("X-Caligraphy-Timestamp")
+		got.event = r.Header.Get("X-Caligraphy-Event")
+		got.jobID = r.Header.Get("X-Caligraphy-Job-Id")
 		w.WriteHeader(200)
 		fmt.Fprint(w, `{"ok":true}`)
 	}))

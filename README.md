@@ -1,12 +1,12 @@
 <div align="center">
-  <img src=".github/assets/banner.svg" alt="Forge — submit work, kill the worker, get the result anyway" width="100%" />
+  <img src=".github/assets/banner.svg" alt="Caligraphy — submit work, kill the worker, get the result anyway" width="100%" />
 </div>
 
 <div align="center">
 
 **A distributed job-processing platform that assumes workers die.**
 
-Submit background jobs over HTTP. Forge queues them durably, runs them
+Submit background jobs over HTTP. Caligraphy queues them durably, runs them
 across a fleet of Go workers, retries what fails, recovers what crashes —
 and proves all of it with committed benchmarks, including the run where
 two workers get `kill -9` mid-job.
@@ -51,7 +51,7 @@ answers are all traps —
   OOM, a node dying — strands a job in `RUNNING` forever, which is the
   worst failure a job system has, because no error ever fires.
 
-Forge is the missing tier, built the way the failure modes demand:
+Caligraphy is the missing tier, built the way the failure modes demand:
 **Redis Streams move the work, Postgres records the truth, and Go runs
 it** — with every seam between those three designed around the question
 *"and what if it dies right here?"*
@@ -120,12 +120,12 @@ jobs failing against one downed dependency retry *decorrelated* instead of
 in synchronized waves. Handlers classify their own failures: transient
 errors retry, `NonRetryable` ones fail fast (retrying a 400 five times is
 just five 400s), and exhausted jobs park in a **dead-letter queue** with
-their full attempt history, one `forgectl requeue` away from another
+their full attempt history, one `caligraphyctl requeue` away from another
 chance.
 
 ### Honest guarantees, in writing
 
-Forge delivers **at-least-once execution with exactly-once result
+Caligraphy delivers **at-least-once execution with exactly-once result
 persistence**. It does not claim exactly-once execution — no queue can
 from the outside, and the docs say so. What it does guarantee: submission
 with an idempotency key never creates duplicate jobs (a retried submit
@@ -147,10 +147,10 @@ A gRPC **control plane** streams live worker stats up and pushes
 driven from a CLI:
 
 ```
-$ forgectl live                          # connected workers, live stats
-$ forgectl concurrency worker-3 8        # live-resize a pool
-$ forgectl drain worker-3                # graceful shutdown, now
-$ forgectl dlq && forgectl requeue <id>  # inspect and revive dead letters
+$ caligraphyctl live                          # connected workers, live stats
+$ caligraphyctl concurrency worker-3 8        # live-resize a pool
+$ caligraphyctl drain worker-3                # graceful shutdown, now
+$ caligraphyctl dlq && caligraphyctl requeue <id>  # inspect and revive dead letters
 ```
 
 ## The numbers
@@ -191,24 +191,24 @@ transient + 1% permanent injected failures, two workers SIGKILLed
 mid-run — 99.04% completed, 0 lost, all 10,000 terminal**, and the 8 jobs
 that died with their workers all show `lease_expired → completed` in
 their attempt history. The exec p99 of 11s *is* the crash-recovery
-latency, visible and tunable (`FORGE_LEASE_TTL`), not mysterious.
+latency, visible and tunable (`CALIGRAPHY_LEASE_TTL`), not mysterious.
 
 ## Architecture
 
 ```mermaid
 graph TB
     subgraph Clients
-        BK["Booklet (or any app)<br/><i>@forge/client · HTTP + bearer token</i>"]
-        CTL["forgectl<br/><i>operator CLI</i>"]
+        BK["Booklet (or any app)<br/><i>@caligraphy/client · HTTP + bearer token</i>"]
+        CTL["caligraphyctl<br/><i>operator CLI</i>"]
     end
 
-    subgraph API["forge-api"]
+    subgraph API["caligraphy-api"]
         HTTP["HTTP API<br/><i>submit · status · result · cancel · DLQ</i>"]
         REC["Recovery leader<br/><i>promoter · reaper · repair sweeps</i>"]
         GRPC["gRPC control plane<br/><i>stats up · drain/resize down</i>"]
     end
 
-    subgraph Workers["forge-worker × N"]
+    subgraph Workers["caligraphy-worker × N"]
         POOL["Bounded pool<br/><i>free = target − active</i>"]
         RUN["Runner<br/><i>claim → lease → execute → record → ack</i>"]
         H["Handlers<br/><i>article.analysis · http.callback · bench.*</i>"]
@@ -251,7 +251,7 @@ against). **gRPC carries only control** (jobs never travel there).
 ```mermaid
 sequenceDiagram
     participant B as Booklet
-    participant A as forge-api
+    participant A as caligraphy-api
     participant R as Redis
     participant W as Worker
     participant P as Postgres
@@ -259,7 +259,7 @@ sequenceDiagram
     B->>A: POST /jobs {type, payload, idempotencyKey}
     A->>P: INSERT (dedupe on key — replay returns the original)
     A->>R: XADD envelope (payload travels with it)
-    A-->>B: 201 {id} — durable; delivery is Forge's problem now
+    A-->>B: 201 {id} — durable; delivery is Caligraphy's problem now
     W->>R: XREADGROUP (≤ free slots)
     W->>P: claim: conditional UPDATE, epoch++ (arbitration)
     loop while running
@@ -288,14 +288,14 @@ already promises — while the reverse order would lose it.
 
 ## Booklet integration
 
-Forge was built as the async tier for [Booklet](https://github.com/jguapp/Booklet),
+Caligraphy was built as the async tier for [Booklet](https://github.com/jguapp/Booklet),
 whose own source comments document four gaps: extraction blocking the
 save request, embedding indexing as fire-and-forget, webhook delivery
-with no retry, and no scheduler. The mapping from each gap to a Forge
+with no retry, and no scheduler. The mapping from each gap to a Caligraphy
 pattern — with working receiver code and HMAC signature verification —
 is in [`docs/INTEGRATION.md`](docs/INTEGRATION.md), and the
 dependency-free TypeScript client lives in [`clients/ts`](clients/ts).
-The boundary rule: **Booklet talks to Forge only through the HTTP API** —
+The boundary rule: **Booklet talks to Caligraphy only through the HTTP API** —
 no shared database, no shared Redis, either side replaceable without the
 other noticing.
 
@@ -313,10 +313,10 @@ other noticing.
 
 ```
 cmd/
-  forge-api/       HTTP API + recovery leader + gRPC control plane
-  forge-worker/    the fleet: pool, runner, handlers, metrics
-  forge-bench/     the load generator with honesty properties
-  forgectl/        operator CLI
+  caligraphy-api/       HTTP API + recovery leader + gRPC control plane
+  caligraphy-worker/    the fleet: pool, runner, handlers, metrics
+  caligraphy-bench/     the load generator with honesty properties
+  caligraphyctl/        operator CLI
 internal/
   job/             the domain: record, state machine, error taxonomy
   store/           Postgres: fenced writes, batched recording, migrations
@@ -327,7 +327,7 @@ internal/
   api/ control/ scale/ metrics/ retry/ config/
 deploy/            Dockerfile (scratch images), compose, k8s, Grafana
 bench/             harness, matrix scripts, committed results, report
-clients/ts/        @forge/client for Booklet (fetch + node:crypto only)
+clients/ts/        @caligraphy/client for Booklet (fetch + node:crypto only)
 ```
 
 ## Getting started
@@ -336,7 +336,7 @@ clients/ts/        @forge/client for Booklet (fetch + node:crypto only)
 Grafana):
 
 ```bash
-cp .env.example .env          # set FORGE_API_TOKENS (openssl rand -hex 24)
+cp .env.example .env          # set CALIGRAPHY_API_TOKENS (openssl rand -hex 24)
 docker compose up --build
 docker compose up -d --scale worker=7    # the fleet from the benchmarks
 
@@ -353,9 +353,9 @@ control plane: `:9090`.
 
 ```bash
 make build && make test           # unit; add test-integration with services up
-FORGE_API_TOKENS=dev ./bin/forge-api &
-./bin/forge-worker &
-./bin/forgectl -token dev stats
+CALIGRAPHY_API_TOKENS=dev ./bin/caligraphy-api &
+./bin/caligraphy-worker &
+./bin/caligraphyctl -token dev stats
 ```
 
 **Reproduce the benchmarks**: `bench/scripts/matrix.sh sweep-io | sweep-cpu | ablation | reliability`

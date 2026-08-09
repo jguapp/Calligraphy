@@ -21,21 +21,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jguapp/forge/internal/config"
-	"github.com/jguapp/forge/internal/handler"
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/queue"
-	"github.com/jguapp/forge/internal/retry"
-	"github.com/jguapp/forge/internal/store"
-	"github.com/jguapp/forge/internal/worker"
+	"github.com/jguapp/caligraphy/internal/config"
+	"github.com/jguapp/caligraphy/internal/handler"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/caligraphy/internal/retry"
+	"github.com/jguapp/caligraphy/internal/store"
+	"github.com/jguapp/caligraphy/internal/worker"
 )
 
 func testDSNs(t *testing.T) (string, string) {
 	t.Helper()
-	dsn := os.Getenv("FORGE_TEST_DATABASE_URL")
-	addr := os.Getenv("FORGE_TEST_REDIS_ADDR")
+	dsn := os.Getenv("CALIGRAPHY_TEST_DATABASE_URL")
+	addr := os.Getenv("CALIGRAPHY_TEST_REDIS_ADDR")
 	if dsn == "" || addr == "" {
-		t.Skip("FORGE_TEST_DATABASE_URL / FORGE_TEST_REDIS_ADDR not set")
+		t.Skip("CALIGRAPHY_TEST_DATABASE_URL / CALIGRAPHY_TEST_REDIS_ADDR not set")
 	}
 	return dsn, addr
 }
@@ -44,7 +44,7 @@ func testConfig(dsn, addr string) config.Config {
 	cfg, _ := config.Load()
 	cfg.DatabaseURL = dsn
 	cfg.RedisAddr = addr
-	cfg.KeyPrefix = "forgetest"
+	cfg.KeyPrefix = "caligraphytest"
 	cfg.Concurrency = 2
 	cfg.FetchBlock = 100 * time.Millisecond
 	cfg.BatchInterval = 5 * time.Millisecond
@@ -74,7 +74,7 @@ func cleanSlate(t *testing.T, dsn, addr string) (*store.Store, *queue.Queue) {
 	if err := st.TruncateForTest(ctx); err != nil {
 		t.Fatal(err)
 	}
-	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "forgetest", Queue: "default"})
+	q, err := queue.New(ctx, queue.Config{Addr: addr, Prefix: "caligraphytest", Queue: "default"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,15 +173,15 @@ func waitStatus(t *testing.T, st *store.Store, id string, want job.Status, timeo
 // the parent knows execution has genuinely begun, then blocks forever --
 // until the parent SIGKILLs the whole process mid-job.
 func TestHelperCrashWorker(t *testing.T) {
-	if os.Getenv("FORGE_CRASH_HELPER") != "1" {
+	if os.Getenv("CALIGRAPHY_CRASH_HELPER") != "1" {
 		t.Skip("helper process body, not a test")
 	}
-	dsn := os.Getenv("FORGE_TEST_DATABASE_URL")
-	addr := os.Getenv("FORGE_TEST_REDIS_ADDR")
+	dsn := os.Getenv("CALIGRAPHY_TEST_DATABASE_URL")
+	addr := os.Getenv("CALIGRAPHY_TEST_REDIS_ADDR")
 	cfg := testConfig(dsn, addr)
 	cfg.WorkerID = "doomed-worker"
 
-	q, err := queue.New(context.Background(), queue.Config{Addr: addr, Prefix: "forgetest", Queue: "default"})
+	q, err := queue.New(context.Background(), queue.Config{Addr: addr, Prefix: "caligraphytest", Queue: "default"})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -213,7 +213,7 @@ func TestWorkerSIGKILLRecovery(t *testing.T) {
 
 	// 2. Start the doomed worker as a real OS process.
 	child := exec.Command(os.Args[0], "-test.run=^TestHelperCrashWorker$", "-test.v=false")
-	child.Env = append(os.Environ(), "FORGE_CRASH_HELPER=1")
+	child.Env = append(os.Environ(), "CALIGRAPHY_CRASH_HELPER=1")
 	child.Stderr = os.Stderr
 	if err := child.Start(); err != nil {
 		t.Fatal(err)

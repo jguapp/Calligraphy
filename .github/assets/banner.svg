@@ -1,4 +1,4 @@
-<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Forge">
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caligraphy">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#16130F"/>
@@ -17,28 +17,27 @@
   <rect width="1280" height="320" fill="url(#bg)"/>
   <rect width="640" height="320" fill="url(#glow)"/>
 
-  <!-- anvil mark; three sparks for the three moving pieces:
+  <!-- pen-nib mark; three ink drops for the three moving pieces:
        queue, workers, record -->
-  <g transform="translate(88, 100)">
+  <g transform="translate(92, 86)">
     <g stroke="#E8763A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
-      <!-- top face with horn -->
-      <path d="M10 26 H84 C100 26 112 20 120 10 C106 8 96 12 88 14 H10 Z"/>
-      <!-- waist -->
-      <path d="M34 40 C34 50 26 56 18 60 H80 C72 56 64 50 64 40"/>
-      <!-- base -->
-      <path d="M14 60 H84 V74 H14 Z"/>
+      <!-- nib body: shoulders tapering to the point -->
+      <path d="M52 4 C70 18 84 36 84 54 C84 74 70 92 52 104 C34 92 20 74 20 54 C20 36 34 18 52 4 Z"/>
+      <!-- slit from breather hole to the point -->
+      <circle cx="52" cy="52" r="7"/>
+      <path d="M52 59 V96"/>
     </g>
-    <!-- sparks rising off the horn -->
+    <!-- ink drops falling from the point -->
     <g fill="url(#heat)">
-      <circle cx="126" cy="-6" r="4"/>
-      <circle cx="140" cy="8" r="3"/>
-      <circle cx="130" cy="22" r="2.5"/>
+      <circle cx="104" cy="20" r="4"/>
+      <circle cx="118" cy="38" r="3"/>
+      <circle cx="110" cy="56" r="2.5"/>
     </g>
-    <!-- ember line under the anvil -->
-    <rect x="10" y="86" width="78" height="9" rx="4.5" fill="#E8763A" opacity="0.5"/>
+    <!-- ink stroke under the nib -->
+    <path d="M14 122 C40 114 68 114 92 122" stroke="#E8763A" stroke-width="9" stroke-linecap="round" fill="none" opacity="0.5"/>
   </g>
 
-  <text x="248" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#ECE5DA" font-weight="700">Forge</text>
+  <text x="248" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#ECE5DA" font-weight="700">Caligraphy</text>
   <text x="252" y="214" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" fill="#A89A8A" letter-spacing="0.3">Submit work. Kill the worker. Get the result anyway.</text>
 
   <line x1="92" y1="252" x2="940" y2="252" stroke="#332A21" stroke-width="1.5"/>

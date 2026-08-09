@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jguapp/forge/internal/job"
-	"github.com/jguapp/forge/internal/queue"
+	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/caligraphy/internal/queue"
 )
 
 // fakeFeed produces synthetic deliveries and records how many were asked
