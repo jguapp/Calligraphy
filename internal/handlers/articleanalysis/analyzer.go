@@ -464,7 +464,7 @@ func detectLanguage(words []string) string {
 	return best
 }
 
-var stopwordsEN = wordSet(`the a an and or but if then else when while of to in on at by for with about as into from up down out off over under again is are was were be been being have has had do does did will would can could should must not no nor this that these those it its i you he she we they them his her their my your our me him us what which who whom where why how all any both each few more most other some such only own same so than too very just there here once during before after above below s t don now`)
+var stopwordsEN = wordSet(`the a an and or but if then else when while of to in on at by for with about as into from up down out off over under around again is are was were be been being have has had do does did will would can cannot could should must not no nor this that these those it its i you he she we they them his her their my your our me him us what which who whom where why how all any both each few more most other some such only own same so than too very just there here once during rather before after above below within without s t don now`)
 
 var stopwordsES = wordSet(`el la los las un una unos unas y o pero si de del en a al por para con sobre como desde hasta es son era eran ser está están fue fueron hay que no ni este esta estos estas ese esa eso aquellos yo tú él ella nosotros ellos ellas su sus mi mis tu tus lo le les se me te nos os cuando donde porque qué cómo todo toda todos todas más menos muy ya también entre sin`)
 
