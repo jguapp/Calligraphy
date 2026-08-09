@@ -1,0 +1,106 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 7,
+    "workers": [
+      {
+        "id": "fleet-w3",
+        "processed": 533,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w2",
+        "processed": 546,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w1",
+        "processed": 531,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w5",
+        "processed": 553,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w7",
+        "processed": 532,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w6",
+        "processed": 556,
+        "targetConcurrency": 8
+      },
+      {
+        "id": "fleet-w4",
+        "processed": 544,
+        "targetConcurrency": 8
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "ablation-v4-fleet-batch",
+  "note": "7 workers x conc 8, batch ON: fsync amortization at high write rates",
+  "run": {
+    "counts": {
+      "COMPLETED": 8000
+    },
+    "e2eSeconds": {
+      "p50": 0.7312345,
+      "p95": 1.5210075,
+      "p99": 1.5955035499999999
+    },
+    "execSeconds": {
+      "p50": 0.036353,
+      "p95": 0.04306964999999998,
+      "p99": 0.05433905000000002
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 1284.55,
+    "totalAttempts": 8000,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 6.22
+  },
+  "scenario": {
+    "jobs": 8000,
+    "payload": {
+      "ms": 20,
+      "jitterMs": 10
+    },
+    "submitters": 32,
+    "type": "bench.sleep"
+  },
+  "submit": {
+    "durationSec": 4.61,
+    "errors": 0,
+    "jobsPerSec": 1733.29
+  },
+  "timestamp": "2026-08-09T21:35:06Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 8000,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 8000
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 1,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 0,
+        "targetConcurrency": 1
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "ablation-cpu-v0-baseline",
+  "note": "v0 baseline, CPU-bound (real TextRank over 4KB)",
+  "run": {
+    "counts": {
+      "COMPLETED": 1000
+    },
+    "e2eSeconds": {
+      "p50": 1.520759,
+      "p95": 2.6572503,
+      "p99": 2.75109036
+    },
+    "execSeconds": {
+      "p50": 0.001533,
+      "p95": 0.00263005,
+      "p99": 0.004914149999999999
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 299.67,
+    "totalAttempts": 1000,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 3.33
+  },
+  "scenario": {
+    "jobs": 1000,
+    "payload": {
+      "articleId": "bench",
+      "text": "Distributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. The database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. \n\nEvery retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. A fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. \n\nObservability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. Distributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. \n\nThe database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. Every retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. \n\nA fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. Observability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. \n\nDistributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. The database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. \n\nEvery retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. A fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. \n\nObservability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. Distributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. \n\nThe database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. Every retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. \n\nA fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. Observability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. \n\nDistributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. The database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. \n\nEvery retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. A fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. \n\nObservability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. Distributed systems fail in ways that single machines never see. A queue that cannot survive a crash is a list with ambitions. \n\nThe database records what happened, and the stream moves what happens next. Backpressure is not a feature you add but a property you refuse to lose. Every retry policy is a bet about the shape of failure. Leases expire because workers cannot be trusted to say goodbye. \n\nA fencing token turns a race into a decision made exactly once. Idempotency is the tax that at-least-once delivery collects. Observability means the dashboard answers the question you did not think to ask. Throughput without a latency distribution is a marketing number. \n\nDistributed systems fail in ways that single machines never see. "
+    },
+    "submitters": 16,
+    "type": "article.analysis"
+  },
+  "submit": {
+    "durationSec": 0.53,
+    "errors": 0,
+    "jobsPerSec": 1880.63
+  },
+  "timestamp": "2026-08-09T21:33:58Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 1000,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 1000
+  }
+}

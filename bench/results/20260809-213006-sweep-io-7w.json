@@ -1,0 +1,106 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 7,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 180,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w2",
+        "processed": 177,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w3",
+        "processed": 182,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w4",
+        "processed": 181,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w7",
+        "processed": 183,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w5",
+        "processed": 180,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w6",
+        "processed": 181,
+        "targetConcurrency": 4
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "sweep-io-7w",
+  "note": "worker sweep, I/O-bound: 7 procs x concurrency 4",
+  "run": {
+    "counts": {
+      "COMPLETED": 3000
+    },
+    "e2eSeconds": {
+      "p50": 3.367103,
+      "p95": 6.321269,
+      "p99": 6.590541499999997
+    },
+    "execSeconds": {
+      "p50": 0.077431,
+      "p95": 0.078928,
+      "p99": 0.08684015999999982
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 370.5,
+    "totalAttempts": 3000,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 8.09
+  },
+  "scenario": {
+    "jobs": 3000,
+    "payload": {
+      "ms": 50,
+      "jitterMs": 20
+    },
+    "submitters": 16,
+    "type": "bench.sleep"
+  },
+  "submit": {
+    "durationSec": 1.4,
+    "errors": 0,
+    "jobsPerSec": 2133.95
+  },
+  "timestamp": "2026-08-09T21:30:06Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 3000,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 3000
+  }
+}

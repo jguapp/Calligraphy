@@ -1,0 +1,76 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 1,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 913,
+        "targetConcurrency": 8
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "ablation-v3-batching",
+  "note": "v3: v2 + batched terminal writes (the fsync-amortization lever)",
+  "run": {
+    "counts": {
+      "COMPLETED": 1000
+    },
+    "e2eSeconds": {
+      "p50": 4.520811,
+      "p95": 8.4036612,
+      "p99": 8.74892331
+    },
+    "execSeconds": {
+      "p50": 0.077375,
+      "p95": 0.07862005,
+      "p99": 0.07898579
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 106.92,
+    "totalAttempts": 1000,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 9.35
+  },
+  "scenario": {
+    "jobs": 1000,
+    "payload": {
+      "ms": 50,
+      "jitterMs": 20
+    },
+    "submitters": 16,
+    "type": "bench.sleep"
+  },
+  "submit": {
+    "durationSec": 0.46,
+    "errors": 0,
+    "jobsPerSec": 2147.2
+  },
+  "timestamp": "2026-08-09T21:33:51Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 1000,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 1000
+  }
+}
