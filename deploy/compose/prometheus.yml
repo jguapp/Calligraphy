@@ -1,0 +1,23 @@
+# Prometheus scrape config for the compose stack.
+#
+# Workers are discovered by DNS: compose's embedded DNS answers the bare
+# service name "worker" with the address of EVERY replica, so
+# `--scale worker=7` is automatically seven scrape targets with no config
+# change. (dns_sd re-resolves every refresh_interval, so scaling up or
+# down converges within 15s.)
+
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: forge-api
+    static_configs:
+      - targets: ["api:8080"]
+
+  - job_name: forge-worker
+    dns_sd_configs:
+      - names: ["worker"]
+        type: A
+        port: 9100
+        refresh_interval: 15s

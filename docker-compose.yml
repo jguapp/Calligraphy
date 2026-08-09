@@ -1,0 +1,132 @@
+# The whole platform, one command:
+#
+#   cp .env.example .env        # set FORGE_API_TOKENS
+#   docker compose up --build
+#
+# Then scale the fleet:
+#
+#   docker compose up -d --scale worker=7
+#
+# What starts: Postgres (truth), Redis (transport), forge-api (HTTP :8080,
+# control plane :9090, recovery leader), N workers, Prometheus (:9091),
+# Grafana (:3001, dashboard pre-provisioned, anonymous viewing).
+#
+# Two Redis decisions differ from a cache deployment and are the point:
+# appendonly yes -- queue entries are jobs, and jobs survive a restart;
+# noeviction -- a cache under memory pressure drops cold keys, a QUEUE
+# under memory pressure must refuse writes and page a human, because
+# "evicted" here would mean "silently deleted someone's job".
+#
+# Workers get no fixed FORGE_WORKER_ID: the default (hostname-pid) uses
+# the container hostname, which compose makes unique per replica -- which
+# is exactly what lets --scale work without a per-replica env stanza.
+# They also publish no host ports, for the same reason; Prometheus
+# scrapes them by DNS on the internal network.
+#
+# Verification status, stated honestly: `docker compose up --build` has
+# not run in the environment this was authored in -- its network policy
+# denies container-registry blob CDNs, so no base image can be pulled
+# there. What IS verified in that environment, directly: `docker compose
+# config` (this file parses and resolves), the exact build the Dockerfile
+# runs (CGO_ENABLED=0 static build, confirmed statically linked and
+# stripped), every binary against real Postgres/Redis, and the full
+# metrics pipeline -- a native Prometheus scraping a live api + two
+# workers through the same scrape config shapes, all targets up, counters
+# matching submitted load. The first `docker compose up` on an
+# unrestricted machine is expected to be uneventful, and this note should
+# be replaced by its date when it happens.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: forge
+      POSTGRES_PASSWORD: forge
+      POSTGRES_DB: forge
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forge"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile
+      args: { BINARY: forge-api }
+    ports:
+      - "8080:8080"   # HTTP API + /metrics
+      - "9090:9090"   # gRPC control plane
+    environment:
+      FORGE_DATABASE_URL: postgres://forge:forge@postgres:5432/forge?sslmode=disable
+      FORGE_REDIS_ADDR: redis:6379
+      FORGE_API_TOKENS: ${FORGE_API_TOKENS:?set FORGE_API_TOKENS in .env}
+      FORGE_CALLBACK_SECRET: ${FORGE_CALLBACK_SECRET:-}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile
+      args: { BINARY: forge-worker }
+    environment:
+      FORGE_DATABASE_URL: postgres://forge:forge@postgres:5432/forge?sslmode=disable
+      FORGE_REDIS_ADDR: redis:6379
+      FORGE_CONTROL_ADDR: api:9090
+      FORGE_CONCURRENCY: ${FORGE_CONCURRENCY:-4}
+      FORGE_AUTOSCALE: ${FORGE_AUTOSCALE:-true}
+      FORGE_MIN_CONCURRENCY: ${FORGE_MIN_CONCURRENCY:-2}
+      FORGE_MAX_CONCURRENCY: ${FORGE_MAX_CONCURRENCY:-16}
+      FORGE_CALLBACK_SECRET: ${FORGE_CALLBACK_SECRET:-}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2d
+    volumes:
+      - ./deploy/compose/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9091:9090"   # 9090 on the host belongs to the control plane
+    depends_on: [api]
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    environment:
+      # Anonymous read-only viewing: this is a local dev dashboard, and a
+      # login wall between a developer and their own metrics helps nobody.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./deploy/compose/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/compose/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"   # 3000 is usually taken by a web app's dev server
+    depends_on: [prometheus]
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
