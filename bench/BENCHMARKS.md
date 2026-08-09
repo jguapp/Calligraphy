@@ -1,14 +1,14 @@
 # Benchmarks
 
 Every number in this document comes from a committed result file in
-`bench/results/` produced by `caligraphy-bench` against the real system — real
+`bench/results/` produced by `calligraphy-bench` against the real system — real
 HTTP submission, real Redis dispatch, real Postgres recording, real
 workers. Nothing is simulated, sampled, or extrapolated. To reproduce any
 row: `make build`, start Postgres + Redis, and run the named
 `bench/scripts/matrix.sh` suite.
 
 > The committed result files predate the project's rename (Forge →
-> Caligraphy) and are preserved exactly as the runs produced them, at the
+> Calligraphy) and are preserved exactly as the runs produced them, at the
 > git SHAs they record. Only the tooling and env-var names changed in the
 > rename — none of the mechanisms measured here — so a rerun under the
 > new names measures the same system.
@@ -124,7 +124,7 @@ recorded `lease_expired` attempts for all 8; **all 8 subsequently
 completed** on surviving workers. The exec p99 of 11.0s *is* the
 crash-recovery latency made visible — those jobs waited out the 10s lease
 before the reaper could prove their worker dead. That tail is the price
-of crash detection, and it is a tunable (`CALIGRAPHY_LEASE_TTL`), not a
+of crash detection, and it is a tunable (`CALLIGRAPHY_LEASE_TTL`), not a
 mystery.
 
 The 96 failures are exactly the injected permanent-failure population

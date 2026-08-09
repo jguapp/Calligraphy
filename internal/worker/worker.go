@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/jguapp/caligraphy/internal/config"
-	"github.com/jguapp/caligraphy/internal/handler"
-	"github.com/jguapp/caligraphy/internal/queue"
-	"github.com/jguapp/caligraphy/internal/retry"
-	"github.com/jguapp/caligraphy/internal/store"
+	"github.com/jguapp/calligraphy/internal/config"
+	"github.com/jguapp/calligraphy/internal/handler"
+	"github.com/jguapp/calligraphy/internal/queue"
+	"github.com/jguapp/calligraphy/internal/retry"
+	"github.com/jguapp/calligraphy/internal/store"
 )
 
 // Worker assembles the runtime: store + queue + recorder + pool + runner,

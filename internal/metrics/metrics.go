@@ -1,4 +1,4 @@
-// Package metrics owns every Prometheus series Caligraphy exposes. One place,
+// Package metrics owns every Prometheus series Calligraphy exposes. One place,
 // so the metric names in the Grafana dashboard, the README, and the code
 // cannot drift apart -- the names here ARE the contract.
 //
@@ -17,7 +17,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/calligraphy/internal/queue"
 )
 
 // Metrics is the full series set. Fields are nil-safe to ignore; a
@@ -51,47 +51,47 @@ func New() *Metrics {
 	m := &Metrics{
 		reg: reg,
 		JobsSubmitted: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_submitted_total",
+			Name: "calligraphy_jobs_submitted_total",
 			Help: "Jobs accepted by the API, by type and queue.",
 		}, []string{"type", "queue"}),
 		JobsCompleted: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_completed_total",
+			Name: "calligraphy_jobs_completed_total",
 			Help: "Jobs that reached COMPLETED.",
 		}, []string{"type"}),
 		JobsFailed: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_failed_total",
+			Name: "calligraphy_jobs_failed_total",
 			Help: "Attempts that ended in a permanent (non-retryable) failure.",
 		}, []string{"type"}),
 		JobsRetried: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_retried_total",
+			Name: "calligraphy_jobs_retried_total",
 			Help: "Attempts that ended in a retry being scheduled.",
 		}, []string{"type"}),
 		JobsDeadLettered: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_dead_lettered_total",
+			Name: "calligraphy_jobs_dead_lettered_total",
 			Help: "Jobs parked in the DLQ after exhausting attempts.",
 		}, []string{"type"}),
 		JobsCancelled: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "caligraphy_jobs_cancelled_total",
+			Name: "calligraphy_jobs_cancelled_total",
 			Help: "Jobs cancelled cooperatively mid-run.",
 		}, []string{"type"}),
 		ExecDuration: prometheus.NewHistogramVec(prometheus.HistogramOpts{
-			Name: "caligraphy_job_duration_seconds",
+			Name: "calligraphy_job_duration_seconds",
 			Help: "Handler execution time (excludes queue wait).",
 			// 1ms .. ~2 minutes; the workloads span article analysis
 			// (tens of ms) to slow external callbacks.
 			Buckets: prometheus.ExponentialBuckets(0.001, 2, 18),
 		}, []string{"type"}),
 		E2EDuration: prometheus.NewHistogramVec(prometheus.HistogramOpts{
-			Name:    "caligraphy_job_e2e_duration_seconds",
+			Name:    "calligraphy_job_e2e_duration_seconds",
 			Help:    "Enqueue-to-completion time (includes queue wait).",
 			Buckets: prometheus.ExponentialBuckets(0.001, 2, 18),
 		}, []string{"type"}),
 		ClaimsSkipped: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: "caligraphy_claims_skipped_total",
+			Name: "calligraphy_claims_skipped_total",
 			Help: "Deliveries that lost claim arbitration (duplicate/stale) and were acked away.",
 		}),
 		WritesFenced: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: "caligraphy_writes_fenced_total",
+			Name: "calligraphy_writes_fenced_total",
 			Help: "Terminal writes rejected by the lease-epoch fence.",
 		}),
 	}
@@ -127,13 +127,13 @@ func (m *Metrics) RegisterWorkerGauges(workerID string, p PoolStats) {
 	labels := prometheus.Labels{"worker": workerID}
 	m.reg.MustRegister(
 		prometheus.NewGaugeFunc(prometheus.GaugeOpts{
-			Name: "caligraphy_worker_active_jobs", Help: "Jobs executing right now.", ConstLabels: labels,
+			Name: "calligraphy_worker_active_jobs", Help: "Jobs executing right now.", ConstLabels: labels,
 		}, func() float64 { return float64(p.Active()) }),
 		prometheus.NewGaugeFunc(prometheus.GaugeOpts{
-			Name: "caligraphy_worker_target_concurrency", Help: "Current concurrency target.", ConstLabels: labels,
+			Name: "calligraphy_worker_target_concurrency", Help: "Current concurrency target.", ConstLabels: labels,
 		}, func() float64 { return float64(p.Target()) }),
 		prometheus.NewGaugeFunc(prometheus.GaugeOpts{
-			Name: "caligraphy_worker_utilization", Help: "active / target, 0..1.", ConstLabels: labels,
+			Name: "calligraphy_worker_utilization", Help: "active / target, 0..1.", ConstLabels: labels,
 		}, func() float64 {
 			t := p.Target()
 			if t == 0 {
@@ -142,7 +142,7 @@ func (m *Metrics) RegisterWorkerGauges(workerID string, p PoolStats) {
 			return float64(p.Active()) / float64(t)
 		}),
 		prometheus.NewCounterFunc(prometheus.CounterOpts{
-			Name: "caligraphy_worker_processed_total", Help: "Deliveries finished by this worker.", ConstLabels: labels,
+			Name: "calligraphy_worker_processed_total", Help: "Deliveries finished by this worker.", ConstLabels: labels,
 		}, func() float64 { return float64(p.Processed()) }),
 	)
 }
@@ -190,10 +190,10 @@ func NewDepthCollector(q *queue.Queue) *DepthCollector {
 	ql := []string{"queue", "priority"}
 	return &DepthCollector{
 		Q:            q,
-		descReady:    prometheus.NewDesc("caligraphy_queue_depth", "Entries ready to claim.", ql, prometheus.Labels{"state": "ready"}),
-		descDelayed:  prometheus.NewDesc("caligraphy_queue_delayed_depth", "Envelopes waiting on backoff/schedule.", ql, nil),
-		descInflight: prometheus.NewDesc("caligraphy_queue_inflight", "Claimed, unacked entries.", []string{"queue"}, nil),
-		descDLQ:      prometheus.NewDesc("caligraphy_queue_dlq_depth", "Entries in the DLQ log stream.", []string{"queue"}, nil),
+		descReady:    prometheus.NewDesc("calligraphy_queue_depth", "Entries ready to claim.", ql, prometheus.Labels{"state": "ready"}),
+		descDelayed:  prometheus.NewDesc("calligraphy_queue_delayed_depth", "Envelopes waiting on backoff/schedule.", ql, nil),
+		descInflight: prometheus.NewDesc("calligraphy_queue_inflight", "Claimed, unacked entries.", []string{"queue"}, nil),
+		descDLQ:      prometheus.NewDesc("calligraphy_queue_dlq_depth", "Entries in the DLQ log stream.", []string{"queue"}, nil),
 	}
 }
 

@@ -5,9 +5,9 @@ Apply order: `namespace` → `config` → `postgres` + `redis` → `api` →
 
 ```bash
 kubectl apply -f deploy/k8s/namespace.yaml
-kubectl create secret generic caligraphy-secrets -n caligraphy \
+kubectl create secret generic calligraphy-secrets -n calligraphy \
   --from-literal=api-tokens="$(openssl rand -hex 24)" \
-  --from-literal=database-url="postgres://caligraphy:caligraphy@postgres:5432/caligraphy?sslmode=disable"
+  --from-literal=database-url="postgres://calligraphy:calligraphy@postgres:5432/calligraphy?sslmode=disable"
 kubectl apply -f deploy/k8s/
 ```
 
@@ -15,22 +15,22 @@ Honesty about scope: the Postgres and Redis manifests here are
 **dev-grade** (single replica, small PVCs, no operator, no backups) —
 they exist so the whole platform runs in a cluster with nothing external.
 A production deployment should point `database-url` at managed Postgres
-and `CALIGRAPHY_REDIS_ADDR` at managed Redis and delete those two files; the
-Caligraphy deployments themselves are the production-shaped part (probes,
+and `CALLIGRAPHY_REDIS_ADDR` at managed Redis and delete those two files; the
+Calligraphy deployments themselves are the production-shaped part (probes,
 resources, graceful drain, anti-affinity hint).
 
 Scaling is two composable axes:
 
-- **Vertical, per pod**: `CALIGRAPHY_AUTOSCALE=true` lets each worker move its
+- **Vertical, per pod**: `CALLIGRAPHY_AUTOSCALE=true` lets each worker move its
   own concurrency between min/max from queue depth (measured +670% for
   I/O-bound work — see `bench/BENCHMARKS.md`).
 - **Horizontal, pods**: `hpa.yaml` ships CPU-based (works everywhere).
   The queue-depth-driven variant is included commented-out: it needs
-  `caligraphy_queue_depth` exposed to the HPA through prometheus-adapter,
+  `calligraphy_queue_depth` exposed to the HPA through prometheus-adapter,
   which is an extra install — the comment shows the exact
   seriesQuery/metricsQuery pair to configure when you have it.
 
 Worker termination is tuned to the drain: `terminationGracePeriodSeconds`
-exceeds `CALIGRAPHY_DRAIN_TIMEOUT`, so a rolling update lets in-flight jobs
+exceeds `CALLIGRAPHY_DRAIN_TIMEOUT`, so a rolling update lets in-flight jobs
 finish rather than relying on the reaper to mop up (which would also
 work — that's the point of it — but gracefully is cheaper).

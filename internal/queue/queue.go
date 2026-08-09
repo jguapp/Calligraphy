@@ -1,4 +1,4 @@
-// Package queue is Caligraphy's Redis layer: the transport that moves work.
+// Package queue is Calligraphy's Redis layer: the transport that moves work.
 //
 // Why Redis Streams (and not lists, pub/sub, Kafka, or RabbitMQ):
 //
@@ -14,12 +14,12 @@
 //   - Kafka solves a different problem (an ordered, replayable log); its
 //     ordering guarantee buys this workload nothing and its retry story
 //     costs topic gymnastics. RabbitMQ would genuinely fit -- Redis wins
-//     here because Booklet already operates Redis, so Caligraphy adds zero new
+//     here because Booklet already operates Redis, so Calligraphy adds zero new
 //     infrastructure to the deployment it exists to serve.
 //
-// Keyspace (prefix configurable, default "caligraphy"):
+// Keyspace (prefix configurable, default "calligraphy"):
 //
-//	{p}:stream:{queue}:{prio}   stream   ready work, consumer group "caligraphy"
+//	{p}:stream:{queue}:{prio}   stream   ready work, consumer group "calligraphy"
 //	{p}:delayed:{queue}:{prio}  zset     score = ready-at unix ms, member = envelope JSON
 //	{p}:dlq:{queue}             stream   dead-letter *log* (capped; DB is authoritative)
 //	{p}:cancel:{jobID}          string   cooperative cancel flag, TTL'd
@@ -41,19 +41,19 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/calligraphy/internal/job"
 )
 
-// Group is the consumer group every worker joins. One group: Caligraphy wants
+// Group is the consumer group every worker joins. One group: Calligraphy wants
 // each job executed once, not fanned out to every consumer.
-const Group = "caligraphy"
+const Group = "calligraphy"
 
 // ReaperConsumer is the consumer name XAUTOCLAIM claims abandoned entries
 // under, so a stolen entry is attributable in XPENDING output.
-const ReaperConsumer = "caligraphy-reaper"
+const ReaperConsumer = "calligraphy-reaper"
 
 // dlqMaxLen caps the dead-letter stream. The DLQ *log* in Redis is an
-// operator convenience (caligraphyctl peek without a SQL prompt); the
+// operator convenience (calligraphyctl peek without a SQL prompt); the
 // authoritative DLQ is `status = 'DEAD_LETTER'` in Postgres, which is why
 // capping this loses nothing that matters.
 const dlqMaxLen = 10_000
@@ -95,7 +95,7 @@ func New(ctx context.Context, cfg Config) (*Queue, error) {
 	}
 	q := &Queue{rdb: redis.NewClient(opts), prefix: cfg.Prefix, queue: cfg.Queue, log: log}
 	if q.prefix == "" {
-		q.prefix = "caligraphy"
+		q.prefix = "calligraphy"
 	}
 	if q.queue == "" {
 		q.queue = job.DefaultQueue
@@ -346,7 +346,7 @@ func (q *Queue) DeadLetter(ctx context.Context, env job.Envelope, errMsg string)
 	return nil
 }
 
-// DLQEntry is one row of the DLQ log, for caligraphyctl display.
+// DLQEntry is one row of the DLQ log, for calligraphyctl display.
 type DLQEntry struct {
 	EntryID string       `json:"entryId"`
 	Env     job.Envelope `json:"envelope"`

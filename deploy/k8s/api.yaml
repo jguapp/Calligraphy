@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: caligraphy-api
-  namespace: caligraphy
+  name: calligraphy-api
+  namespace: calligraphy
 spec:
   replicas: 2
   selector:
-    matchLabels: { app: caligraphy-api }
+    matchLabels: { app: calligraphy-api }
   template:
     metadata:
-      labels: { app: caligraphy-api }
+      labels: { app: calligraphy-api }
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
     spec:
       containers:
         - name: api
-          image: caligraphy-api:latest # built from deploy/docker/Dockerfile --build-arg BINARY=caligraphy-api
+          image: calligraphy-api:latest # built from deploy/docker/Dockerfile --build-arg BINARY=calligraphy-api
           ports:
             - { containerPort: 8080, name: http }
             - { containerPort: 9090, name: grpc }
           envFrom:
-            - configMapRef: { name: caligraphy-config }
+            - configMapRef: { name: calligraphy-config }
           env:
-            - name: CALIGRAPHY_DATABASE_URL
-              valueFrom: { secretKeyRef: { name: caligraphy-secrets, key: database-url } }
-            - name: CALIGRAPHY_API_TOKENS
-              valueFrom: { secretKeyRef: { name: caligraphy-secrets, key: api-tokens } }
+            - name: CALLIGRAPHY_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: calligraphy-secrets, key: database-url } }
+            - name: CALLIGRAPHY_API_TOKENS
+              valueFrom: { secretKeyRef: { name: calligraphy-secrets, key: api-tokens } }
           # httpGet probes: exactly why the scratch image can skip a shell.
           # Liveness is process-local (a Postgres blip must NOT restart the
           # fleet); readiness checks both dependencies.
@@ -45,10 +45,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: caligraphy-api
-  namespace: caligraphy
+  name: calligraphy-api
+  namespace: calligraphy
 spec:
-  selector: { app: caligraphy-api }
+  selector: { app: calligraphy-api }
   ports:
     - { name: http, port: 8080 }
     - { name: grpc, port: 9090 }

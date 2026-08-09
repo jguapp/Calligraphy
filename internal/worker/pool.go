@@ -1,4 +1,4 @@
-// Package worker is Caligraphy's execution engine: a bounded pool of goroutines
+// Package worker is Calligraphy's execution engine: a bounded pool of goroutines
 // fed from the queue, with live resizing, graceful drain, and the runner
 // that walks one delivery through claim -> execute -> record -> ack.
 package worker
@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/jguapp/caligraphy/internal/queue"
+	"github.com/jguapp/calligraphy/internal/queue"
 )
 
 // FetchFunc claims up to max deliveries. It is expected to block briefly

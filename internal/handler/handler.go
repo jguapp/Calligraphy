@@ -1,4 +1,4 @@
-// Package handler defines the contract between Caligraphy's engine and the
+// Package handler defines the contract between Calligraphy's engine and the
 // business logic it executes, and the registry that binds job types to
 // implementations.
 //
@@ -16,7 +16,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jguapp/caligraphy/internal/job"
+	"github.com/jguapp/calligraphy/internal/job"
 )
 
 // Handler executes one job attempt. Implementations MUST:
@@ -24,9 +24,9 @@ import (
 //   - respect ctx: it carries the execution timeout, shutdown drain, and
 //     cooperative cancellation, and a handler that ignores it holds a
 //     worker slot hostage;
-//   - be idempotent where they have external side effects: Caligraphy delivers
+//   - be idempotent where they have external side effects: Calligraphy delivers
 //     at-least-once, so a handler may run more than once for the same job
-//     (see the README's idempotency section for what Caligraphy does and does
+//     (see the README's idempotency section for what Calligraphy does and does
 //     not guarantee).
 //
 // The returned result is persisted verbatim on success (nil is fine).

@@ -23,11 +23,11 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/jguapp/caligraphy/internal/control/pb"
+	"github.com/jguapp/calligraphy/internal/control/pb"
 )
 
 // WorkerView is a snapshot of one connected worker, for the API and
-// caligraphyctl.
+// calligraphyctl.
 type WorkerView struct {
 	ID          string    `json:"id"`
 	Hostname    string    `json:"hostname"`

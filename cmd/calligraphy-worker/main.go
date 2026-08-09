@@ -1,4 +1,4 @@
-// caligraphy-worker executes jobs. Scale it by running more of them (compose
+// calligraphy-worker executes jobs. Scale it by running more of them (compose
 // --scale, k8s replicas) or by raising one worker's concurrency; the two
 // compose, and the benchmarks measure both axes.
 package main
@@ -12,17 +12,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jguapp/caligraphy/internal/config"
-	"github.com/jguapp/caligraphy/internal/control"
-	"github.com/jguapp/caligraphy/internal/handlers"
-	"github.com/jguapp/caligraphy/internal/metrics"
-	"github.com/jguapp/caligraphy/internal/scale"
-	"github.com/jguapp/caligraphy/internal/worker"
+	"github.com/jguapp/calligraphy/internal/config"
+	"github.com/jguapp/calligraphy/internal/control"
+	"github.com/jguapp/calligraphy/internal/handlers"
+	"github.com/jguapp/calligraphy/internal/metrics"
+	"github.com/jguapp/calligraphy/internal/scale"
+	"github.com/jguapp/calligraphy/internal/worker"
 )
 
 func main() {
 	if err := run(); err != nil {
-		slog.Error("caligraphy-worker: fatal", "err", err)
+		slog.Error("calligraphy-worker: fatal", "err", err)
 		os.Exit(1)
 	}
 }
@@ -43,7 +43,7 @@ func run() error {
 		CallbackAllowedHosts: cfg.CallbackAllowedHosts,
 	})
 	if cfg.CallbackHMACSecret == "" {
-		log.Warn("caligraphy-worker: CALIGRAPHY_CALLBACK_SECRET is empty; http.callback deliveries are UNSIGNED")
+		log.Warn("calligraphy-worker: CALLIGRAPHY_CALLBACK_SECRET is empty; http.callback deliveries are UNSIGNED")
 	}
 
 	m := metrics.New()
@@ -80,7 +80,7 @@ func run() error {
 			},
 		}
 		go as.Run(ctx)
-		log.Info("caligraphy-worker: autoscaling enabled",
+		log.Info("calligraphy-worker: autoscaling enabled",
 			"min", cfg.MinConcurrency, "max", cfg.MaxConcurrency)
 	}
 
@@ -94,11 +94,11 @@ func run() error {
 	})
 	metricsSrv := &http.Server{Addr: cfg.MetricsAddr, Handler: mux, ReadHeaderTimeout: 5 * time.Second}
 	go func() {
-		log.Info("caligraphy-worker: metrics listening", "addr", cfg.MetricsAddr, "worker", cfg.WorkerID)
+		log.Info("calligraphy-worker: metrics listening", "addr", cfg.MetricsAddr, "worker", cfg.WorkerID)
 		metricsSrv.ListenAndServe() //nolint:errcheck // shutdown handled below
 	}()
 
-	log.Info("caligraphy-worker: starting", "worker", cfg.WorkerID,
+	log.Info("calligraphy-worker: starting", "worker", cfg.WorkerID,
 		"concurrency", cfg.Concurrency, "types", reg.Types())
 	err = w.Run(ctx) // blocks until SIGTERM, then drains
 

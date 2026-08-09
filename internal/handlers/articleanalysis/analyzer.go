@@ -1,4 +1,4 @@
-// Package articleanalysis is Caligraphy's flagship built-in handler: real,
+// Package articleanalysis is Calligraphy's flagship built-in handler: real,
 // CPU-bound text analysis with no external API in sight.
 //
 // That constraint is the point. The obvious demo handler calls an LLM and

@@ -1,4 +1,4 @@
-// The control plane. This is the only place gRPC appears in Caligraphy, and
+// The control plane. This is the only place gRPC appears in Calligraphy, and
 // the boundary is strict: jobs NEVER travel here. Work moves through
 // Redis, where it is durable and claimable; this stream carries the small
 // bidirectional truth that HTTP polling handles badly -- workers pushing
@@ -611,11 +611,11 @@ var File_proto_control_proto protoreflect.FileDescriptor
 
 const file_proto_control_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/control.proto\x12\x15caligraphy.control.v1\"\xc5\x01\n" +
-	"\rWorkerMessage\x12:\n" +
-	"\x05hello\x18\x01 \x01(\v2\".caligraphy.control.v1.WorkerHelloH\x00R\x05hello\x12:\n" +
-	"\x05stats\x18\x02 \x01(\v2\".caligraphy.control.v1.WorkerStatsH\x00R\x05stats\x125\n" +
-	"\x03ack\x18\x03 \x01(\v2!.caligraphy.control.v1.CommandAckH\x00R\x03ackB\x05\n" +
+	"\x13proto/control.proto\x12\x16calligraphy.control.v1\"\xc8\x01\n" +
+	"\rWorkerMessage\x12;\n" +
+	"\x05hello\x18\x01 \x01(\v2#.calligraphy.control.v1.WorkerHelloH\x00R\x05hello\x12;\n" +
+	"\x05stats\x18\x02 \x01(\v2#.calligraphy.control.v1.WorkerStatsH\x00R\x05stats\x126\n" +
+	"\x03ack\x18\x03 \x01(\v2\".calligraphy.control.v1.CommandAckH\x00R\x03ackB\x05\n" +
 	"\x03msg\"\x90\x01\n" +
 	"\vWorkerHello\x12\x1b\n" +
 	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12\x1a\n" +
@@ -633,22 +633,22 @@ const file_proto_control_proto_rawDesc = "" +
 	"CommandAck\x12\x1d\n" +
 	"\n" +
 	"command_id\x18\x01 \x01(\tR\tcommandId\x12\x16\n" +
-	"\x06detail\x18\x02 \x01(\tR\x06detail\"\xa6\x02\n" +
+	"\x06detail\x18\x02 \x01(\tR\x06detail\"\xaa\x02\n" +
 	"\aCommand\x12\x1d\n" +
 	"\n" +
-	"command_id\x18\x01 \x01(\tR\tcommandId\x124\n" +
-	"\x05drain\x18\x02 \x01(\v2\x1c.caligraphy.control.v1.DrainH\x00R\x05drain\x124\n" +
-	"\x05pause\x18\x03 \x01(\v2\x1c.caligraphy.control.v1.PauseH\x00R\x05pause\x127\n" +
-	"\x06resume\x18\x04 \x01(\v2\x1d.caligraphy.control.v1.ResumeH\x00R\x06resume\x12P\n" +
-	"\x0fset_concurrency\x18\x05 \x01(\v2%.caligraphy.control.v1.SetConcurrencyH\x00R\x0esetConcurrencyB\x05\n" +
+	"command_id\x18\x01 \x01(\tR\tcommandId\x125\n" +
+	"\x05drain\x18\x02 \x01(\v2\x1d.calligraphy.control.v1.DrainH\x00R\x05drain\x125\n" +
+	"\x05pause\x18\x03 \x01(\v2\x1d.calligraphy.control.v1.PauseH\x00R\x05pause\x128\n" +
+	"\x06resume\x18\x04 \x01(\v2\x1e.calligraphy.control.v1.ResumeH\x00R\x06resume\x12Q\n" +
+	"\x0fset_concurrency\x18\x05 \x01(\v2&.calligraphy.control.v1.SetConcurrencyH\x00R\x0esetConcurrencyB\x05\n" +
 	"\x03cmd\"\a\n" +
 	"\x05Drain\"\a\n" +
 	"\x05Pause\"\b\n" +
 	"\x06Resume\"(\n" +
 	"\x0eSetConcurrency\x12\x16\n" +
-	"\x06target\x18\x01 \x01(\x05R\x06target2c\n" +
-	"\aControl\x12X\n" +
-	"\fWorkerStream\x12$.caligraphy.control.v1.WorkerMessage\x1a\x1e.caligraphy.control.v1.Command(\x010\x01B5Z3github.com/jguapp/caligraphy/internal/control/pb;pbb\x06proto3"
+	"\x06target\x18\x01 \x01(\x05R\x06target2e\n" +
+	"\aControl\x12Z\n" +
+	"\fWorkerStream\x12%.calligraphy.control.v1.WorkerMessage\x1a\x1f.calligraphy.control.v1.Command(\x010\x01B6Z4github.com/jguapp/calligraphy/internal/control/pb;pbb\x06proto3"
 
 var (
 	file_proto_control_proto_rawDescOnce sync.Once
@@ -664,26 +664,26 @@ func file_proto_control_proto_rawDescGZIP() []byte {
 
 var file_proto_control_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_proto_control_proto_goTypes = []any{
-	(*WorkerMessage)(nil),  // 0: caligraphy.control.v1.WorkerMessage
-	(*WorkerHello)(nil),    // 1: caligraphy.control.v1.WorkerHello
-	(*WorkerStats)(nil),    // 2: caligraphy.control.v1.WorkerStats
-	(*CommandAck)(nil),     // 3: caligraphy.control.v1.CommandAck
-	(*Command)(nil),        // 4: caligraphy.control.v1.Command
-	(*Drain)(nil),          // 5: caligraphy.control.v1.Drain
-	(*Pause)(nil),          // 6: caligraphy.control.v1.Pause
-	(*Resume)(nil),         // 7: caligraphy.control.v1.Resume
-	(*SetConcurrency)(nil), // 8: caligraphy.control.v1.SetConcurrency
+	(*WorkerMessage)(nil),  // 0: calligraphy.control.v1.WorkerMessage
+	(*WorkerHello)(nil),    // 1: calligraphy.control.v1.WorkerHello
+	(*WorkerStats)(nil),    // 2: calligraphy.control.v1.WorkerStats
+	(*CommandAck)(nil),     // 3: calligraphy.control.v1.CommandAck
+	(*Command)(nil),        // 4: calligraphy.control.v1.Command
+	(*Drain)(nil),          // 5: calligraphy.control.v1.Drain
+	(*Pause)(nil),          // 6: calligraphy.control.v1.Pause
+	(*Resume)(nil),         // 7: calligraphy.control.v1.Resume
+	(*SetConcurrency)(nil), // 8: calligraphy.control.v1.SetConcurrency
 }
 var file_proto_control_proto_depIdxs = []int32{
-	1, // 0: caligraphy.control.v1.WorkerMessage.hello:type_name -> caligraphy.control.v1.WorkerHello
-	2, // 1: caligraphy.control.v1.WorkerMessage.stats:type_name -> caligraphy.control.v1.WorkerStats
-	3, // 2: caligraphy.control.v1.WorkerMessage.ack:type_name -> caligraphy.control.v1.CommandAck
-	5, // 3: caligraphy.control.v1.Command.drain:type_name -> caligraphy.control.v1.Drain
-	6, // 4: caligraphy.control.v1.Command.pause:type_name -> caligraphy.control.v1.Pause
-	7, // 5: caligraphy.control.v1.Command.resume:type_name -> caligraphy.control.v1.Resume
-	8, // 6: caligraphy.control.v1.Command.set_concurrency:type_name -> caligraphy.control.v1.SetConcurrency
-	0, // 7: caligraphy.control.v1.Control.WorkerStream:input_type -> caligraphy.control.v1.WorkerMessage
-	4, // 8: caligraphy.control.v1.Control.WorkerStream:output_type -> caligraphy.control.v1.Command
+	1, // 0: calligraphy.control.v1.WorkerMessage.hello:type_name -> calligraphy.control.v1.WorkerHello
+	2, // 1: calligraphy.control.v1.WorkerMessage.stats:type_name -> calligraphy.control.v1.WorkerStats
+	3, // 2: calligraphy.control.v1.WorkerMessage.ack:type_name -> calligraphy.control.v1.CommandAck
+	5, // 3: calligraphy.control.v1.Command.drain:type_name -> calligraphy.control.v1.Drain
+	6, // 4: calligraphy.control.v1.Command.pause:type_name -> calligraphy.control.v1.Pause
+	7, // 5: calligraphy.control.v1.Command.resume:type_name -> calligraphy.control.v1.Resume
+	8, // 6: calligraphy.control.v1.Command.set_concurrency:type_name -> calligraphy.control.v1.SetConcurrency
+	0, // 7: calligraphy.control.v1.Control.WorkerStream:input_type -> calligraphy.control.v1.WorkerMessage
+	4, // 8: calligraphy.control.v1.Control.WorkerStream:output_type -> calligraphy.control.v1.Command
 	8, // [8:9] is the sub-list for method output_type
 	7, // [7:8] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name

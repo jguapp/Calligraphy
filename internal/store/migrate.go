@@ -14,7 +14,7 @@ var migrationFS embed.FS
 // order, each inside its own transaction.
 //
 // This is a deliberately tiny hand-rolled migrator (~60 lines) instead of
-// goose/golang-migrate: Caligraphy needs exactly "apply these files once, in
+// goose/golang-migrate: Calligraphy needs exactly "apply these files once, in
 // order, under a lock", and a dependency whose feature list is 95% unused
 // is a dependency someone still has to be able to explain in review. The
 // advisory lock serializes concurrent boots (two API replicas starting at
@@ -36,7 +36,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 	}
 	defer tx.Rollback(ctx) //nolint:errcheck // rollback after commit is a no-op
 
-	// An arbitrary but fixed key: every Caligraphy process migrating this
+	// An arbitrary but fixed key: every Calligraphy process migrating this
 	// database contends on the same lock. Transaction-scoped, so it
 	// releases itself even if we die mid-way.
 	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(72631001)`); err != nil {
