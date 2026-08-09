@@ -7,6 +7,12 @@ workers. Nothing is simulated, sampled, or extrapolated. To reproduce any
 row: `make build`, start Postgres + Redis, and run the named
 `bench/scripts/matrix.sh` suite.
 
+> The committed result files predate the project's rename (Forge →
+> Caligraphy) and are preserved exactly as the runs produced them, at the
+> git SHAs they record. Only the tooling and env-var names changed in the
+> rename — none of the mechanisms measured here — so a rerun under the
+> new names measures the same system.
+
 ## Methodology
 
 - **The bench is a pure API client.** It submits through `POST
