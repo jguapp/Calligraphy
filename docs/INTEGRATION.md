@@ -1,22 +1,22 @@
-# Integrating Booklet (or any app) with Forge
+# Integrating Booklet (or any app) with Caligraphy
 
-Forge exists because Booklet's own source comments describe four gaps —
+Caligraphy exists because Booklet's own source comments describe four gaps —
 extraction blocking the save request, embedding indexing as
 fire-and-forget, webhook delivery with no retry, and no scheduler at all.
 This guide is the drop-in path for closing them. **Nothing in this guide
-requires changes to Forge**, and no changes have been made to Booklet's
+requires changes to Caligraphy**, and no changes have been made to Booklet's
 repository — this documents exactly what Booklet would add, on Booklet's
-side, when it adopts Forge.
+side, when it adopts Caligraphy.
 
 The boundary rule that keeps both codebases healthy: **Booklet talks to
-Forge only through the HTTP API.** No shared database, no shared Redis
-keys, no imported packages. Forge stays generic infrastructure; Booklet
+Caligraphy only through the HTTP API.** No shared database, no shared Redis
+keys, no imported packages. Caligraphy stays generic infrastructure; Booklet
 stays a product. Either can be rewritten without the other noticing.
 
 ```
-Booklet API ──POST /api/v1/jobs──────────▶ Forge
+Booklet API ──POST /api/v1/jobs──────────▶ Caligraphy
      ▲                                       │
-     │            (Forge executes: its own   │
+     │            (Caligraphy executes: its own   │
      │             handler, or POSTs back    │
      │             via http.callback)        │
      └──────HMAC-signed callback ────────────┘
@@ -26,39 +26,39 @@ Booklet API ──POST /api/v1/jobs──────────▶ Forge
 ## Setup
 
 Compose-network deployments put both stacks on one network and point
-Booklet at `http://forge-api:8080`. Environment on Booklet's side:
+Booklet at `http://caligraphy-api:8080`. Environment on Booklet's side:
 
 ```bash
-FORGE_URL=http://forge-api:8080
-FORGE_TOKEN=fg_…            # one of forge's FORGE_API_TOKENS
-FORGE_CALLBACK_SECRET=…     # same value as forge's FORGE_CALLBACK_SECRET
+CALIGRAPHY_URL=http://caligraphy-api:8080
+CALIGRAPHY_TOKEN=cg_…            # one of caligraphy's CALIGRAPHY_API_TOKENS
+CALIGRAPHY_CALLBACK_SECRET=…     # same value as caligraphy's CALIGRAPHY_CALLBACK_SECRET
 ```
 
-Client: `clients/ts` in this repo (`@forge/client`) — dependency-free,
+Client: `clients/ts` in this repo (`@caligraphy/client`) — dependency-free,
 `fetch` + `node:crypto`.
 
-## Pattern 1 — native Forge handler (`article.analysis`)
+## Pattern 1 — native Caligraphy handler (`article.analysis`)
 
-For work Forge can own end-to-end. Booklet submits the article's
+For work Caligraphy can own end-to-end. Booklet submits the article's
 *already-extracted* text and retrieves structured analysis (TextRank
 keywords, extractive summary, readability, language):
 
 ```ts
-import { ForgeClient } from "@forge/client";
+import { CaligraphyClient } from "@caligraphy/client";
 
-const forge = new ForgeClient({ baseUrl: env.FORGE_URL, token: env.FORGE_TOKEN });
+const caligraphy = new CaligraphyClient({ baseUrl: env.CALIGRAPHY_URL, token: env.CALIGRAPHY_TOKEN });
 
 // In the article-save path, after extraction succeeds. The idempotency
 // key means a Booklet retry (or a double-submit from a webhook replay)
 // can never analyze the same article twice.
-const job = await forge.submit(
+const job = await caligraphy.submit(
   "article.analysis",
   { articleId: article.id, text: article.extractedText },
   { idempotencyKey: `analysis:${article.id}` },
 );
 
 // Later — a poll from a status endpoint, or awaited where acceptable:
-const res = await forge.waitForResult(job.id, { timeoutMs: 60_000 });
+const res = await caligraphy.waitForResult(job.id, { timeoutMs: 60_000 });
 if (res.status === "COMPLETED") {
   // res.result: { keywords, summary, fleschReadingEase, language, … }
 }
@@ -70,19 +70,19 @@ dies mid-analysis, the job is reaped and re-run; if it fails transiently,
 it retries with backoff; if it fails permanently, it's visible in the
 DLQ with its attempt history — not a line lost in stdout.
 
-## Pattern 2 — `http.callback` (Forge as the retry engine)
+## Pattern 2 — `http.callback` (Caligraphy as the retry engine)
 
 For work whose logic must stay in Booklet (extraction needs Readability
-and JSDOM; webhook delivery needs Booklet's per-user records). Forge
+and JSDOM; webhook delivery needs Booklet's per-user records). Caligraphy
 holds the job, the schedule, the retries, and the DLQ; at execution time
 it POSTs the payload back to a Booklet endpoint:
 
 ```ts
 // Submitting: "call me back with this payload, retrying until I 2xx"
-await forge.submit(
+await caligraphy.submit(
   "http.callback",
   {
-    url: "http://booklet-api:4000/internal/forge/extract",
+    url: "http://booklet-api:4000/internal/caligraphy/extract",
     body: { articleId: article.id, url: article.url },
     event: "article.extract",
   },
@@ -91,19 +91,19 @@ await forge.submit(
 ```
 
 The receiving endpoint (new, small, internal) verifies the signature
-against the **raw body** and returns status codes that mean what Forge
+against the **raw body** and returns status codes that mean what Caligraphy
 documents: `2xx` done, other `4xx` permanent (don't retry), `5xx`/`429`
 transient (retry with backoff):
 
 ```ts
-import { verifySignature } from "@forge/client";
+import { verifySignature } from "@caligraphy/client";
 
-app.post("/internal/forge/extract", { config: { rawBody: true } }, async (req, reply) => {
+app.post("/internal/caligraphy/extract", { config: { rawBody: true } }, async (req, reply) => {
   const ok = verifySignature({
-    secret: env.FORGE_CALLBACK_SECRET,
+    secret: env.CALIGRAPHY_CALLBACK_SECRET,
     rawBody: req.rawBody,                              // BYTES, not re-serialized JSON
-    signatureHeader: req.headers["x-forge-signature"],
-    timestampHeader: req.headers["x-forge-timestamp"],
+    signatureHeader: req.headers["x-caligraphy-signature"],
+    timestampHeader: req.headers["x-caligraphy-timestamp"],
   });
   if (!ok) return reply.code(401).send();
 
@@ -115,30 +115,30 @@ app.post("/internal/forge/extract", { config: { rawBody: true } }, async (req, r
     if (err instanceof ExtractionError) {
       return reply.code(422).send({ error: err.message }); // permanent: bad page, don't retry
     }
-    return reply.code(503).send();                     // transient: Forge retries with backoff
+    return reply.code(503).send();                     // transient: Caligraphy retries with backoff
   }
 });
 ```
 
 **Idempotency note, because at-least-once means it**: the handler above
-may run twice for one job (Forge's documented guarantee is at-least-once
+may run twice for one job (Caligraphy's documented guarantee is at-least-once
 execution, exactly-once *result persistence*). Booklet's extraction
 writes are naturally idempotent (re-extracting an article converges), and
-the `X-Forge-Job-Id` / `X-Forge-Attempt` headers are available where a
+the `X-Caligraphy-Job-Id` / `X-Caligraphy-Attempt` headers are available where a
 receiving endpoint needs its own dedup.
 
 ## Mapping the four Booklet gaps
 
-| Booklet gap (its own comment) | Forge pattern |
+| Booklet gap (its own comment) | Caligraphy pattern |
 |---|---|
 | Extraction blocks `POST /api/articles` for up to ~15s + 30 image fetches | `http.callback` → extraction endpoint; save returns instantly with `extractionStatus: PENDING`, reader polls or gets pushed |
 | Embeddings: *"failures are logged and dropped… backfill script re-attempts"* | `http.callback` → embedding endpoint with `maxAttempts: 5`; failures land in the DLQ, not the void |
-| Webhooks: *"at-least-once, no retry queue yet"* | `http.callback` per delivery — Forge **is** the "real retry-with-backoff" that comment defers |
+| Webhooks: *"at-least-once, no retry queue yet"* | `http.callback` per delivery — Caligraphy **is** the "real retry-with-backoff" that comment defers |
 | Feeds: *"no background worker to poll feeds on a schedule"* | submit with `delaySeconds`/`scheduledAt`; the completing callback submits the next poll (a self-perpetuating schedule with per-tick retry semantics) |
 
 ## What Booklet must NOT do
 
-- Reach into Forge's Postgres or Redis. The API is the whole contract.
+- Reach into Caligraphy's Postgres or Redis. The API is the whole contract.
 - Treat a callback 2xx as "exactly once happened". It means *at least
   once, and the result is recorded once*.
 - Skip signature verification because "it's on the internal network".
