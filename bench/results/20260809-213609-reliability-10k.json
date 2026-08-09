@@ -1,0 +1,98 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 5,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 1784,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w2",
+        "processed": 1784,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w4",
+        "processed": 1779,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w7",
+        "processed": 1783,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w5",
+        "processed": 1780,
+        "targetConcurrency": 4
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "reliability-10k",
+  "note": "10k jobs, 5% transient + 1% permanent injected failures, 7 workers x conc 4, 2 workers SIGKILLed mid-run",
+  "run": {
+    "counts": {
+      "COMPLETED": 9904,
+      "FAILED": 96
+    },
+    "e2eSeconds": {
+      "p50": 5.3569375,
+      "p95": 12.41839575,
+      "p99": 15.167732149999999
+    },
+    "execSeconds": {
+      "p50": 0.0376735,
+      "p95": 0.07464670000000033,
+      "p99": 10.954732019999996
+    },
+    "retriedJobs": 485,
+    "throughputJobsPerSec": 239.2,
+    "totalAttempts": 10485,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 41.4
+  },
+  "scenario": {
+    "jobs": 10000,
+    "payload": {
+      "failRate": 0.05,
+      "permanentRate": 0.01,
+      "sleepMs": 20
+    },
+    "submitters": 32,
+    "type": "bench.flaky"
+  },
+  "submit": {
+    "durationSec": 4.74,
+    "errors": 0,
+    "jobsPerSec": 2106.61
+  },
+  "timestamp": "2026-08-09T21:36:09Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 9904,
+    "completionRate": 0.9904,
+    "deadLettered": 0,
+    "failed": 96,
+    "submitted": 10000
+  }
+}

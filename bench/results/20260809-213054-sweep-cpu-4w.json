@@ -1,0 +1,90 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 4,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 145,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w2",
+        "processed": 157,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w3",
+        "processed": 153,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w4",
+        "processed": 153,
+        "targetConcurrency": 4
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "sweep-cpu-4w",
+  "note": "worker sweep, CPU-bound: 4 procs x concurrency 4 on a 4-core host",
+  "run": {
+    "counts": {
+      "COMPLETED": 1500
+    },
+    "e2eSeconds": {
+      "p50": 3.3575545,
+      "p95": 5.93148745,
+      "p99": 6.1566481699999995
+    },
+    "execSeconds": {
+      "p50": 0.07253899999999999,
+      "p95": 0.12832515,
+      "p99": 0.18445809999999996
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 190.85,
+    "totalAttempts": 1500,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 7.85
+  },
+  "scenario": {
+    "jobs": 1500,
+    "payload": {
+      "iterations": 200000
+    },
+    "submitters": 16,
+    "type": "bench.cpu"
+  },
+  "submit": {
+    "durationSec": 1.66,
+    "errors": 0,
+    "jobsPerSec": 902.17
+  },
+  "timestamp": "2026-08-09T21:30:54Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 1500,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 1500
+  }
+}

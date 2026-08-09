@@ -1,0 +1,105 @@
+{
+  "environment": {
+    "api": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "numCPU": 4,
+      "version": "0.1.0"
+    },
+    "host": {
+      "goVersion": "go1.25.0",
+      "goarch": "amd64",
+      "goos": "linux",
+      "kernel": "6.18.5-fc-v20",
+      "memTotal": "16461004 kB",
+      "numCPU": 4
+    }
+  },
+  "fleet": {
+    "activeWorkers": 7,
+    "workers": [
+      {
+        "id": "bench-w1",
+        "processed": 85,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w2",
+        "processed": 90,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w3",
+        "processed": 98,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w4",
+        "processed": 82,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w7",
+        "processed": 85,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w5",
+        "processed": 85,
+        "targetConcurrency": 4
+      },
+      {
+        "id": "bench-w6",
+        "processed": 89,
+        "targetConcurrency": 4
+      }
+    ]
+  },
+  "gitSHA": "38bb6fb",
+  "name": "sweep-cpu-7w",
+  "note": "worker sweep, CPU-bound: 7 procs x concurrency 4 on a 4-core host",
+  "run": {
+    "counts": {
+      "COMPLETED": 1500
+    },
+    "e2eSeconds": {
+      "p50": 3.1518545,
+      "p95": 5.4244701,
+      "p99": 5.6161921999999995
+    },
+    "execSeconds": {
+      "p50": 0.130382,
+      "p95": 0.22365235,
+      "p99": 0.27429127000000003
+    },
+    "retriedJobs": 0,
+    "throughputJobsPerSec": 188.19,
+    "totalAttempts": 1500,
+    "wallNote": "submit start -\u003e drain detected; poll adds \u003c=250ms (recorded, not subtracted)",
+    "wallSec": 7.97
+  },
+  "scenario": {
+    "jobs": 1500,
+    "payload": {
+      "iterations": 200000
+    },
+    "submitters": 16,
+    "type": "bench.cpu"
+  },
+  "submit": {
+    "durationSec": 2.18,
+    "errors": 0,
+    "jobsPerSec": 687.43
+  },
+  "timestamp": "2026-08-09T21:31:06Z",
+  "verdict": {
+    "allTerminal": true,
+    "cancelled": 0,
+    "completed": 1500,
+    "completionRate": 1,
+    "deadLettered": 0,
+    "failed": 0,
+    "submitted": 1500
+  }
+}
