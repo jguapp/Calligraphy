@@ -1,0 +1,17 @@
+# Non-secret configuration. Secrets (api-tokens, database-url, callback
+# secret) live in the `forge-secrets` Secret -- created imperatively or by
+# your secret manager, never committed. See deploy/k8s/README.md.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forge-config
+  namespace: forge
+data:
+  FORGE_REDIS_ADDR: "redis:6379"
+  FORGE_QUEUE: "default"
+  FORGE_CONCURRENCY: "4"
+  FORGE_AUTOSCALE: "true"
+  FORGE_MIN_CONCURRENCY: "2"
+  FORGE_MAX_CONCURRENCY: "16"
+  FORGE_CONTROL_ADDR: "forge-api:9090"
+  FORGE_DRAIN_TIMEOUT: "25s"

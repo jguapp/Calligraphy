@@ -1,0 +1,44 @@
+# Dev-grade Redis with the two queue-not-cache flags that matter:
+# appendonly (jobs survive restarts) and noeviction (a queue under memory
+# pressure refuses writes instead of silently deleting jobs).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: forge
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels: { app: redis }
+  template:
+    metadata:
+      labels: { app: redis }
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+          ports: [{ containerPort: 6379 }]
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          readinessProbe:
+            exec: { command: ["redis-cli", "ping"] }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { memory: 512Mi }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 2Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: forge
+spec:
+  selector: { app: redis }
+  ports: [{ port: 6379 }]
