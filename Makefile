@@ -21,11 +21,16 @@ build:
 test:
 	$(GO) test -race $(PKGS)
 
+# -p 1 serializes PACKAGES (not tests): the integration suites share one
+# real Redis and one real Postgres, and each package flushes them in its
+# setup — run in parallel they'd wipe each other's in-flight state. Found
+# the honest way: a job "stuck at PENDING" whose stream entry a sibling
+# package's FlushDB had eaten.
 .PHONY: test-integration
 test-integration:
 	FORGE_TEST_DATABASE_URL="$(TEST_DATABASE_URL)" \
 	FORGE_TEST_REDIS_ADDR="$(TEST_REDIS_ADDR)" \
-	$(GO) test -race -count=1 $(PKGS)
+	$(GO) test -race -count=1 -p 1 $(PKGS)
 
 .PHONY: lint
 lint:
