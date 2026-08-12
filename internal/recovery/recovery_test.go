@@ -398,6 +398,56 @@ func TestStuckRetryIsRepaired(t *testing.T) {
 	}
 }
 
+// TestDeliveryReapedBeforeClaimIsNotStranded covers the narrowest crash
+// window in the system: a worker takes an entry with XREADGROUP and dies
+// before ClaimJob runs. The job never leaves PENDING, so the reaper's
+// ReapJob (which matches only expired RUNNING rows) declines it -- and the
+// reaper used to treat that as "the entry is litter" and delete it, which
+// destroyed the job's only delivery. Nothing could recover it afterwards:
+// every repair sweep keys on a status or a NULL enqueue marker that a
+// still-PENDING, already-enqueued row does not have.
+//
+// A chaos run (40k jobs, a worker SIGKILLed every 5s) stranded exactly one
+// job this way. Reproduced here deterministically by fetching an entry as a
+// worker that then does nothing at all.
+func TestDeliveryReapedBeforeClaimIsNotStranded(t *testing.T) {
+	dsn, addr := testDSNs(t)
+	st, q := cleanSlate(t, dsn, addr)
+	cfg := testConfig(dsn, addr)
+
+	ctx := context.Background()
+	j := submit(t, st, q, "preclaim", `{}`, job.Options{})
+
+	// The crash: take the delivery into the PEL and never claim, never ack.
+	deliveries, err := q.Fetch(ctx, "died-before-claiming", 10, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(deliveries) != 1 {
+		t.Fatalf("deliveries = %d, want 1", len(deliveries))
+	}
+	before, _ := st.GetJob(ctx, j.ID)
+	if before.Status != job.StatusPending || before.AttemptCount != 0 {
+		t.Fatalf("precondition: job is %s with %d attempts, want PENDING with 0",
+			before.Status, before.AttemptCount)
+	}
+
+	startLeader(t, st, q, cfg)
+	reg := handler.NewRegistry()
+	reg.MustRegister(handler.Registration{
+		Type: "preclaim",
+		Handler: handler.Func(func(ctx context.Context, j *job.Job) (json.RawMessage, error) {
+			return json.RawMessage(`{}`), nil
+		}),
+	})
+	startWorker(t, cfg, reg)
+
+	final := waitStatus(t, st, j.ID, job.StatusCompleted, 20*time.Second)
+	if final.AttemptCount != 1 {
+		t.Errorf("attempts = %d, want 1 (the job had never run when its worker died)", final.AttemptCount)
+	}
+}
+
 // TestReapExhaustionDeadLetters: the worker dies on a job's LAST attempt;
 // the reaper must route it to the DLQ, not schedule attempt N+1.
 func TestReapExhaustionDeadLetters(t *testing.T) {
