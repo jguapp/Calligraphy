@@ -167,10 +167,22 @@ func (l *Leader) reapOne(ctx context.Context, d queue.Delivery) {
 		return
 	}
 	if !res.Reaped {
-		// The job isn't an expired-RUNNING row: the worker finished (or
-		// was cancelled) but died before acking. The record stands; the
-		// entry is just litter.
-		l.ack(ctx, d)
+		// ReapJob only matches an expired RUNNING row, so !Reaped has three
+		// causes and this branch used to assume two. The job finished, or it
+		// was cancelled -- in both cases the entry really is litter -- or
+		// it was NEVER CLAIMED AT ALL, which is the one that bites:
+		//
+		// a worker that dies between XREADGROUP and ClaimJob leaves the job
+		// PENDING with its only delivery sitting in the PEL. Acking that
+		// entry deletes the last copy, and no repair sweep can find it
+		// afterwards: ListUnenqueued wants enqueued_stream_id IS NULL (it is
+		// set), ListExpiredRunning wants RUNNING, ListStuckRetrying wants
+		// RETRYING. The row sits PENDING forever with attempt_count 0.
+		//
+		// Found by a chaos run -- 40k jobs, a worker SIGKILLed every 5s --
+		// which stranded exactly one job this way. The two-kill reliability
+		// run never hit the window.
+		l.ackUnreaped(ctx, d)
 		return
 	}
 
@@ -292,6 +304,43 @@ func (l *Leader) sweepWorkers(ctx context.Context) {
 	if n, err := l.Store.MarkDeadWorkers(ctx, 15*time.Second); err == nil && n > 0 {
 		l.Log.Info("recovery: marked dead workers", "count", n)
 	}
+}
+
+// ackUnreaped disposes of a delivery whose job was not an expired RUNNING
+// row. Terminal and RETRYING jobs are safe to ack -- their entry is spent,
+// and a RETRYING job's next delivery is the promoter's job (or the
+// stuck-retry sweep's, if the ZADD was lost). A PENDING job is not: this
+// entry may be its only copy, so put a fresh one on the wire before
+// deleting this one.
+//
+// Re-enqueueing can duplicate a delivery when the job was legitimately
+// re-queued by something else in the meantime. That is the cheaper mistake
+// by a wide margin -- claim arbitration collapses a duplicate on its next
+// hop, while the alternative strands the job until a human notices -- and
+// it is the same asymmetry the error taxonomy leans on.
+func (l *Leader) ackUnreaped(ctx context.Context, d queue.Delivery) {
+	j, err := l.Store.GetJob(ctx, d.Env.ID)
+	if err != nil {
+		// We cannot prove this entry is spent, so we do not delete it. The
+		// next reap pass sees it again once it goes idle.
+		l.Log.Warn("recovery: could not classify unreaped delivery; leaving it for the next pass",
+			"job", d.Env.ID, "err", err)
+		return
+	}
+	if j.Status == job.StatusPending {
+		env := d.Env
+		env.Attempt = j.AttemptCount + 1
+		env.EnqueuedAt = time.Now().UTC()
+		if _, err := l.Queue.Enqueue(ctx, env, time.Time{}); err != nil {
+			// Do NOT ack: this entry is still the job's only delivery.
+			l.Log.Warn("recovery: re-enqueue of an unclaimed job failed; keeping its entry",
+				"job", d.Env.ID, "err", err)
+			return
+		}
+		l.Store.AddEvent(ctx, d.Env.ID, "requeued", map[string]any{"reason": "reaped before claim"})
+		l.Log.Info("recovery: re-enqueued a job orphaned before its claim", "job", d.Env.ID)
+	}
+	l.ack(ctx, d)
 }
 
 func (l *Leader) ack(ctx context.Context, d queue.Delivery) {
