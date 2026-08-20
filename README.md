@@ -307,7 +307,7 @@ other noticing.
 | **Tests** | Unit + integration suites against real Postgres 16 & Redis 7, including a real-process SIGKILL crash-recovery test — all in CI on every push |
 | **Benchmarks** | 17 committed runs with embedded provenance; findings including the unflattering ones |
 | **History** | Built issue-by-issue — every subsystem has an issue stating the problem and a PR recording what was found, including the bugs |
-| **Docs** | [`TECHNICAL_DOCUMENTATION.html`](docs/TECHNICAL_DOCUMENTATION.html) — the long-form guide: how it works, what went wrong, and what was learned |
+| **Docs** | [`INTEGRATION.md`](docs/INTEGRATION.md) — adopting Calligraphy, with working receiver code · [`BENCHMARKS.md`](bench/BENCHMARKS.md) — methodology and findings, including the unflattering ones |
 
 ## Project structure
 
